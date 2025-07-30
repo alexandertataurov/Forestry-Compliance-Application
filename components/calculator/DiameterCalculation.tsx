@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Ruler, 
   Calculator as CalculatorIcon, 
@@ -90,6 +90,7 @@ export function DiameterCalculation({
   const [slideStartX, setSlideStartX] = useState(0);
   const [slideOffset, setSlideOffset] = useState(0);
   const [lastCategoryChange, setLastCategoryChange] = useState(0);
+  const [showSummaryBar, setShowSummaryBar] = useState(true);
 
   const speciesNames: Record<string, string> = {
     'pine': 'Сосна',
@@ -216,6 +217,27 @@ export function DiameterCalculation({
     setSlideOffset(0);
   };
 
+  // Add scroll detection to hide summary bar when bottom totals are visible
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Hide summary bar when user scrolls close to bottom (where totals are visible)
+      const bottomThreshold = documentHeight - windowHeight - 200; // 200px before reaching bottom
+      const shouldShowSummary = scrollPosition < bottomThreshold && diameterEntries.length > 0;
+      
+      setShowSummaryBar(shouldShowSummary);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Check initial state
+    handleScroll();
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [diameterEntries.length]);
+
   const getCurrentCategoryValues = () => diameterCategories[currentDiameterCategory].values;
   
   const getCurrentDiameter = () => {
@@ -316,8 +338,15 @@ export function DiameterCalculation({
 
   return (
     <div style={{ position: 'relative' }}>
-      {/* Fixed Summary Bar - Always Visible (iOS 16 Style) */}
-      <div style={{
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+      `}</style>
+      {/* Smart Summary Bar - Hides when bottom totals are visible (iOS 16 Style) */}
+      {showSummaryBar && (
+        <div style={{
         position: 'fixed',
         top: '60px',
         left: '50%',
@@ -377,9 +406,10 @@ export function DiameterCalculation({
           {diameterEntries.length}
         </div>
       </div>
+      )}
 
-      {/* Content with fixed top padding for summary bar */}
-      <div style={{ paddingTop: '80px' }}>
+      {/* Content with dynamic top padding for summary bar */}
+      <div style={{ paddingTop: showSummaryBar ? '80px' : '0px', transition: 'padding-top 0.3s ease' }}>
 
 
       {/* Volume Warning - Push Notification Style */}
@@ -452,9 +482,9 @@ export function DiameterCalculation({
               <Ruler className="w-4 h-4" />
             </div>
             <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Перетащите для смены категории</div>
-              <div className="ios-list-item-subtitle">
-                {diameterCategories[currentDiameterCategory].label} диаметры ({diameterCategories[currentDiameterCategory].range})
+              <div className="ios-list-item-title">{diameterCategories[currentDiameterCategory].label} диаметры</div>
+              <div className="ios-list-item-subtitle" style={{ fontSize: '12px', opacity: 0.6 }}>
+                Перетащите или нажмите для смены
               </div>
             </div>
           </div>
@@ -614,44 +644,42 @@ export function DiameterCalculation({
               }}
             />
             
-            {/* Enhanced Diameter Display with Category Info */}
-            <div style={{
-              position: 'absolute',
-              bottom: '8px',
-              left: '50%',
-              transform: `translateX(-50%) scale(${isSliding ? 1.15 : 1})`,
-              background: isSliding 
-                ? 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)' 
-                : 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)',
-              color: 'white',
-              padding: '12px 24px',
-              borderRadius: '24px',
-              textAlign: 'center',
-              boxShadow: isSliding 
-                ? '0 8px 24px rgba(0, 122, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)' 
-                : '0 4px 12px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
-              backdropFilter: 'blur(10px)',
-              WebkitBackdropFilter: 'blur(10px)'
-            }}>
+            {/* Disappearing Tooltip */}
+            {isSliding && (
               <div style={{
-                fontSize: '22px',
-                fontWeight: '800',
-                textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
-                marginBottom: '2px'
-              }}>
-                {getCurrentDiameter()}см
-              </div>
-              <div style={{
-                fontSize: '12px',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                background: 'rgba(0, 0, 0, 0.8)',
+                color: 'white',
+                padding: '8px 16px',
+                borderRadius: '20px',
+                fontSize: '14px',
                 fontWeight: '600',
-                opacity: 0.8,
-                textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+                textAlign: 'center',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                zIndex: 10,
+                animation: 'fadeIn 0.2s ease-out',
+                pointerEvents: 'none'
               }}>
-                {diameterCategories[currentDiameterCategory].range}
+                <div style={{
+                  fontSize: '16px',
+                  fontWeight: '700',
+                  marginBottom: '2px'
+                }}>
+                  {getCurrentDiameter()}см
+                </div>
+                <div style={{
+                  fontSize: '11px',
+                  opacity: 0.8
+                }}>
+                  {diameterCategories[currentDiameterCategory].range}
+                </div>
               </div>
-            </div>
+            )}
           </div>
           
           {/* Large Diameter Buttons Grid - Weather Resistant */}
