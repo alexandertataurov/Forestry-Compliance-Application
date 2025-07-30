@@ -84,11 +84,12 @@ export function DiameterCalculation({
   const [showVolumeWarning, setShowVolumeWarning] = useState(false);
   const [batchCompleted, setBatchCompleted] = useState(false);
   const [showFullTable, setShowFullTable] = useState(false);
-  const [showStandardDiameters, setShowStandardDiameters] = useState(false);
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
   const [currentDiameterCategory, setCurrentDiameterCategory] = useState<'small' | 'medium' | 'large'>('medium');
   const [isSliding, setIsSliding] = useState(false);
   const [slideStartX, setSlideStartX] = useState(0);
+  const [slideOffset, setSlideOffset] = useState(0);
+  const [lastCategoryChange, setLastCategoryChange] = useState(0);
 
   const speciesNames: Record<string, string> = {
     'pine': 'Сосна',
@@ -167,31 +168,52 @@ export function DiameterCalculation({
     extraLarge: { label: 'Особо крупные (38-60см)', values: [38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60] }
   };
 
-  // Handle category slide interactions
+  // Handle category slide interactions with improved responsiveness
   const handleCategorySlideStart = (clientX: number) => {
     setIsSliding(true);
     setSlideStartX(clientX);
+    setSlideOffset(0);
+    setLastCategoryChange(Date.now());
   };
 
   const handleCategorySlideMove = (clientX: number) => {
     if (!isSliding) return;
     
     const deltaX = clientX - slideStartX;
-    const sensitivity = 80; // pixels per category step
+    setSlideOffset(deltaX);
+    
+    // More sensitive category switching - 40px threshold
+    const sensitivity = 40;
     const steps = Math.round(deltaX / sensitivity);
     
     const categories = ['small', 'medium', 'large'] as const;
     const currentIndex = categories.indexOf(currentDiameterCategory);
     const newIndex = Math.max(0, Math.min(categories.length - 1, currentIndex - steps));
     
-    if (newIndex !== currentIndex) {
+    // Add debouncing to prevent rapid switching
+    const now = Date.now();
+    if (newIndex !== currentIndex && now - lastCategoryChange > 150) {
       setCurrentDiameterCategory(categories[newIndex]);
       setSlideStartX(clientX); // Reset start position
+      setSlideOffset(0);
+      setLastCategoryChange(now);
+      
+      // Add subtle haptic-like feedback with scale animation
+      const indicators = document.querySelectorAll('[data-category-indicator]');
+      indicators.forEach((indicator, index) => {
+        if (index === newIndex) {
+          (indicator as HTMLElement).style.transform = 'scale(1.2)';
+          setTimeout(() => {
+            (indicator as HTMLElement).style.transform = 'scale(1)';
+          }, 100);
+        }
+      });
     }
   };
 
   const handleCategorySlideEnd = () => {
     setIsSliding(false);
+    setSlideOffset(0);
   };
 
   const getCurrentCategoryValues = () => diameterCategories[currentDiameterCategory].values;
@@ -359,73 +381,57 @@ export function DiameterCalculation({
       {/* Content with fixed top padding for summary bar */}
       <div style={{ paddingTop: '80px' }}>
 
-      {/* Quality Selector - iOS 16 Segmented Control */}
-      <div className="ios-section-header">Качество</div>
-      <div className="ios-list">
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
-            >
-              <Star className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Выбор качества</div>
-            </div>
-          </div>
-          <div style={{
-            background: '#F2F2F7',
-            borderRadius: '10px',
-            padding: '2px',
-            display: 'flex',
-            minWidth: '120px'
-          }}>
-            {qualityGrades.map((grade) => (
-              <button
-                key={grade.value}
-                onClick={() => setSelectedQuality(grade.value)}
-                style={{
-                  background: selectedQuality === grade.value ? '#FFFFFF' : 'transparent',
-                  color: selectedQuality === grade.value ? '#007AFF' : '#8E8E93',
-                  fontSize: '15px',
-                  fontWeight: '600',
-                  padding: '8px 12px',
-                  minHeight: '32px',
-                  flex: '1',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: selectedQuality === grade.value ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
-                }}
-              >
-                {grade.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
-
-      {/* Volume Warning */}
+      {/* Volume Warning - Push Notification Style */}
       {showVolumeWarning && (
-        <div className="ios-list">
-          <div className="ios-list-item" style={{ backgroundColor: '#FFE6E6', border: '1px solid #FF3B30' }}>
-            <div className="ios-list-item-content">
-              <div 
-                className="ios-list-item-icon"
-                style={{ backgroundColor: '#FF3B30' }}
-              >
-                <AlertTriangle className="w-4 h-4" />
+        <div style={{
+          position: 'fixed',
+          top: '140px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1001,
+          width: 'calc(100% - 32px)',
+          maxWidth: '390px',
+          background: 'linear-gradient(135deg, #FF3B30 0%, #D12B20 100%)',
+          color: 'white',
+          borderRadius: '16px',
+          padding: '16px 20px',
+          boxShadow: '0 8px 24px rgba(255, 59, 48, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          animation: 'slideDown 0.3s ease-out'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+            <div style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              marginTop: '2px'
+            }}>
+              <AlertTriangle className="w-4 h-4" style={{ color: 'white' }} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontSize: '16px',
+                fontWeight: '700',
+                lineHeight: '1.3',
+                marginBottom: '4px'
+              }}>
+                Превышен максимальный объём!
               </div>
-              <div className="ios-list-item-text">
-                <div className="ios-list-item-title" style={{ color: '#FF3B30', fontWeight: '600' }}>
-                  Превышен максимальный объём!
-                </div>
-                <div className="ios-list-item-subtitle" style={{ color: '#FF3B30' }}>
-                  Текущий объём: {getTotalVolume().toFixed(3)} м³ (макс. {MAX_TRUCK_VOLUME} м³ для грузовика)
-                </div>
+              <div style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                lineHeight: '1.4',
+                opacity: 0.9
+              }}>
+                Текущий объём: {getTotalVolume().toFixed(3)} м³ (макс. {MAX_TRUCK_VOLUME} м³ для грузовика)
               </div>
             </div>
           </div>
@@ -433,29 +439,7 @@ export function DiameterCalculation({
       )}
 
       {/* Diameter Selector Header - iOS 16 */}
-      <div className="ios-section-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--ios-spacing-md)' }}>
-          <span>Выбор диаметра</span>
-          <button
-            onClick={() => setShowStandardDiameters(!showStandardDiameters)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#007AFF',
-              fontSize: '17px',
-              fontWeight: '400',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '8px 0'
-            }}
-          >
-            {showStandardDiameters ? 'Скрыть' : 'Ещё'}
-            {showStandardDiameters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-        </div>
-      </div>
+      <div className="ios-section-header">Выбор диаметра</div>
       
       {/* Category Slider for Diameter Presets */}
       <div className="ios-list">
@@ -487,7 +471,7 @@ export function DiameterCalculation({
             border: '1px solid rgba(0, 0, 0, 0.04)',
             marginBottom: '20px'
           }}>
-            {/* Category Indicators */}
+            {/* Enhanced Category Indicators with Visual Feedback */}
             <div style={{
               position: 'absolute',
               top: '0',
@@ -497,34 +481,78 @@ export function DiameterCalculation({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '0 20px'
+              padding: '0 24px'
             }}>
-              {Object.entries(diameterCategories).map(([key, category]) => {
+              {Object.entries(diameterCategories).map(([key, category], index) => {
                 const isSelected = key === currentDiameterCategory;
+                const categories = ['small', 'medium', 'large'];
+                const currentIndex = categories.indexOf(currentDiameterCategory);
+                
+                // Calculate slide influence for smooth transitions
+                const slideInfluence = Math.abs(slideOffset) > 10 ? Math.min(Math.abs(slideOffset) / 40, 1) : 0;
+                const isNextCategory = (slideOffset < 0 && index === currentIndex + 1) || (slideOffset > 0 && index === currentIndex - 1);
                 
                 return (
                   <div
                     key={key}
+                    data-category-indicator
+                    onClick={() => {
+                      if (!isSliding) {
+                        setCurrentDiameterCategory(key as 'small' | 'medium' | 'large');
+                        // Add quick feedback animation
+                        const element = document.querySelector(`[data-category-indicator][data-key="${key}"]`) as HTMLElement;
+                        if (element) {
+                          element.style.transform = 'scale(1.3)';
+                          setTimeout(() => {
+                            element.style.transform = 'scale(1)';
+                          }, 150);
+                        }
+                      }
+                    }}
+                    data-key={key}
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                      transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      transform: `scale(${isSelected && isSliding ? 1 + slideInfluence * 0.1 : 1})`,
+                      cursor: 'pointer',
+                      padding: '8px',
+                      margin: '-8px',
+                      borderRadius: '12px'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected && !isSliding) {
+                        e.currentTarget.style.backgroundColor = 'rgba(0, 122, 255, 0.1)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
                     }}
                   >
                     <div style={{
-                      width: '6px',
-                      height: isSelected ? '36px' : '20px',
-                      background: isSelected ? '#007AFF' : '#C7C7CC',
-                      borderRadius: '3px',
-                      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                      width: isSelected ? '8px' : '6px',
+                      height: isSelected ? '40px' : isNextCategory && slideInfluence > 0.3 ? `${20 + slideInfluence * 15}px` : '20px',
+                      background: isSelected 
+                        ? `linear-gradient(135deg, #007AFF ${100 - slideInfluence * 20}%, #0051D5 100%)` 
+                        : isNextCategory && slideInfluence > 0.3
+                        ? `rgba(0, 122, 255, ${0.3 + slideInfluence * 0.4})`
+                        : '#C7C7CC',
+                      borderRadius: '4px',
+                      transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      boxShadow: isSelected ? '0 2px 8px rgba(0, 122, 255, 0.3)' : 'none'
                     }} />
                     <div style={{
-                      fontSize: isSelected ? '13px' : '11px',
-                      fontWeight: isSelected ? '600' : '500',
-                      color: isSelected ? '#007AFF' : '#8E8E93',
-                      marginTop: '4px',
-                      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                      fontSize: isSelected ? '14px' : '12px',
+                      fontWeight: isSelected ? '700' : '500',
+                      color: isSelected 
+                        ? '#007AFF' 
+                        : isNextCategory && slideInfluence > 0.3
+                        ? `rgba(0, 122, 255, ${0.5 + slideInfluence * 0.3})`
+                        : '#8E8E93',
+                      marginTop: '6px',
+                      transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      textShadow: isSelected ? '0 1px 2px rgba(0, 122, 255, 0.2)' : 'none'
                     }}>
                       {category.label}
                     </div>
@@ -533,7 +561,7 @@ export function DiameterCalculation({
               })}
             </div>
             
-            {/* Interactive Slide Area */}
+            {/* Enhanced Interactive Slide Area */}
             <div
               style={{
                 position: 'absolute',
@@ -544,7 +572,9 @@ export function DiameterCalculation({
                 cursor: isSliding ? 'grabbing' : 'grab',
                 userSelect: 'none',
                 WebkitUserSelect: 'none',
-                touchAction: 'none'
+                touchAction: 'pan-x', // Better touch handling
+                background: isSliding ? 'rgba(0, 122, 255, 0.05)' : 'transparent',
+                transition: 'background 0.2s ease'
               }}
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -584,24 +614,43 @@ export function DiameterCalculation({
               }}
             />
             
-            {/* Selected Diameter Display */}
+            {/* Enhanced Diameter Display with Category Info */}
             <div style={{
               position: 'absolute',
-              bottom: '12px',
+              bottom: '8px',
               left: '50%',
-              transform: `translateX(-50%) scale(${isSliding ? 1.1 : 1})`,
-              background: 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)',
+              transform: `translateX(-50%) scale(${isSliding ? 1.15 : 1})`,
+              background: isSliding 
+                ? 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)' 
+                : 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)',
               color: 'white',
-              padding: '8px 20px',
-              borderRadius: '20px',
-              fontSize: '20px',
-              fontWeight: '700',
-              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
-              boxShadow: '0 4px 12px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease',
-              border: '2px solid rgba(255, 255, 255, 0.3)'
+              padding: '12px 24px',
+              borderRadius: '24px',
+              textAlign: 'center',
+              boxShadow: isSliding 
+                ? '0 8px 24px rgba(0, 122, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)' 
+                : '0 4px 12px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)'
             }}>
-              {getCurrentDiameter()}см
+              <div style={{
+                fontSize: '22px',
+                fontWeight: '800',
+                textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+                marginBottom: '2px'
+              }}>
+                {getCurrentDiameter()}см
+              </div>
+              <div style={{
+                fontSize: '12px',
+                fontWeight: '600',
+                opacity: 0.8,
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+              }}>
+                {diameterCategories[currentDiameterCategory].range}
+              </div>
             </div>
           </div>
           
@@ -665,70 +714,53 @@ export function DiameterCalculation({
         </div>
       </div>
 
-      {/* Quick Access Diameter Buttons */}
-      {showStandardDiameters && (
-        <div className="ios-list">
-          <div style={{ padding: '12px var(--ios-spacing-md)' }}>
-            <div style={{
-              fontSize: '12px',
-              fontWeight: '600',
-              color: 'var(--ios-secondary-label)',
-              marginBottom: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              textAlign: 'center'
-            }}>
-              Дополнительные диаметры
+      {/* Quality Selector - iOS 16 Segmented Control */}
+      <div className="ios-section-header">Качество</div>
+      <div className="ios-list">
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div 
+              className="ios-list-item-icon"
+              style={{ backgroundColor: '#007AFF' }}
+            >
+              <Star className="w-4 h-4" />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
-              {[6, 8, 10, 52, 54, 56, 58, 60].map((diameter) => (
-                <button
-                  key={diameter}
-                  onClick={() => addDiameterEntry(diameter)}
-                  style={{
-                    minHeight: '48px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    borderRadius: '10px',
-                    background: 'linear-gradient(135deg, #FF9500 0%, #E8890B 100%)',
-                    color: 'white',
-                    border: '2px solid rgba(255, 255, 255, 0.1)',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 2px 6px rgba(255, 149, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
-                  }}
-                  onTouchStart={(e) => {
-                    e.currentTarget.style.transform = 'scale(0.95)';
-                    e.currentTarget.style.boxShadow = '0 1px 4px rgba(255, 149, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                  onTouchEnd={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(255, 149, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.transform = 'scale(0.95)';
-                    e.currentTarget.style.boxShadow = '0 1px 4px rgba(255, 149, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(255, 149, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(255, 149, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                >
-                  {diameter}
-                </button>
-              ))}
+            <div className="ios-list-item-text">
+              <div className="ios-list-item-title">Выбор качества</div>
             </div>
           </div>
+          <div style={{
+            background: '#F2F2F7',
+            borderRadius: '10px',
+            padding: '2px',
+            display: 'flex',
+            minWidth: '120px'
+          }}>
+            {qualityGrades.map((grade) => (
+              <button
+                key={grade.value}
+                onClick={() => setSelectedQuality(grade.value)}
+                style={{
+                  background: selectedQuality === grade.value ? '#FFFFFF' : 'transparent',
+                  color: selectedQuality === grade.value ? '#007AFF' : '#8E8E93',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  padding: '8px 12px',
+                  minHeight: '32px',
+                  flex: '1',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: selectedQuality === grade.value ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
+                }}
+              >
+                {grade.label}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Manual Diameter Entry - iOS 16 Style */}
       <div className="ios-section-header">Ручной ввод</div>
