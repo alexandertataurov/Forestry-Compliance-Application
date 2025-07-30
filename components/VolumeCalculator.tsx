@@ -168,11 +168,28 @@ export function VolumeCalculator() {
     setSavedSettings(settingsToSave);
   };
 
+  const generateCalculationId = () => {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substr(2, 4).toUpperCase();
+    return `CALC-${timestamp.toString().slice(-8)}-${random}`;
+  };
+
+  const generateBatchNumber = () => {
+    const date = new Date();
+    const batchNum = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+    return batchNum;
+  };
+
   const startQuickCalculation = () => {
     if (!savedSettings) return;
     
-    // Generate new batch number
-    const newBatchNumber = `B${Date.now().toString().slice(-6)}`;
+    // Prompt for new vehicle number
+    const newVehicleNumber = prompt('Введите номер транспорта для новой партии:', '');
+    if (newVehicleNumber === null) return; // User cancelled
+    
+    // Generate new batch number and calculation ID
+    const newBatchNumber = generateBatchNumber();
+    const calculationId = generateCalculationId();
     
     setState({
       currentScreen: 'calculation',
@@ -186,8 +203,8 @@ export function VolumeCalculator() {
         plot: ''
       },
       transport: {
-        type: '',
-        plateNumber: '',
+        type: 'truck', // Default to truck
+        plateNumber: newVehicleNumber,
         driverName: ''
       },
       batch: {
@@ -208,8 +225,12 @@ export function VolumeCalculator() {
       return;
     }
 
+    // Generate unique calculation ID for this batch
+    const calculationId = generateCalculationId();
+
     const batchCalculations = state.diameterEntries.map(entry => ({
       id: Date.now() + Math.random(),
+      calculationId: calculationId, // Add unique calculation ID
       diameter: entry.diameter,
       length: parseFloat(state.length),
       species: state.selectedSpecies,
