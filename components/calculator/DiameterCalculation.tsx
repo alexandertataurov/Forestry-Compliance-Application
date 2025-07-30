@@ -138,22 +138,12 @@ export function DiameterCalculation({
       {/* Quick Preset Diameters */}
       <div className="ios-section-header">Быстрый выбор диаметров</div>
       <div className="ios-list">
-        <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
           {quickPresets.map((preset) => (
             <button
               key={preset}
               onClick={() => addDiameterEntry(preset)}
-              style={{
-                background: 'var(--ios-blue)',
-                color: 'white',
-                border: 'none',
-                padding: '8px 16px',
-                borderRadius: 'var(--ios-radius-md)',
-                fontSize: '17px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                minWidth: '60px'
-              }}
+              className="calculator-button-preset"
             >
               {preset}см
             </button>
@@ -179,15 +169,11 @@ export function DiameterCalculation({
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
               onClick={() => adjustDiameter(-1)}
-              className="ios-button"
+              className="calculator-button-small"
               style={{ 
-                width: '32px', 
-                height: '32px', 
-                padding: '0',
                 background: 'var(--ios-quaternary-system-fill)',
                 color: 'var(--ios-blue)',
-                fontSize: '18px',
-                borderRadius: '16px'
+                borderRadius: '20px'
               }}
             >
               <Minus className="w-4 h-4" />
@@ -198,27 +184,23 @@ export function DiameterCalculation({
               onChange={(e) => onCurrentDiameterChange(e.target.value)}
               placeholder="0"
               style={{
-                width: '80px',
-                padding: '8px 12px',
-                borderRadius: 'var(--ios-radius-md)',
+                width: '90px',
+                padding: '12px 16px',
+                borderRadius: 'var(--ios-radius-lg)',
                 border: '1px solid var(--ios-separator)',
                 background: 'var(--ios-secondary-system-grouped-background)',
                 color: 'var(--ios-label)',
-                fontSize: '17px',
-                textAlign: 'left'
+                fontSize: '18px',
+                fontWeight: '600',
+                textAlign: 'center',
+                fontFamily: 'var(--font-family)'
               }}
             />
             <button
               onClick={() => adjustDiameter(1)}
-              className="ios-button"
+              className="calculator-button-small"
               style={{ 
-                width: '32px', 
-                height: '32px', 
-                padding: '0',
-                background: 'var(--ios-blue)',
-                color: 'white',
-                fontSize: '18px',
-                borderRadius: '16px'
+                borderRadius: '20px'
               }}
             >
               <Plus className="w-4 h-4" />
@@ -263,21 +245,12 @@ export function DiameterCalculation({
       </div>
       {showPresets && (
         <div className="ios-list">
-          <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {standardPresets.map((preset) => (
               <button
                 key={preset}
                 onClick={() => addDiameterEntry(preset)}
-                style={{
-                  background: 'var(--ios-quaternary-system-fill)',
-                  color: 'var(--ios-blue)',
-                  border: 'none',
-                  padding: '6px 12px',
-                  borderRadius: 'var(--ios-radius-md)',
-                  fontSize: '15px',
-                  cursor: 'pointer',
-                  minWidth: '50px'
-                }}
+                className="calculator-button-secondary"
               >
                 {preset}
               </button>

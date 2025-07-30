@@ -182,29 +182,7 @@ export default function App() {
 
   return (
     <div className="ios-app-container">
-      {/* Native iOS Status Bar */}
-      <div className="ios-status-bar">
-        <div className="ios-status-left">
-          <span className="ios-time">
-            {new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-          </span>
-        </div>
-        <div className="ios-status-right">
-          {isOnline ? (
-            <Wifi className="ios-status-icon" />
-          ) : (
-            <WifiOff className="ios-status-icon ios-status-icon-error" />
-          )}
-          {pendingSync > 0 && (
-            <div className="ios-sync-indicator"></div>
-          )}
-          <div className="ios-battery">
-            <div className="ios-battery-level"></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Native iOS Navigation Bar */}
+      {/* Web-optimized Navigation Bar */}
       <div className="ios-navigation-bar">
         <div className="ios-nav-content">
           <div className="ios-nav-left">
@@ -224,6 +202,23 @@ export default function App() {
           </div>
           
           <div className="ios-nav-right">
+            {/* Connection Status Indicator */}
+            <div className="connection-status" style={{ display: 'flex', alignItems: 'center', marginRight: '8px' }}>
+              {isOnline ? (
+                <Wifi className="ios-nav-icon" style={{ color: 'var(--ios-green)' }} />
+              ) : (
+                <WifiOff className="ios-nav-icon" style={{ color: 'var(--ios-red)' }} />
+              )}
+              {pendingSync > 0 && (
+                <div className="sync-indicator" style={{
+                  width: '8px',
+                  height: '8px',
+                  background: 'var(--ios-orange)',
+                  borderRadius: '50%',
+                  marginLeft: '4px'
+                }}></div>
+              )}
+            </div>
             <button className="ios-nav-button">
               <MoreHorizontal className="ios-nav-icon" />
             </button>
@@ -272,7 +267,6 @@ export default function App() {
             );
           })}
         </div>
-        <div className="ios-home-indicator"></div>
       </div>
     </div>
   );
