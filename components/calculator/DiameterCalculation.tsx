@@ -131,52 +131,71 @@ export function DiameterCalculation({
   const [selectedDiameterClass, setSelectedDiameterClass] = useState<keyof typeof iso26DiameterClasses>('mediumLarge');
 
   return (
-    <div>
-      {/* Total Volume Display at Top */}
+    <div style={{ position: 'relative' }}>
+      {/* Floating Summary - Always Visible */}
       {diameterEntries.length > 0 && (
-        <>
-          <div className="ios-section-header">Общий объём партии</div>
-          <div className="ios-list">
-            <div className="ios-list-item">
-              <div className="ios-list-item-content">
-                <div 
-                  className="ios-list-item-icon"
-                  style={{ backgroundColor: '#34C759' }}
-                >
-                  <CalculatorIcon className="w-4 h-4" />
-                </div>
-                <div className="ios-list-item-text">
-                  <div className="ios-list-item-title" style={{ 
-                    fontSize: '20px', 
-                    fontWeight: '700',
-                    color: '#34C759'
-                  }}>
-                    {getTotalVolume().toFixed(3)} м³
-                  </div>
-                  <div className="ios-list-item-subtitle" style={{
-                    fontSize: '15px',
-                    wordWrap: 'break-word',
-                    overflowWrap: 'break-word',
-                    whiteSpace: 'normal'
-                  }}>
-                    {diameterEntries.length} брёвен • {speciesNames[selectedSpecies]} • {length}м
-                  </div>
-                </div>
+        <div style={{
+          position: 'fixed',
+          top: '60px', // Below iOS status bar and navigation
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 100,
+          width: 'calc(100% - 32px)',
+          maxWidth: '390px',
+          background: 'var(--ios-thick-material)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderRadius: 'var(--ios-radius-xl)',
+          padding: '12px 16px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+          border: '0.5px solid var(--ios-separator)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '16px',
+              backgroundColor: '#34C759',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <CalculatorIcon className="w-4 h-4" style={{ color: 'white' }} />
+            </div>
+            <div>
+              <div style={{
+                fontSize: '17px',
+                fontWeight: '600',
+                color: 'var(--ios-label)',
+                lineHeight: '1.2'
+              }}>
+                {getTotalVolume().toFixed(3)} м³
               </div>
-              <div className="ios-list-item-accessory">
-                <div style={{ 
-                  color: '#34C759', 
-                  fontSize: '28px', 
-                  fontWeight: '800',
-                  fontVariantNumeric: 'tabular-nums'
-                }}>
-                  {diameterEntries.length}
-                </div>
+              <div style={{
+                fontSize: '13px',
+                color: 'var(--ios-secondary-label)',
+                lineHeight: '1.2'
+              }}>
+                {diameterEntries.length} брёвен
               </div>
             </div>
           </div>
-        </>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#34C759',
+            fontVariantNumeric: 'tabular-nums'
+          }}>
+            {diameterEntries.length}
+          </div>
+        </div>
       )}
+
+      {/* Content with top padding when summary is visible */}
+      <div style={{ paddingTop: diameterEntries.length > 0 ? '80px' : '0' }}>
 
       {/* Summary Info */}
       <div className="ios-section-header">Информация о партии</div>
@@ -606,6 +625,8 @@ export function DiameterCalculation({
           </div>
         </>
       )}
+
+      </div> {/* Close content wrapper */}
     </div>
   );
 }
