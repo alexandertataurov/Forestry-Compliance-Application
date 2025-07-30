@@ -88,6 +88,8 @@ export function DiameterCalculation({
   const [currentDiameterCategory, setCurrentDiameterCategory] = useState<'small' | 'medium' | 'large'>('medium');
   const [isSliding, setIsSliding] = useState(false);
   const [slideStartX, setSlideStartX] = useState(0);
+  const [slideOffset, setSlideOffset] = useState(0);
+  const [lastCategoryChange, setLastCategoryChange] = useState(0);
 
   const speciesNames: Record<string, string> = {
     'pine': 'Сосна',
@@ -166,31 +168,52 @@ export function DiameterCalculation({
     extraLarge: { label: 'Особо крупные (38-60см)', values: [38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60] }
   };
 
-  // Handle category slide interactions
+  // Handle category slide interactions with improved responsiveness
   const handleCategorySlideStart = (clientX: number) => {
     setIsSliding(true);
     setSlideStartX(clientX);
+    setSlideOffset(0);
+    setLastCategoryChange(Date.now());
   };
 
   const handleCategorySlideMove = (clientX: number) => {
     if (!isSliding) return;
     
     const deltaX = clientX - slideStartX;
-    const sensitivity = 80; // pixels per category step
+    setSlideOffset(deltaX);
+    
+    // More sensitive category switching - 40px threshold
+    const sensitivity = 40;
     const steps = Math.round(deltaX / sensitivity);
     
     const categories = ['small', 'medium', 'large'] as const;
     const currentIndex = categories.indexOf(currentDiameterCategory);
     const newIndex = Math.max(0, Math.min(categories.length - 1, currentIndex - steps));
     
-    if (newIndex !== currentIndex) {
+    // Add debouncing to prevent rapid switching
+    const now = Date.now();
+    if (newIndex !== currentIndex && now - lastCategoryChange > 150) {
       setCurrentDiameterCategory(categories[newIndex]);
       setSlideStartX(clientX); // Reset start position
+      setSlideOffset(0);
+      setLastCategoryChange(now);
+      
+      // Add subtle haptic-like feedback with scale animation
+      const indicators = document.querySelectorAll('[data-category-indicator]');
+      indicators.forEach((indicator, index) => {
+        if (index === newIndex) {
+          (indicator as HTMLElement).style.transform = 'scale(1.2)';
+          setTimeout(() => {
+            (indicator as HTMLElement).style.transform = 'scale(1)';
+          }, 100);
+        }
+      });
     }
   };
 
   const handleCategorySlideEnd = () => {
     setIsSliding(false);
+    setSlideOffset(0);
   };
 
   const getCurrentCategoryValues = () => diameterCategories[currentDiameterCategory].values;
@@ -448,7 +471,7 @@ export function DiameterCalculation({
             border: '1px solid rgba(0, 0, 0, 0.04)',
             marginBottom: '20px'
           }}>
-            {/* Category Indicators */}
+            {/* Enhanced Category Indicators with Visual Feedback */}
             <div style={{
               position: 'absolute',
               top: '0',
@@ -458,34 +481,78 @@ export function DiameterCalculation({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '0 20px'
+              padding: '0 24px'
             }}>
-              {Object.entries(diameterCategories).map(([key, category]) => {
+              {Object.entries(diameterCategories).map(([key, category], index) => {
                 const isSelected = key === currentDiameterCategory;
+                const categories = ['small', 'medium', 'large'];
+                const currentIndex = categories.indexOf(currentDiameterCategory);
+                
+                // Calculate slide influence for smooth transitions
+                const slideInfluence = Math.abs(slideOffset) > 10 ? Math.min(Math.abs(slideOffset) / 40, 1) : 0;
+                const isNextCategory = (slideOffset < 0 && index === currentIndex + 1) || (slideOffset > 0 && index === currentIndex - 1);
                 
                 return (
                   <div
                     key={key}
+                    data-category-indicator
+                    onClick={() => {
+                      if (!isSliding) {
+                        setCurrentDiameterCategory(key as 'small' | 'medium' | 'large');
+                        // Add quick feedback animation
+                        const element = document.querySelector(`[data-category-indicator][data-key="${key}"]`) as HTMLElement;
+                        if (element) {
+                          element.style.transform = 'scale(1.3)';
+                          setTimeout(() => {
+                            element.style.transform = 'scale(1)';
+                          }, 150);
+                        }
+                      }
+                    }}
+                    data-key={key}
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                      transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      transform: `scale(${isSelected && isSliding ? 1 + slideInfluence * 0.1 : 1})`,
+                      cursor: 'pointer',
+                      padding: '8px',
+                      margin: '-8px',
+                      borderRadius: '12px'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected && !isSliding) {
+                        e.currentTarget.style.backgroundColor = 'rgba(0, 122, 255, 0.1)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
                     }}
                   >
                     <div style={{
-                      width: '6px',
-                      height: isSelected ? '36px' : '20px',
-                      background: isSelected ? '#007AFF' : '#C7C7CC',
-                      borderRadius: '3px',
-                      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                      width: isSelected ? '8px' : '6px',
+                      height: isSelected ? '40px' : isNextCategory && slideInfluence > 0.3 ? `${20 + slideInfluence * 15}px` : '20px',
+                      background: isSelected 
+                        ? `linear-gradient(135deg, #007AFF ${100 - slideInfluence * 20}%, #0051D5 100%)` 
+                        : isNextCategory && slideInfluence > 0.3
+                        ? `rgba(0, 122, 255, ${0.3 + slideInfluence * 0.4})`
+                        : '#C7C7CC',
+                      borderRadius: '4px',
+                      transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      boxShadow: isSelected ? '0 2px 8px rgba(0, 122, 255, 0.3)' : 'none'
                     }} />
                     <div style={{
-                      fontSize: isSelected ? '13px' : '11px',
-                      fontWeight: isSelected ? '600' : '500',
-                      color: isSelected ? '#007AFF' : '#8E8E93',
-                      marginTop: '4px',
-                      transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                      fontSize: isSelected ? '14px' : '12px',
+                      fontWeight: isSelected ? '700' : '500',
+                      color: isSelected 
+                        ? '#007AFF' 
+                        : isNextCategory && slideInfluence > 0.3
+                        ? `rgba(0, 122, 255, ${0.5 + slideInfluence * 0.3})`
+                        : '#8E8E93',
+                      marginTop: '6px',
+                      transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                      textShadow: isSelected ? '0 1px 2px rgba(0, 122, 255, 0.2)' : 'none'
                     }}>
                       {category.label}
                     </div>
@@ -494,7 +561,7 @@ export function DiameterCalculation({
               })}
             </div>
             
-            {/* Interactive Slide Area */}
+            {/* Enhanced Interactive Slide Area */}
             <div
               style={{
                 position: 'absolute',
@@ -505,7 +572,9 @@ export function DiameterCalculation({
                 cursor: isSliding ? 'grabbing' : 'grab',
                 userSelect: 'none',
                 WebkitUserSelect: 'none',
-                touchAction: 'none'
+                touchAction: 'pan-x', // Better touch handling
+                background: isSliding ? 'rgba(0, 122, 255, 0.05)' : 'transparent',
+                transition: 'background 0.2s ease'
               }}
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -545,24 +614,43 @@ export function DiameterCalculation({
               }}
             />
             
-            {/* Selected Diameter Display */}
+            {/* Enhanced Diameter Display with Category Info */}
             <div style={{
               position: 'absolute',
-              bottom: '12px',
+              bottom: '8px',
               left: '50%',
-              transform: `translateX(-50%) scale(${isSliding ? 1.1 : 1})`,
-              background: 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)',
+              transform: `translateX(-50%) scale(${isSliding ? 1.15 : 1})`,
+              background: isSliding 
+                ? 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)' 
+                : 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)',
               color: 'white',
-              padding: '8px 20px',
-              borderRadius: '20px',
-              fontSize: '20px',
-              fontWeight: '700',
-              textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
-              boxShadow: '0 4px 12px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease',
-              border: '2px solid rgba(255, 255, 255, 0.3)'
+              padding: '12px 24px',
+              borderRadius: '24px',
+              textAlign: 'center',
+              boxShadow: isSliding 
+                ? '0 8px 24px rgba(0, 122, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3)' 
+                : '0 4px 12px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+              transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)'
             }}>
-              {getCurrentDiameter()}см
+              <div style={{
+                fontSize: '22px',
+                fontWeight: '800',
+                textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
+                marginBottom: '2px'
+              }}>
+                {getCurrentDiameter()}см
+              </div>
+              <div style={{
+                fontSize: '12px',
+                fontWeight: '600',
+                opacity: 0.8,
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
+              }}>
+                {diameterCategories[currentDiameterCategory].range}
+              </div>
             </div>
           </div>
           
