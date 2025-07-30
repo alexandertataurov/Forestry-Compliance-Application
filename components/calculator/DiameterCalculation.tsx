@@ -11,7 +11,11 @@ import {
   CheckCircle,
   Target,
   Zap,
-  Settings
+  Settings,
+  Star,
+  AlertTriangle,
+  Truck,
+  Check
 } from 'lucide-react';
 import { calculateLogVolume } from '../../utils/gost-calculations';
 
@@ -61,6 +65,9 @@ export function DiameterCalculation({
   savedSettings
 }: DiameterCalculationProps) {
   const [showPresets, setShowPresets] = useState(true);
+  const [selectedQuality, setSelectedQuality] = useState('1');
+  const [showVolumeWarning, setShowVolumeWarning] = useState(false);
+  const [batchCompleted, setBatchCompleted] = useState(false);
 
   const speciesNames: Record<string, string> = {
     'pine': 'Сосна',
@@ -105,7 +112,9 @@ export function DiameterCalculation({
   };
 
   const getTotalVolume = () => {
-    return diameterEntries.reduce((total, entry) => total + entry.volume, 0);
+    const totalVolume = diameterEntries.reduce((total, entry) => total + entry.volume, 0);
+    checkVolumeLimit(totalVolume);
+    return totalVolume;
   };
 
   const getAverageDiameter = () => {
@@ -129,6 +138,52 @@ export function DiameterCalculation({
   };
 
   const [selectedDiameterClass, setSelectedDiameterClass] = useState<keyof typeof iso26DiameterClasses>('mediumLarge');
+
+  // Quality grades for hot button selector
+  const qualityGrades = [
+    { value: '1', label: '1', description: 'Premium quality', color: '#34C759' },
+    { value: '2', label: '2', description: 'Good quality', color: '#FF9500' },
+    { value: '3', label: '3', description: 'Standard quality', color: '#FF3B30' }
+  ];
+
+  // Maximum volume warning (35m3 for trucks)
+  const MAX_TRUCK_VOLUME = 35.0;
+
+  // Check if volume exceeds limit
+  const checkVolumeLimit = (totalVolume: number) => {
+    if (totalVolume > MAX_TRUCK_VOLUME && !showVolumeWarning) {
+      setShowVolumeWarning(true);
+    } else if (totalVolume <= MAX_TRUCK_VOLUME && showVolumeWarning) {
+      setShowVolumeWarning(false);
+    }
+  };
+
+  // Prompt for new vehicle number
+  const promptForNewVehicle = () => {
+    const vehicleNumber = prompt('Введите номер нового транспортного средства:', '');
+    if (vehicleNumber && vehicleNumber.trim()) {
+      return vehicleNumber.trim();
+    }
+    return null;
+  };
+
+  // Complete batch function
+  const completeBatch = () => {
+    if (diameterEntries.length === 0) {
+      alert('Добавьте диаметры перед завершением партии');
+      return;
+    }
+    
+    const vehicleNumber = promptForNewVehicle();
+    if (vehicleNumber === null) return; // User cancelled
+    
+    setBatchCompleted(true);
+    
+    // Save the batch with new vehicle number
+    onSave();
+    
+    alert(`Партия завершена!\nТранспорт: ${vehicleNumber}\nОбъём: ${getTotalVolume().toFixed(3)} м³\nКоличество: ${diameterEntries.length} брёвен`);
+  };
 
   return (
     <div style={{ position: 'relative' }}>
@@ -230,6 +285,78 @@ export function DiameterCalculation({
           </div>
         </div>
       </div>
+
+      {/* Quality Selector Hot Buttons */}
+      <div className="ios-section-header">Качество древесины</div>
+      <div className="ios-list">
+        <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', gap: '8px' }}>
+          {qualityGrades.map((grade) => (
+            <button
+              key={grade.value}
+              onClick={() => setSelectedQuality(grade.value)}
+              className="calculator-button-secondary"
+              style={{
+                background: selectedQuality === grade.value ? grade.color : 'var(--ios-quaternary-system-fill)',
+                color: selectedQuality === grade.value ? 'white' : 'var(--ios-label)',
+                fontSize: '16px',
+                fontWeight: '600',
+                padding: '12px 16px',
+                minHeight: '48px',
+                flex: '1',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              <Star className="w-4 h-4" />
+              Сорт {grade.label}
+            </button>
+          ))}
+        </div>
+        {selectedQuality && (
+          <div className="ios-list-item">
+            <div className="ios-list-item-content">
+              <div 
+                className="ios-list-item-icon"
+                style={{ backgroundColor: qualityGrades.find(g => g.value === selectedQuality)?.color }}
+              >
+                <Star className="w-4 h-4" />
+              </div>
+              <div className="ios-list-item-text">
+                <div className="ios-list-item-title">Выбранное качество: Сорт {selectedQuality}</div>
+                <div className="ios-list-item-subtitle">
+                  {qualityGrades.find(g => g.value === selectedQuality)?.description}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Volume Warning */}
+      {showVolumeWarning && (
+        <div className="ios-list">
+          <div className="ios-list-item" style={{ backgroundColor: '#FFE6E6', border: '1px solid #FF3B30' }}>
+            <div className="ios-list-item-content">
+              <div 
+                className="ios-list-item-icon"
+                style={{ backgroundColor: '#FF3B30' }}
+              >
+                <AlertTriangle className="w-4 h-4" />
+              </div>
+              <div className="ios-list-item-text">
+                <div className="ios-list-item-title" style={{ color: '#FF3B30', fontWeight: '600' }}>
+                  Превышен максимальный объём!
+                </div>
+                <div className="ios-list-item-subtitle" style={{ color: '#FF3B30' }}>
+                  Текущий объём: {getTotalVolume().toFixed(3)} м³ (макс. {MAX_TRUCK_VOLUME} м³ для грузовика)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ISO 26 Standard Diameter Classes */}
       <div className="ios-section-header">Стандартные диаметры ISO 26</div>
@@ -393,43 +520,84 @@ export function DiameterCalculation({
             </div>
           </div>
           <div className="ios-list">
-            {diameterEntries.slice(-10).reverse().map((entry, index) => (
-              <div key={entry.id} className="ios-list-item">
-                <div className="ios-list-item-content">
-                  <div 
-                    className="ios-list-item-icon"
-                    style={{ backgroundColor: '#34C759' }}
+            {diameterEntries.slice(-15).reverse().map((entry, index) => {
+              const actualIndex = diameterEntries.length - index;
+              const qualityGrade = qualityGrades.find(g => g.value === selectedQuality);
+              return (
+                <div key={entry.id} className="ios-list-item" style={{ 
+                  borderLeft: `4px solid ${qualityGrade?.color || '#34C759'}`,
+                  backgroundColor: index < 5 ? 'var(--ios-secondary-system-grouped-background)' : 'var(--ios-system-grouped-background)'
+                }}>
+                  <div className="ios-list-item-content">
+                    <div 
+                      className="ios-list-item-icon"
+                      style={{ 
+                        backgroundColor: qualityGrade?.color || '#34C759',
+                        fontSize: '12px',
+                        fontWeight: '700'
+                      }}
+                    >
+                      <span style={{ color: 'white' }}>
+                        #{actualIndex}
+                      </span>
+                    </div>
+                    <div className="ios-list-item-text">
+                      <div className="ios-list-item-title" style={{ 
+                        fontSize: '17px',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}>
+                        Ø{entry.diameter}см × {length}м
+                        <span style={{
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          color: 'var(--ios-secondary-label)',
+                          backgroundColor: 'var(--ios-quaternary-system-fill)',
+                          padding: '2px 6px',
+                          borderRadius: '8px'
+                        }}>
+                          Сорт {selectedQuality}
+                        </span>
+                      </div>
+                      <div className="ios-list-item-subtitle" style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <span>Объём: {entry.volume.toFixed(3)} м³</span>
+                        <span style={{ 
+                          fontSize: '13px',
+                          color: 'var(--ios-tertiary-label)'
+                        }}>
+                          {index < 5 ? 'Новые' : 'Ранее'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => removeDiameterEntry(entry.id)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#FF3B30',
+                      cursor: 'pointer',
+                      padding: '8px',
+                      borderRadius: 'var(--ios-radius-md)',
+                      opacity: 0.7,
+                      transition: 'opacity 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                    onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
                   >
-                    <span style={{ color: 'white', fontSize: '12px', fontWeight: '600' }}>
-                      {diameterEntries.length - index}
-                    </span>
-                  </div>
-                  <div className="ios-list-item-text">
-                    <div className="ios-list-item-title">
-                      Ø{entry.diameter}см × {length}м
-                    </div>
-                    <div className="ios-list-item-subtitle">
-                      Объём: {entry.volume.toFixed(3)} м³
-                    </div>
-                  </div>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
-                <button
-                  onClick={() => removeDiameterEntry(entry.id)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#FF3B30',
-                    cursor: 'pointer',
-                    padding: '8px',
-                    borderRadius: 'var(--ios-radius-md)'
-                  }}
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            ))}
-            {diameterEntries.length > 10 && (
-              <div className="ios-list-item">
+              );
+            })}
+            {diameterEntries.length > 15 && (
+              <div className="ios-list-item" style={{ backgroundColor: '#F2F2F7' }}>
                 <div className="ios-list-item-content">
                   <div 
                     className="ios-list-item-icon"
@@ -439,10 +607,10 @@ export function DiameterCalculation({
                   </div>
                   <div className="ios-list-item-text">
                     <div className="ios-list-item-title">
-                      ... и ещё {diameterEntries.length - 10} брёвен
+                      ... и ещё {diameterEntries.length - 15} брёвен
                     </div>
                     <div className="ios-list-item-subtitle">
-                      Показаны последние 10 записей
+                      Показаны последние 15 записей • Общий объём: {getTotalVolume().toFixed(3)} м³
                     </div>
                   </div>
                 </div>
@@ -529,25 +697,39 @@ export function DiameterCalculation({
             </div>
           </div>
 
-          {/* Save Batch Button */}
-          <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', gap: 'var(--ios-spacing-md)' }}>
+          {/* Action Buttons */}
+          <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexDirection: 'column', gap: 'var(--ios-spacing-md)' }}>
+            <div style={{ display: 'flex', gap: 'var(--ios-spacing-md)' }}>
+              <button
+                onClick={onBack}
+                className="ios-button ios-button-secondary"
+                style={{ flex: 1 }}
+              >
+                Назад
+              </button>
+              <button
+                onClick={onSave}
+                className="ios-button"
+                style={{ 
+                  flex: 2,
+                  background: 'var(--ios-green)'
+                }}
+              >
+                <Save className="w-5 h-5" style={{ marginRight: '8px' }} />
+                Сохранить партию ({diameterEntries.length})
+              </button>
+            </div>
             <button
-              onClick={onBack}
-              className="ios-button ios-button-secondary"
-              style={{ flex: 1 }}
-            >
-              Назад
-            </button>
-            <button
-              onClick={onSave}
+              onClick={completeBatch}
               className="ios-button"
               style={{ 
-                flex: 2,
-                background: 'var(--ios-green)'
+                background: '#FF9500',
+                color: 'white',
+                fontWeight: '600'
               }}
             >
-              <Save className="w-5 h-5" style={{ marginRight: '8px' }} />
-              Сохранить партию ({diameterEntries.length})
+              <Check className="w-5 h-5" style={{ marginRight: '8px' }} />
+              Завершить партию и сменить транспорт
             </button>
           </div>
         </>
