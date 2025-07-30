@@ -9,7 +9,9 @@ import {
   Minus,
   RotateCcw,
   CheckCircle,
-  Target
+  Target,
+  Zap,
+  Settings
 } from 'lucide-react';
 import { calculateLogVolume } from '../../utils/gost-calculations';
 
@@ -17,6 +19,14 @@ interface DiameterEntry {
   id: string;
   diameter: number;
   volume: number;
+}
+
+interface SavedSettings {
+  selectedStandard: string;
+  selectedSpecies: string;
+  length: string;
+  operator: string;
+  coordinates: { lat: number; lng: number } | null;
 }
 
 interface DiameterCalculationProps {
@@ -30,6 +40,9 @@ interface DiameterCalculationProps {
   onCurrentDiameterChange: (diameter: string) => void;
   onSave: () => void;
   onBack: () => void;
+  hasCompletedFirstCalculation?: boolean;
+  onQuickRestart?: () => void;
+  savedSettings?: SavedSettings | null;
 }
 
 export function DiameterCalculation({
@@ -42,7 +55,10 @@ export function DiameterCalculation({
   onDiameterEntriesChange,
   onCurrentDiameterChange,
   onSave,
-  onBack
+  onBack,
+  hasCompletedFirstCalculation = false,
+  onQuickRestart,
+  savedSettings
 }: DiameterCalculationProps) {
   const [showPresets, setShowPresets] = useState(true);
 
@@ -457,6 +473,54 @@ export function DiameterCalculation({
             >
               <Save className="w-5 h-5" style={{ marginRight: '8px' }} />
               Сохранить партию ({diameterEntries.length})
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Quick Restart Section - shown after completing first calculation */}
+      {hasCompletedFirstCalculation && diameterEntries.length === 0 && savedSettings && onQuickRestart && (
+        <>
+          <div className="ios-section-header">Быстрый старт новой партии</div>
+          <div className="ios-list">
+            <div className="ios-list-item">
+              <div className="ios-list-item-content">
+                <div 
+                  className="ios-list-item-icon"
+                  style={{ backgroundColor: '#FF9500' }}
+                >
+                  <Zap className="w-4 h-4" />
+                </div>
+                <div className="ios-list-item-text">
+                  <div className="ios-list-item-title">Сохранённые настройки</div>
+                  <div className="ios-list-item-subtitle">
+                    {speciesNames[savedSettings.selectedSpecies]} • {savedSettings.length}м • {savedSettings.selectedStandard}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', gap: 'var(--ios-spacing-md)' }}>
+            <button
+              onClick={onQuickRestart}
+              className="calculator-button-large"
+              style={{ 
+                flex: 2,
+                background: 'var(--ios-orange)',
+                color: 'white'
+              }}
+            >
+              <Zap className="w-5 h-5" style={{ marginRight: '8px' }} />
+              Быстрый расчёт
+            </button>
+            <button
+              onClick={onBack}
+              className="calculator-button-secondary"
+              style={{ flex: 1 }}
+            >
+              <Settings className="w-4 h-4" style={{ marginRight: '4px' }} />
+              Настройки
             </button>
           </div>
         </>
