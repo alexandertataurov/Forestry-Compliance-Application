@@ -104,11 +104,16 @@ export function DiameterCalculation({
     onCurrentDiameterChange(newValue.toString());
   };
 
-  const standardPresets = [
-    16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50
-  ];
+  // ISO 26 standard diameter classes for forestry measurements
+  // Optimized for harsh field conditions with larger touch targets
+  const iso26DiameterClasses = {
+    small: { label: 'Мелкие (6-14см)', values: [6, 8, 10, 12, 14] },
+    medium: { label: 'Средние (16-24см)', values: [16, 18, 20, 22, 24] },
+    large: { label: 'Крупные (26-36см)', values: [26, 28, 30, 32, 34, 36] },
+    extraLarge: { label: 'Особо крупные (38-60см)', values: [38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60] }
+  };
 
-  const quickPresets = [20, 24, 28, 32, 36, 40];
+  const [selectedDiameterClass, setSelectedDiameterClass] = useState<keyof typeof iso26DiameterClasses>('medium');
 
   return (
     <div>
@@ -135,19 +140,69 @@ export function DiameterCalculation({
         </div>
       </div>
 
-      {/* Quick Preset Diameters */}
-      <div className="ios-section-header">Быстрый выбор диаметров</div>
+      {/* ISO 26 Standard Diameter Classes */}
+      <div className="ios-section-header">Стандартные диаметры ISO 26</div>
+      
+      {/* Diameter Class Selector */}
       <div className="ios-list">
-        <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-          {quickPresets.map((preset) => (
+        <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          {Object.entries(iso26DiameterClasses).map(([key, classData]) => (
             <button
-              key={preset}
-              onClick={() => addDiameterEntry(preset)}
-              className="calculator-button-preset"
+              key={key}
+              onClick={() => setSelectedDiameterClass(key as keyof typeof iso26DiameterClasses)}
+              className="calculator-button-secondary"
+              style={{
+                background: selectedDiameterClass === key ? 'var(--ios-blue)' : 'var(--ios-quaternary-system-fill)',
+                color: selectedDiameterClass === key ? 'white' : 'var(--ios-blue)',
+                fontSize: '14px',
+                padding: '10px 14px',
+                minHeight: '44px',
+                flex: '1 1 calc(50% - 4px)',
+                maxWidth: 'calc(50% - 4px)'
+              }}
             >
-              {preset}см
+              {classData.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Selected Class Diameter Values */}
+      <div className="ios-list">
+        <div style={{ padding: 'var(--ios-spacing-md)' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(70px, 1fr))', 
+            gap: '12px' 
+          }}>
+            {iso26DiameterClasses[selectedDiameterClass].values.map((diameter) => (
+              <button
+                key={diameter}
+                onClick={() => addDiameterEntry(diameter)}
+                className="calculator-button-preset"
+                style={{
+                  minHeight: '56px',
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  borderRadius: 'var(--ios-radius-lg)',
+                  boxShadow: '0 2px 8px rgba(0, 122, 255, 0.15)',
+                  background: 'var(--ios-blue)',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
+                onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                {diameter}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -225,40 +280,7 @@ export function DiameterCalculation({
         </button>
       </div>
 
-      {/* All Preset Diameters */}
-      <div className="ios-section-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--ios-spacing-md)' }}>
-          <span>Стандартные диаметры</span>
-          <button
-            onClick={() => setShowPresets(!showPresets)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--ios-blue)',
-              fontSize: '13px',
-              cursor: 'pointer'
-            }}
-          >
-            {showPresets ? 'Скрыть' : 'Показать'}
-          </button>
-        </div>
-      </div>
-      {showPresets && (
-        <div className="ios-list">
-          <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {standardPresets.map((preset) => (
-              <button
-                key={preset}
-                onClick={() => addDiameterEntry(preset)}
-                className="calculator-button-secondary"
-              >
-                {preset}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
+      
       {/* Current Entries */}
       {diameterEntries.length > 0 && (
         <>
@@ -456,7 +478,7 @@ export function DiameterCalculation({
                 <div className="ios-list-item-text">
                   <div className="ios-list-item-title">Добавьте диаметры брёвен</div>
                   <div className="ios-list-item-subtitle">
-                    Используйте быстрый выбор или введите значение вручную
+                    Выберите стандартный диаметр или введите значение вручную
                   </div>
                 </div>
               </div>
