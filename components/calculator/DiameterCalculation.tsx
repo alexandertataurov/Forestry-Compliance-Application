@@ -15,7 +15,12 @@ import {
   Star,
   AlertTriangle,
   Truck,
-  Check
+  Check,
+  Table,
+  Edit3,
+  Eye,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { calculateLogVolume } from '../../utils/gost-calculations';
 
@@ -23,6 +28,16 @@ interface DiameterEntry {
   id: string;
   diameter: number;
   volume: number;
+  quality?: string;
+  timestamp?: string;
+}
+
+interface GroupedEntry {
+  quality: string;
+  diameter: number;
+  count: number;
+  totalVolume: number;
+  entries: DiameterEntry[];
 }
 
 interface SavedSettings {
@@ -68,6 +83,9 @@ export function DiameterCalculation({
   const [selectedQuality, setSelectedQuality] = useState('1');
   const [showVolumeWarning, setShowVolumeWarning] = useState(false);
   const [batchCompleted, setBatchCompleted] = useState(false);
+  const [showFullTable, setShowFullTable] = useState(false);
+  const [showStandardDiameters, setShowStandardDiameters] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<string | null>(null);
 
   const speciesNames: Record<string, string> = {
     'pine': 'Сосна',
@@ -91,7 +109,9 @@ export function DiameterCalculation({
       const newEntry: DiameterEntry = {
         id: Date.now().toString() + Math.random(),
         diameter: d,
-        volume: volume
+        volume: volume,
+        quality: selectedQuality,
+        timestamp: new Date().toISOString()
       };
       
       onDiameterEntriesChange([...diameterEntries, newEntry]);
@@ -185,6 +205,48 @@ export function DiameterCalculation({
     alert(`Партия завершена!\nТранспорт: ${vehicleNumber}\nОбъём: ${getTotalVolume().toFixed(3)} м³\nКоличество: ${diameterEntries.length} брёвен`);
   };
 
+  // Group entries by quality and diameter
+  const getGroupedEntries = (): GroupedEntry[] => {
+    const groups: { [key: string]: GroupedEntry } = {};
+    
+    diameterEntries.forEach(entry => {
+      const quality = entry.quality || '1';
+      const key = `${quality}-${entry.diameter}`;
+      
+      if (!groups[key]) {
+        groups[key] = {
+          quality,
+          diameter: entry.diameter,
+          count: 0,
+          totalVolume: 0,
+          entries: []
+        };
+      }
+      
+      groups[key].count += 1;
+      groups[key].totalVolume += entry.volume;
+      groups[key].entries.push(entry);
+    });
+    
+    return Object.values(groups).sort((a, b) => {
+      if (a.quality !== b.quality) return a.quality.localeCompare(b.quality);
+      return a.diameter - b.diameter;
+    });
+  };
+
+  // Update entry function
+  const updateEntry = (entryId: string, newDiameter: number) => {
+    const updatedEntries = diameterEntries.map(entry => {
+      if (entry.id === entryId) {
+        const newVolume = calculateLogVolume(newDiameter, parseFloat(length));
+        return { ...entry, diameter: newDiameter, volume: newVolume };
+      }
+      return entry;
+    });
+    onDiameterEntriesChange(updatedEntries);
+    setEditingEntry(null);
+  };
+
   return (
     <div style={{ position: 'relative' }}>
       {/* Floating Summary - Always Visible */}
@@ -252,87 +314,43 @@ export function DiameterCalculation({
       {/* Content with top padding when summary is visible */}
       <div style={{ paddingTop: diameterEntries.length > 0 ? '80px' : '0' }}>
 
-      {/* Summary Info */}
-      <div className="ios-section-header">Информация о партии</div>
-      <div className="ios-list">
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
-            >
-              <TreePine className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title" style={{
-                fontSize: '17px',
-                fontWeight: '400',
-                wordWrap: 'break-word',
-                overflowWrap: 'break-word',
-                whiteSpace: 'normal'
-              }}>
-                {speciesNames[selectedSpecies]} • {length}м
-              </div>
-              <div className="ios-list-item-subtitle" style={{
-                fontSize: '15px',
-                wordWrap: 'break-word',
-                overflowWrap: 'break-word',
-                whiteSpace: 'normal'
-              }}>
-                Стандарт: {selectedStandard}
-              </div>
-            </div>
-          </div>
+      {/* Compact Quality Selector */}
+      <div className="ios-section-header">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--ios-spacing-md)' }}>
+          <span style={{ fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Качество</span>
         </div>
       </div>
-
-      {/* Quality Selector Hot Buttons */}
-      <div className="ios-section-header">Качество древесины</div>
       <div className="ios-list">
-        <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', gap: '8px' }}>
+        <div style={{ padding: '8px var(--ios-spacing-md)', display: 'flex', gap: '6px' }}>
           {qualityGrades.map((grade) => (
             <button
               key={grade.value}
               onClick={() => setSelectedQuality(grade.value)}
-              className="calculator-button-secondary"
               style={{
                 background: selectedQuality === grade.value ? grade.color : 'var(--ios-quaternary-system-fill)',
                 color: selectedQuality === grade.value ? 'white' : 'var(--ios-label)',
-                fontSize: '16px',
+                fontSize: '15px',
                 fontWeight: '600',
-                padding: '12px 16px',
-                minHeight: '48px',
+                padding: '8px 12px',
+                minHeight: '36px',
                 flex: '1',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px'
+                gap: '4px',
+                borderRadius: 'var(--ios-radius-md)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
               }}
             >
-              <Star className="w-4 h-4" />
-              Сорт {grade.label}
+              <Star className="w-3 h-3" />
+              {grade.label}
             </button>
           ))}
         </div>
-        {selectedQuality && (
-          <div className="ios-list-item">
-            <div className="ios-list-item-content">
-              <div 
-                className="ios-list-item-icon"
-                style={{ backgroundColor: qualityGrades.find(g => g.value === selectedQuality)?.color }}
-              >
-                <Star className="w-4 h-4" />
-              </div>
-              <div className="ios-list-item-text">
-                <div className="ios-list-item-title">Выбранное качество: Сорт {selectedQuality}</div>
-                <div className="ios-list-item-subtitle">
-                  {qualityGrades.find(g => g.value === selectedQuality)?.description}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
 
       {/* Volume Warning */}
       {showVolumeWarning && (
@@ -358,52 +376,43 @@ export function DiameterCalculation({
         </div>
       )}
 
-      {/* ISO 26 Standard Diameter Classes */}
-      <div className="ios-section-header">Стандартные диаметры ISO 26</div>
-      
-      {/* Diameter Class Selector */}
-      <div className="ios-list">
-        <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {Object.entries(iso26DiameterClasses).map(([key, classData]) => (
-            <button
-              key={key}
-              onClick={() => setSelectedDiameterClass(key as keyof typeof iso26DiameterClasses)}
-              className="calculator-button-secondary"
-              style={{
-                background: selectedDiameterClass === key ? 'var(--ios-blue)' : 'var(--ios-quaternary-system-fill)',
-                color: selectedDiameterClass === key ? 'white' : 'var(--ios-blue)',
-                fontSize: '14px',
-                padding: '10px 14px',
-                minHeight: '44px',
-                flex: '1 1 calc(50% - 4px)',
-                maxWidth: 'calc(50% - 4px)'
-              }}
-            >
-              {classData.label}
-            </button>
-          ))}
+      {/* Compact Standard Diameters */}
+      <div className="ios-section-header">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--ios-spacing-md)' }}>
+          <span style={{ fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Стандартные диаметры</span>
+          <button
+            onClick={() => setShowStandardDiameters(!showStandardDiameters)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--ios-blue)',
+              fontSize: '15px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            {showStandardDiameters ? 'Скрыть' : 'Показать'}
+            {showStandardDiameters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
         </div>
       </div>
-
-      {/* Selected Class Diameter Values */}
+      
+      {/* Quick Access Diameters - Always Visible */}
       <div className="ios-list">
-        <div style={{ padding: 'var(--ios-spacing-md)' }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(70px, 1fr))', 
-            gap: '12px' 
-          }}>
-            {iso26DiameterClasses[selectedDiameterClass].values.map((diameter) => (
+        <div style={{ padding: '8px var(--ios-spacing-md)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {[16, 18, 20, 22, 24, 26, 28, 30, 32, 34].map((diameter) => (
               <button
                 key={diameter}
                 onClick={() => addDiameterEntry(diameter)}
-                className="calculator-button-preset"
                 style={{
-                  minHeight: '56px',
-                  fontSize: '18px',
-                  fontWeight: '700',
-                  borderRadius: 'var(--ios-radius-lg)',
-                  boxShadow: '0 2px 8px rgba(0, 122, 255, 0.15)',
+                  minHeight: '36px',
+                  minWidth: '36px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  borderRadius: 'var(--ios-radius-md)',
                   background: 'var(--ios-blue)',
                   color: 'white',
                   border: 'none',
@@ -411,11 +420,9 @@ export function DiameterCalculation({
                   transition: 'all 0.2s ease',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  padding: '0 8px'
                 }}
-                onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
-                onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
                 {diameter}
               </button>
@@ -423,6 +430,64 @@ export function DiameterCalculation({
           </div>
         </div>
       </div>
+
+      {/* Expanded Standard Diameters */}
+      {showStandardDiameters && (
+        <div className="ios-list">
+          <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {Object.entries(iso26DiameterClasses).map(([key, classData]) => (
+              <button
+                key={key}
+                onClick={() => setSelectedDiameterClass(key as keyof typeof iso26DiameterClasses)}
+                style={{
+                  background: selectedDiameterClass === key ? 'var(--ios-blue)' : 'var(--ios-quaternary-system-fill)',
+                  color: selectedDiameterClass === key ? 'white' : 'var(--ios-blue)',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  padding: '6px 10px',
+                  minHeight: '32px',
+                  borderRadius: 'var(--ios-radius-md)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {classData.label.replace('Мелкие ', 'М ').replace('Средние и крупные ', 'С/К ').replace('Особо крупные ', 'ОК ')}
+              </button>
+            ))}
+          </div>
+          <div style={{ padding: '8px var(--ios-spacing-md)' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {iso26DiameterClasses[selectedDiameterClass].values.map((diameter) => (
+                <button
+                  key={diameter}
+                  onClick={() => addDiameterEntry(diameter)}
+                  style={{
+                    minHeight: '36px',
+                    minWidth: '36px',
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    borderRadius: 'var(--ios-radius-md)',
+                    background: 'var(--ios-blue)',
+                    color: 'white',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 8px'
+                  }}
+                >
+                  {diameter}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Manual Diameter Entry */}
       <div className="ios-section-header">Ввод диаметра</div>
@@ -504,99 +569,262 @@ export function DiameterCalculation({
         <>
           <div className="ios-section-header">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--ios-spacing-md)' }}>
-              <span>Введённые диаметры ({diameterEntries.length})</span>
-              <button
-                onClick={clearAllEntries}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--ios-red)',
-                  fontSize: '13px',
-                  cursor: 'pointer'
-                }}
-              >
-                Очистить
-              </button>
+              <span style={{ fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Записи ({diameterEntries.length})</span>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={() => setShowFullTable(!showFullTable)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--ios-blue)',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  {showFullTable ? <Eye className="w-3 h-3" /> : <Table className="w-3 h-3" />}
+                  {showFullTable ? 'Группы' : 'Таблица'}
+                </button>
+                <button
+                  onClick={clearAllEntries}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--ios-red)',
+                    fontSize: '13px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Очистить
+                </button>
+              </div>
             </div>
           </div>
           <div className="ios-list">
-            {diameterEntries.slice(-15).reverse().map((entry, index) => {
-              const actualIndex = diameterEntries.length - index;
-              const qualityGrade = qualityGrades.find(g => g.value === selectedQuality);
-              return (
-                <div key={entry.id} className="ios-list-item" style={{ 
-                  borderLeft: `4px solid ${qualityGrade?.color || '#34C759'}`,
-                  backgroundColor: index < 5 ? 'var(--ios-secondary-system-grouped-background)' : 'var(--ios-system-grouped-background)'
-                }}>
-                  <div className="ios-list-item-content">
-                    <div 
-                      className="ios-list-item-icon"
-                      style={{ 
-                        backgroundColor: qualityGrade?.color || '#34C759',
-                        fontSize: '12px',
-                        fontWeight: '700'
-                      }}
-                    >
-                      <span style={{ color: 'white' }}>
-                        #{actualIndex}
-                      </span>
-                    </div>
-                    <div className="ios-list-item-text">
-                      <div className="ios-list-item-title" style={{ 
-                        fontSize: '17px',
-                        fontWeight: '600',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}>
-                        Ø{entry.diameter}см × {length}м
-                        <span style={{
+            {!showFullTable ? (
+              // Grouped View
+              getGroupedEntries().map((group) => {
+                const qualityGrade = qualityGrades.find(g => g.value === group.quality);
+                return (
+                  <div key={`${group.quality}-${group.diameter}`} className="ios-list-item" style={{ 
+                    borderLeft: `4px solid ${qualityGrade?.color || '#34C759'}`,
+                    backgroundColor: 'var(--ios-system-grouped-background)'
+                  }}>
+                    <div className="ios-list-item-content">
+                      <div 
+                        className="ios-list-item-icon"
+                        style={{ 
+                          backgroundColor: qualityGrade?.color || '#34C759',
+                          fontSize: '11px',
+                          fontWeight: '700'
+                        }}
+                      >
+                        <span style={{ color: 'white' }}>
+                          {group.count}
+                        </span>
+                      </div>
+                      <div className="ios-list-item-text">
+                        <div className="ios-list-item-title" style={{ 
+                          fontSize: '16px',
+                          fontWeight: '600',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          wordWrap: 'break-word',
+                          overflowWrap: 'break-word'
+                        }}>
+                          Ø{group.diameter}см × {length}м
+                          <span style={{
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            color: 'var(--ios-secondary-label)',
+                            backgroundColor: 'var(--ios-quaternary-system-fill)',
+                            padding: '2px 4px',
+                            borderRadius: '4px',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            Сорт {group.quality}
+                          </span>
+                        </div>
+                        <div className="ios-list-item-subtitle" style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
                           fontSize: '14px',
-                          fontWeight: '500',
-                          color: 'var(--ios-secondary-label)',
-                          backgroundColor: 'var(--ios-quaternary-system-fill)',
-                          padding: '2px 6px',
-                          borderRadius: '8px'
+                          wordWrap: 'break-word',
+                          overflowWrap: 'break-word'
                         }}>
-                          Сорт {selectedQuality}
+                          <span>Кол-во: {group.count} шт.</span>
+                          <span>Объём: {group.totalVolume.toFixed(3)} м³</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Удалить все ${group.count} записей с диаметром ${group.diameter}см?`)) {
+                          const filteredEntries = diameterEntries.filter(entry => 
+                            !(entry.diameter === group.diameter && (entry.quality || '1') === group.quality)
+                          );
+                          onDiameterEntriesChange(filteredEntries);
+                        }
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#FF3B30',
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: 'var(--ios-radius-md)',
+                        opacity: 0.7,
+                        transition: 'opacity 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                      onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              // Full Table View
+              diameterEntries.slice(-20).reverse().map((entry, index) => {
+                const actualIndex = diameterEntries.length - index;
+                const qualityGrade = qualityGrades.find(g => g.value === entry.quality || '1');
+                return (
+                  <div key={entry.id} className="ios-list-item" style={{ 
+                    borderLeft: `3px solid ${qualityGrade?.color || '#34C759'}`,
+                    backgroundColor: index < 5 ? 'var(--ios-secondary-system-grouped-background)' : 'var(--ios-system-grouped-background)',
+                    minHeight: '56px'
+                  }}>
+                    <div className="ios-list-item-content">
+                      <div 
+                        className="ios-list-item-icon"
+                        style={{ 
+                          backgroundColor: qualityGrade?.color || '#34C759',
+                          fontSize: '10px',
+                          fontWeight: '600',
+                          width: '28px',
+                          height: '28px'
+                        }}
+                      >
+                        <span style={{ color: 'white' }}>
+                          #{actualIndex}
                         </span>
                       </div>
-                      <div className="ios-list-item-subtitle" style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                      }}>
-                        <span>Объём: {entry.volume.toFixed(3)} м³</span>
-                        <span style={{ 
+                      <div className="ios-list-item-text" style={{ flex: 1 }}>
+                        {editingEntry === entry.id ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <input
+                              type="number"
+                              defaultValue={entry.diameter}
+                              style={{
+                                width: '60px',
+                                padding: '4px 8px',
+                                borderRadius: 'var(--ios-radius-sm)',
+                                border: '1px solid var(--ios-blue)',
+                                background: 'var(--ios-secondary-system-grouped-background)',
+                                fontSize: '14px'
+                              }}
+                              onBlur={(e) => {
+                                const newDiameter = parseFloat(e.target.value);
+                                if (newDiameter > 0) {
+                                  updateEntry(entry.id, newDiameter);
+                                } else {
+                                  setEditingEntry(null);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  const newDiameter = parseFloat((e.target as HTMLInputElement).value);
+                                  if (newDiameter > 0) {
+                                    updateEntry(entry.id, newDiameter);
+                                  }
+                                } else if (e.key === 'Escape') {
+                                  setEditingEntry(null);
+                                }
+                              }}
+                              autoFocus
+                            />
+                            <span style={{ fontSize: '14px' }}>см × {length}м</span>
+                          </div>
+                        ) : (
+                          <div className="ios-list-item-title" style={{ 
+                            fontSize: '15px',
+                            fontWeight: '500',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word'
+                          }}>
+                            Ø{entry.diameter}см × {length}м
+                            <span style={{
+                              fontSize: '11px',
+                              fontWeight: '500',
+                              color: 'var(--ios-secondary-label)',
+                              backgroundColor: 'var(--ios-quaternary-system-fill)',
+                              padding: '1px 4px',
+                              borderRadius: '3px',
+                              whiteSpace: 'nowrap'
+                            }}>
+                              С{entry.quality || '1'}
+                            </span>
+                          </div>
+                        )}
+                        <div className="ios-list-item-subtitle" style={{
                           fontSize: '13px',
-                          color: 'var(--ios-tertiary-label)'
+                          color: 'var(--ios-secondary-label)',
+                          wordWrap: 'break-word',
+                          overflowWrap: 'break-word'
                         }}>
-                          {index < 5 ? 'Новые' : 'Ранее'}
-                        </span>
+                          Объём: {entry.volume.toFixed(3)} м³
+                        </div>
                       </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <button
+                        onClick={() => setEditingEntry(editingEntry === entry.id ? null : entry.id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: 'var(--ios-blue)',
+                          cursor: 'pointer',
+                          padding: '6px',
+                          borderRadius: 'var(--ios-radius-sm)',
+                          opacity: 0.7,
+                          transition: 'opacity 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+                      >
+                        <Edit3 className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => removeDiameterEntry(entry.id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#FF3B30',
+                          cursor: 'pointer',
+                          padding: '6px',
+                          borderRadius: 'var(--ios-radius-sm)',
+                          opacity: 0.7,
+                          transition: 'opacity 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
-                  <button
-                    onClick={() => removeDiameterEntry(entry.id)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#FF3B30',
-                      cursor: 'pointer',
-                      padding: '8px',
-                      borderRadius: 'var(--ios-radius-md)',
-                      opacity: 0.7,
-                      transition: 'opacity 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                    onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              );
-            })}
-            {diameterEntries.length > 15 && (
+                );
+              })
+            )}
+            {showFullTable && diameterEntries.length > 20 && (
               <div className="ios-list-item" style={{ backgroundColor: '#F2F2F7' }}>
                 <div className="ios-list-item-content">
                   <div 
@@ -606,11 +834,11 @@ export function DiameterCalculation({
                     <Target className="w-4 h-4" />
                   </div>
                   <div className="ios-list-item-text">
-                    <div className="ios-list-item-title">
-                      ... и ещё {diameterEntries.length - 15} брёвен
+                    <div className="ios-list-item-title" style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                      ... и ещё {diameterEntries.length - 20} брёвен
                     </div>
-                    <div className="ios-list-item-subtitle">
-                      Показаны последние 15 записей • Общий объём: {getTotalVolume().toFixed(3)} м³
+                    <div className="ios-list-item-subtitle" style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                      Показаны последние 20 записей • Общий объём: {getTotalVolume().toFixed(3)} м³
                     </div>
                   </div>
                 </div>
@@ -618,8 +846,50 @@ export function DiameterCalculation({
             )}
           </div>
 
-          {/* Subtotals and Totals */}
-          <div className="ios-section-header">Итоговая информация</div>
+          {/* Batch Information - Moved to Bottom */}
+          <div className="ios-section-header">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--ios-spacing-md)' }}>
+              <span style={{ fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Информация о партии</span>
+            </div>
+          </div>
+          <div className="ios-list">
+            <div className="ios-list-item">
+              <div className="ios-list-item-content">
+                <div 
+                  className="ios-list-item-icon"
+                  style={{ backgroundColor: '#34C759' }}
+                >
+                  <TreePine className="w-4 h-4" />
+                </div>
+                <div className="ios-list-item-text">
+                  <div className="ios-list-item-title" style={{
+                    fontSize: '16px',
+                    fontWeight: '500',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    whiteSpace: 'normal'
+                  }}>
+                    {speciesNames[selectedSpecies]} • {length}м
+                  </div>
+                  <div className="ios-list-item-subtitle" style={{
+                    fontSize: '14px',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    whiteSpace: 'normal'
+                  }}>
+                    Стандарт: {selectedStandard}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Totals Summary */}
+          <div className="ios-section-header">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--ios-spacing-md)' }}>
+              <span style={{ fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Итоги</span>
+            </div>
+          </div>
           <div className="ios-list">
             <div className="ios-list-item">
               <div className="ios-list-item-content">
