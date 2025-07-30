@@ -201,20 +201,23 @@
   flex: 1;
   display: flex;
   justify-content: flex-start;
+  min-width: 0;
 }
 
 .ios-nav-center {
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   pointer-events: none;
-  margin-left: 60px; /* Space for back button */
+  z-index: 1;
 }
 
 .ios-nav-right {
   flex: 1;
   display: flex;
   justify-content: flex-end;
+  min-width: 0;
 }
 
 .ios-back-button {
@@ -754,12 +757,12 @@ select {
   font-weight: 600;
   color: var(--ios-label);
   margin: 0;
-  text-align: left;
+  text-align: center;
   letter-spacing: -0.41px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  max-width: 280px;
 }
 
 /* Ensure all text is left-aligned */
@@ -776,14 +779,16 @@ input, select, textarea, button, div, span, p, h1, h2, h3, h4, h5, h6 {
   text-align: left;
 }
 
-/* Fix navigation title positioning for left alignment */
+/* Responsive navigation title adjustments */
 @media (max-width: 390px) {
-  .ios-nav-center {
-    margin-left: 50px;
-  }
-  
   .ios-nav-title {
-    max-width: 150px;
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 320px) {
+  .ios-nav-title {
+    max-width: 200px;
   }
 }
 
