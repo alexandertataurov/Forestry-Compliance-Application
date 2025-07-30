@@ -369,6 +369,3 @@ function QuickStartScreen({
     </div>
   );
 }
-    </div>
-  );
-}
