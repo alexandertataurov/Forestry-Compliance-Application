@@ -195,6 +195,12 @@ export function DiameterCalculation({
   };
 
   const getCurrentCategoryValues = () => diameterCategories[currentDiameterCategory].values;
+  
+  const getCurrentDiameter = () => {
+    const values = diameterCategories[currentDiameterCategory].values;
+    const middleIndex = Math.floor(values.length / 2);
+    return values[middleIndex];
+  };
 
   const [selectedDiameterClass, setSelectedDiameterClass] = useState<keyof typeof iso26DiameterClasses>('mediumLarge');
 
@@ -542,39 +548,39 @@ export function DiameterCalculation({
               }}
               onMouseDown={(e) => {
                 e.preventDefault();
-                handleSlideStart(e.clientX);
+                handleCategorySlideStart(e.clientX);
               }}
               onMouseMove={(e) => {
                 if (isSliding) {
                   e.preventDefault();
-                  handleSlideMove(e.clientX);
+                  handleCategorySlideMove(e.clientX);
                 }
               }}
               onMouseUp={(e) => {
                 e.preventDefault();
-                handleSlideEnd();
+                handleCategorySlideEnd();
               }}
               onMouseLeave={(e) => {
                 if (isSliding) {
                   e.preventDefault();
-                  handleSlideEnd();
+                  handleCategorySlideEnd();
                 }
               }}
               onTouchStart={(e) => {
                 e.preventDefault();
                 const touch = e.touches[0];
-                handleSlideStart(touch.clientX);
+                handleCategorySlideStart(touch.clientX);
               }}
               onTouchMove={(e) => {
                 if (isSliding) {
                   e.preventDefault();
                   const touch = e.touches[0];
-                  handleSlideMove(touch.clientX);
+                  handleCategorySlideMove(touch.clientX);
                 }
               }}
               onTouchEnd={(e) => {
                 e.preventDefault();
-                handleSlideEnd();
+                handleCategorySlideEnd();
               }}
             />
             
@@ -606,7 +612,7 @@ export function DiameterCalculation({
             gap: '12px',
             marginTop: '20px'
           }}>
-            {diameterCategories[currentDiameterCategory].diameters.map((diameter) => (
+            {diameterCategories[currentDiameterCategory].values.map((diameter) => (
               <button
                 key={diameter}
                 onClick={() => addDiameterEntry(diameter)}
