@@ -84,7 +84,6 @@ export function DiameterCalculation({
   const [showVolumeWarning, setShowVolumeWarning] = useState(false);
   const [batchCompleted, setBatchCompleted] = useState(false);
   const [showFullTable, setShowFullTable] = useState(false);
-  const [showStandardDiameters, setShowStandardDiameters] = useState(false);
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
   const [currentDiameterCategory, setCurrentDiameterCategory] = useState<'small' | 'medium' | 'large'>('medium');
   const [isSliding, setIsSliding] = useState(false);
@@ -359,73 +358,57 @@ export function DiameterCalculation({
       {/* Content with fixed top padding for summary bar */}
       <div style={{ paddingTop: '80px' }}>
 
-      {/* Quality Selector - iOS 16 Segmented Control */}
-      <div className="ios-section-header">Качество</div>
-      <div className="ios-list">
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
-            >
-              <Star className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Выбор качества</div>
-            </div>
-          </div>
-          <div style={{
-            background: '#F2F2F7',
-            borderRadius: '10px',
-            padding: '2px',
-            display: 'flex',
-            minWidth: '120px'
-          }}>
-            {qualityGrades.map((grade) => (
-              <button
-                key={grade.value}
-                onClick={() => setSelectedQuality(grade.value)}
-                style={{
-                  background: selectedQuality === grade.value ? '#FFFFFF' : 'transparent',
-                  color: selectedQuality === grade.value ? '#007AFF' : '#8E8E93',
-                  fontSize: '15px',
-                  fontWeight: '600',
-                  padding: '8px 12px',
-                  minHeight: '32px',
-                  flex: '1',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: selectedQuality === grade.value ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
-                }}
-              >
-                {grade.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
 
-
-      {/* Volume Warning */}
+      {/* Volume Warning - Push Notification Style */}
       {showVolumeWarning && (
-        <div className="ios-list">
-          <div className="ios-list-item" style={{ backgroundColor: '#FFE6E6', border: '1px solid #FF3B30' }}>
-            <div className="ios-list-item-content">
-              <div 
-                className="ios-list-item-icon"
-                style={{ backgroundColor: '#FF3B30' }}
-              >
-                <AlertTriangle className="w-4 h-4" />
+        <div style={{
+          position: 'fixed',
+          top: '140px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1001,
+          width: 'calc(100% - 32px)',
+          maxWidth: '390px',
+          background: 'linear-gradient(135deg, #FF3B30 0%, #D12B20 100%)',
+          color: 'white',
+          borderRadius: '16px',
+          padding: '16px 20px',
+          boxShadow: '0 8px 24px rgba(255, 59, 48, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          animation: 'slideDown 0.3s ease-out'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+            <div style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              marginTop: '2px'
+            }}>
+              <AlertTriangle className="w-4 h-4" style={{ color: 'white' }} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontSize: '16px',
+                fontWeight: '700',
+                lineHeight: '1.3',
+                marginBottom: '4px'
+              }}>
+                Превышен максимальный объём!
               </div>
-              <div className="ios-list-item-text">
-                <div className="ios-list-item-title" style={{ color: '#FF3B30', fontWeight: '600' }}>
-                  Превышен максимальный объём!
-                </div>
-                <div className="ios-list-item-subtitle" style={{ color: '#FF3B30' }}>
-                  Текущий объём: {getTotalVolume().toFixed(3)} м³ (макс. {MAX_TRUCK_VOLUME} м³ для грузовика)
-                </div>
+              <div style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                lineHeight: '1.4',
+                opacity: 0.9
+              }}>
+                Текущий объём: {getTotalVolume().toFixed(3)} м³ (макс. {MAX_TRUCK_VOLUME} м³ для грузовика)
               </div>
             </div>
           </div>
@@ -433,29 +416,7 @@ export function DiameterCalculation({
       )}
 
       {/* Diameter Selector Header - iOS 16 */}
-      <div className="ios-section-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--ios-spacing-md)' }}>
-          <span>Выбор диаметра</span>
-          <button
-            onClick={() => setShowStandardDiameters(!showStandardDiameters)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#007AFF',
-              fontSize: '17px',
-              fontWeight: '400',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '8px 0'
-            }}
-          >
-            {showStandardDiameters ? 'Скрыть' : 'Ещё'}
-            {showStandardDiameters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-        </div>
-      </div>
+      <div className="ios-section-header">Выбор диаметра</div>
       
       {/* Category Slider for Diameter Presets */}
       <div className="ios-list">
@@ -665,70 +626,53 @@ export function DiameterCalculation({
         </div>
       </div>
 
-      {/* Quick Access Diameter Buttons */}
-      {showStandardDiameters && (
-        <div className="ios-list">
-          <div style={{ padding: '12px var(--ios-spacing-md)' }}>
-            <div style={{
-              fontSize: '12px',
-              fontWeight: '600',
-              color: 'var(--ios-secondary-label)',
-              marginBottom: '12px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              textAlign: 'center'
-            }}>
-              Дополнительные диаметры
+      {/* Quality Selector - iOS 16 Segmented Control */}
+      <div className="ios-section-header">Качество</div>
+      <div className="ios-list">
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div 
+              className="ios-list-item-icon"
+              style={{ backgroundColor: '#007AFF' }}
+            >
+              <Star className="w-4 h-4" />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
-              {[6, 8, 10, 52, 54, 56, 58, 60].map((diameter) => (
-                <button
-                  key={diameter}
-                  onClick={() => addDiameterEntry(diameter)}
-                  style={{
-                    minHeight: '48px',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    borderRadius: '10px',
-                    background: 'linear-gradient(135deg, #FF9500 0%, #E8890B 100%)',
-                    color: 'white',
-                    border: '2px solid rgba(255, 255, 255, 0.1)',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 2px 6px rgba(255, 149, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)'
-                  }}
-                  onTouchStart={(e) => {
-                    e.currentTarget.style.transform = 'scale(0.95)';
-                    e.currentTarget.style.boxShadow = '0 1px 4px rgba(255, 149, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                  onTouchEnd={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(255, 149, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.transform = 'scale(0.95)';
-                    e.currentTarget.style.boxShadow = '0 1px 4px rgba(255, 149, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(255, 149, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(255, 149, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
-                  }}
-                >
-                  {diameter}
-                </button>
-              ))}
+            <div className="ios-list-item-text">
+              <div className="ios-list-item-title">Выбор качества</div>
             </div>
           </div>
+          <div style={{
+            background: '#F2F2F7',
+            borderRadius: '10px',
+            padding: '2px',
+            display: 'flex',
+            minWidth: '120px'
+          }}>
+            {qualityGrades.map((grade) => (
+              <button
+                key={grade.value}
+                onClick={() => setSelectedQuality(grade.value)}
+                style={{
+                  background: selectedQuality === grade.value ? '#FFFFFF' : 'transparent',
+                  color: selectedQuality === grade.value ? '#007AFF' : '#8E8E93',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  padding: '8px 12px',
+                  minHeight: '32px',
+                  flex: '1',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: selectedQuality === grade.value ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none'
+                }}
+              >
+                {grade.label}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Manual Diameter Entry - iOS 16 Style */}
       <div className="ios-section-header">Ручной ввод</div>
