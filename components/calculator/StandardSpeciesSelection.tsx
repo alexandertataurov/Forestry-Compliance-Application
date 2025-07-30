@@ -8,7 +8,9 @@ import {
   Star,
   ChevronDown,
   ChevronUp,
-  Zap
+  Zap,
+  Settings,
+  Check
 } from 'lucide-react';
 
 interface StandardSpeciesSelectionProps {
@@ -26,7 +28,8 @@ export function StandardSpeciesSelection({
   onSpeciesChange,
   onNext
 }: StandardSpeciesSelectionProps) {
-  const [showAllSpecies, setShowAllSpecies] = useState(false);
+  const [showStandardPicker, setShowStandardPicker] = useState(false);
+  const [showSpeciesPicker, setShowSpeciesPicker] = useState(false);
 
   // Default standard and species for quick start
   const defaultStandard = 'GOST-2708-75';
@@ -46,6 +49,16 @@ export function StandardSpeciesSelection({
     onStandardChange(defaultStandard);
     onSpeciesChange(defaultSpecies);
     onNext();
+  };
+
+  const handleStandardSelect = (standardId: string) => {
+    onStandardChange(standardId);
+    setShowStandardPicker(false);
+  };
+
+  const handleSpeciesSelect = (speciesId: string) => {
+    onSpeciesChange(speciesId);
+    setShowSpeciesPicker(false);
   };
 
   const standards = [
@@ -101,6 +114,14 @@ export function StandardSpeciesSelection({
     { id: 'larch', name: 'Лиственница', density: 0.66, category: 'Хвойные', icon: '🌲', description: 'Высокая плотность' }
   ];
 
+  const getSelectedStandardName = () => {
+    return standards.find(s => s.id === selectedStandard)?.name || 'Выберите стандарт';
+  };
+
+  const getSelectedSpeciesName = () => {
+    return speciesList.find(s => s.id === selectedSpecies)?.name || 'Выберите породу';
+  };
+
   return (
     <div>
       {/* Quick Start Section */}
@@ -131,110 +152,69 @@ export function StandardSpeciesSelection({
         </button>
       </div>
 
-      {/* Common Species */}
-      <div className="ios-section-header">Часто используемые породы</div>
+      {/* Settings Section */}
+      <div className="ios-section-header">Настройки измерения</div>
       <div className="ios-list">
-        {commonSpecies.map((species) => (
-          <button
-            key={species.id}
-            onClick={() => onSpeciesChange(species.id)}
-            className="ios-list-item"
-            style={{ border: 'none', background: 'transparent', width: '100%' }}
-          >
-            <div className="ios-list-item-content">
-              <div 
-                className="ios-list-item-icon"
-                style={{ 
-                  backgroundColor: species.category === 'Хвойные' ? '#34C759' : '#FF9500',
-                  fontSize: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                {species.icon}
-              </div>
-              <div className="ios-list-item-text">
-                <div className="ios-list-item-title">
-                  {species.name}
-                  {species.id === defaultSpecies && (
-                    <Star className="w-4 h-4" style={{ 
-                      color: '#FFD60A', 
-                      marginLeft: '8px', 
-                      display: 'inline' 
-                    }} />
-                  )}
-                </div>
-                <div className="ios-list-item-subtitle">
-                  {species.description} • {species.density} г/см³
-                </div>
+        {/* Standard Picker */}
+        <button
+          onClick={() => setShowStandardPicker(true)}
+          className="ios-list-item"
+          style={{ border: 'none', background: 'transparent', width: '100%' }}
+        >
+          <div className="ios-list-item-content">
+            <div 
+              className="ios-list-item-icon"
+              style={{ backgroundColor: '#007AFF' }}
+            >
+              <FileText className="w-4 h-4" />
+            </div>
+            <div className="ios-list-item-text">
+              <div className="ios-list-item-title">Стандарт измерения</div>
+              <div className="ios-list-item-subtitle">
+                {getSelectedStandardName()}
               </div>
             </div>
-            {selectedSpecies === species.id && (
-              <div className="ios-list-item-accessory">
-                <div style={{ color: '#007AFF', fontSize: '17px', fontWeight: '600' }}>✓</div>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
+          </div>
+          <div className="ios-list-item-accessory">
+            <ChevronDown className="w-5 h-5" style={{ color: 'var(--ios-tertiary-label)' }} />
+          </div>
+        </button>
 
-      {/* Show All Species Toggle */}
-      <div style={{ padding: 'var(--ios-spacing-md)' }}>
+        {/* Species Picker */}
         <button
-          onClick={() => setShowAllSpecies(!showAllSpecies)}
-          className="ios-button ios-button-secondary"
-          style={{ width: '100%' }}
+          onClick={() => setShowSpeciesPicker(true)}
+          className="ios-list-item"
+          style={{ border: 'none', background: 'transparent', width: '100%' }}
         >
-          <span style={{ marginRight: '8px' }}>
-            {showAllSpecies ? 'Скрыть все породы' : 'Показать все породы'}
-          </span>
-          {showAllSpecies ? (
-            <ChevronUp className="w-5 h-5" />
-          ) : (
-            <ChevronDown className="w-5 h-5" />
-          )}
+          <div className="ios-list-item-content">
+            <div 
+              className="ios-list-item-icon"
+              style={{ backgroundColor: '#34C759' }}
+            >
+              <TreePine className="w-4 h-4" />
+            </div>
+            <div className="ios-list-item-text">
+              <div className="ios-list-item-title">Порода древесины</div>
+              <div className="ios-list-item-subtitle">
+                {getSelectedSpeciesName()}
+                {selectedSpecies && (
+                  <span style={{ marginLeft: '8px', color: 'var(--ios-tertiary-label)' }}>
+                    • {speciesList.find(s => s.id === selectedSpecies)?.density} г/см³
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="ios-list-item-accessory">
+            <ChevronDown className="w-5 h-5" style={{ color: 'var(--ios-tertiary-label)' }} />
+          </div>
         </button>
       </div>
 
-      {/* All Species (Collapsible) */}
-      {showAllSpecies && (
+      {/* Selected Configuration Summary */}
+      {selectedStandard && selectedSpecies && (
         <>
-          {/* Measuring Standards */}
-          <div className="ios-section-header">Стандарт измерения</div>
-      <div className="ios-list">
-        {standards.map((standard) => (
-          <button
-            key={standard.id}
-            onClick={() => onStandardChange(standard.id)}
-            className="ios-list-item"
-            style={{ border: 'none', background: 'transparent', width: '100%' }}
-          >
-            <div className="ios-list-item-content">
-              <div 
-                className="ios-list-item-icon"
-                style={{ backgroundColor: standard.official ? '#007AFF' : '#5856D6' }}
-              >
-                <FileText className="w-4 h-4" />
-              </div>
-              <div className="ios-list-item-text">
-                <div className="ios-list-item-title">{standard.name}</div>
-                <div className="ios-list-item-subtitle">{standard.description}</div>
-              </div>
-            </div>
-            {selectedStandard === standard.id && (
-              <div className="ios-list-item-accessory">
-                <div style={{ color: '#007AFF', fontSize: '17px', fontWeight: '600' }}>✓</div>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Standard Info */}
-      {selectedStandard && (
-        <>
-          <div className="ios-section-header">Информация о стандарте</div>
+          <div className="ios-section-header">Выбранная конфигурация</div>
           <div className="ios-list">
             <div className="ios-list-item">
               <div className="ios-list-item-content">
@@ -242,25 +222,12 @@ export function StandardSpeciesSelection({
                   className="ios-list-item-icon"
                   style={{ backgroundColor: '#34C759' }}
                 >
-                  <Info className="w-4 h-4" />
+                  <CheckCircle className="w-4 h-4" />
                 </div>
                 <div className="ios-list-item-text">
-                  <div className="ios-list-item-title">
-                    {standards.find(s => s.id === selectedStandard)?.name}
-                  </div>
+                  <div className="ios-list-item-title">Готово к расчётам</div>
                   <div className="ios-list-item-subtitle">
-                    {selectedStandard === 'GOST-2708-75' && 
-                      'Точность расчёта: ±2%. Применим для диаметров 6-120 см'
-                    }
-                    {selectedStandard === 'GOST-2292-88' && 
-                      'Учитывает сортность и маркировку. Расширенная классификация'
-                    }
-                    {selectedStandard === 'ISO-4480' && 
-                      'Международные требования. Метрическая система'
-                    }
-                    {selectedStandard === 'EN-1309' && 
-                      'Европейские стандарты качества и измерения'
-                    }
+                    {getSelectedStandardName()} • {getSelectedSpeciesName()}
                   </div>
                 </div>
               </div>
@@ -269,72 +236,281 @@ export function StandardSpeciesSelection({
         </>
       )}
 
-      {/* Coniferous Species */}
-      <div className="ios-section-header">Хвойные породы</div>
-      <div className="ios-list">
-        {coniferousSpecies.map((species) => (
-          <button
-            key={species.id}
-            onClick={() => onSpeciesChange(species.id)}
-            className="ios-list-item"
-            style={{ border: 'none', background: 'transparent', width: '100%' }}
-          >
-            <div className="ios-list-item-content">
-              <div 
-                className="ios-list-item-icon"
-                style={{ backgroundColor: '#34C759' }}
+      {/* Standard Picker Modal */}
+      {showStandardPicker && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--ios-secondary-system-grouped-background)',
+            borderRadius: '14px 14px 0 0',
+            width: '100%',
+            maxWidth: '428px',
+            maxHeight: '70vh',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              padding: 'var(--ios-spacing-md)',
+              borderBottom: '0.5px solid var(--ios-separator)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '600' }}>Выберите стандарт</h3>
+              <button
+                onClick={() => setShowStandardPicker(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--ios-blue)',
+                  fontSize: '17px',
+                  cursor: 'pointer'
+                }}
               >
-                <TreePine className="w-4 h-4" />
-              </div>
-              <div className="ios-list-item-text">
-                <div className="ios-list-item-title">{species.name}</div>
-                <div className="ios-list-item-subtitle">
-                  Плотность: {species.density} г/см³
-                </div>
-              </div>
+                Готово
+              </button>
             </div>
-            {selectedSpecies === species.id && (
-              <div className="ios-list-item-accessory">
-                <div style={{ color: '#007AFF', fontSize: '17px', fontWeight: '600' }}>✓</div>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
+            <div style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+              {standards.map((standard) => (
+                <button
+                  key={standard.id}
+                  onClick={() => handleStandardSelect(standard.id)}
+                  className="ios-list-item"
+                  style={{ 
+                    border: 'none', 
+                    background: 'transparent', 
+                    width: '100%',
+                    borderBottom: '0.5px solid var(--ios-separator)'
+                  }}
+                >
+                  <div className="ios-list-item-content">
+                    <div 
+                      className="ios-list-item-icon"
+                      style={{ backgroundColor: standard.official ? '#007AFF' : '#5856D6' }}
+                    >
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div className="ios-list-item-text">
+                      <div className="ios-list-item-title">{standard.name}</div>
+                      <div className="ios-list-item-subtitle">{standard.description}</div>
+                    </div>
+                  </div>
+                  {selectedStandard === standard.id && (
+                    <div className="ios-list-item-accessory">
+                      <Check className="w-5 h-5" style={{ color: 'var(--ios-blue)' }} />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Deciduous Species */}
-      <div className="ios-section-header">Лиственные породы</div>
-      <div className="ios-list">
-        {deciduousSpecies.map((species) => (
-          <button
-            key={species.id}
-            onClick={() => onSpeciesChange(species.id)}
-            className="ios-list-item"
-            style={{ border: 'none', background: 'transparent', width: '100%' }}
-          >
-            <div className="ios-list-item-content">
-              <div 
-                className="ios-list-item-icon"
-                style={{ backgroundColor: '#FF9500' }}
+      {/* Species Picker Modal */}
+      {showSpeciesPicker && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            backgroundColor: 'var(--ios-secondary-system-grouped-background)',
+            borderRadius: '14px 14px 0 0',
+            width: '100%',
+            maxWidth: '428px',
+            maxHeight: '70vh',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              padding: 'var(--ios-spacing-md)',
+              borderBottom: '0.5px solid var(--ios-separator)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '600' }}>Выберите породу</h3>
+              <button
+                onClick={() => setShowSpeciesPicker(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--ios-blue)',
+                  fontSize: '17px',
+                  cursor: 'pointer'
+                }}
               >
-                <TreePine className="w-4 h-4" />
-              </div>
-              <div className="ios-list-item-text">
-                <div className="ios-list-item-title">{species.name}</div>
-                <div className="ios-list-item-subtitle">
-                  Плотность: {species.density} г/см³
-                </div>
-              </div>
+                Готово
+              </button>
             </div>
-            {selectedSpecies === species.id && (
-              <div className="ios-list-item-accessory">
-                <div style={{ color: '#007AFF', fontSize: '17px', fontWeight: '600' }}>✓</div>
+            <div style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+              {/* Common Species Section */}
+              <div style={{ 
+                padding: '8px var(--ios-spacing-md) 4px var(--ios-spacing-md)',
+                fontSize: '13px',
+                fontWeight: '400',
+                color: 'var(--ios-secondary-label)',
+                textTransform: 'uppercase',
+                letterSpacing: '-0.08px'
+              }}>
+                Часто используемые
               </div>
-            )}
-          </button>
-        ))}
-      </div>
-        </>
+              {commonSpecies.map((species) => (
+                <button
+                  key={species.id}
+                  onClick={() => handleSpeciesSelect(species.id)}
+                  className="ios-list-item"
+                  style={{ 
+                    border: 'none', 
+                    background: 'transparent', 
+                    width: '100%',
+                    borderBottom: '0.5px solid var(--ios-separator)'
+                  }}
+                >
+                  <div className="ios-list-item-content">
+                    <div 
+                      className="ios-list-item-icon"
+                      style={{ 
+                        backgroundColor: species.category === 'Хвойные' ? '#34C759' : '#FF9500',
+                        fontSize: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      {species.icon}
+                    </div>
+                    <div className="ios-list-item-text">
+                      <div className="ios-list-item-title">
+                        {species.name}
+                        {species.id === defaultSpecies && (
+                          <Star className="w-4 h-4" style={{ 
+                            color: '#FFD60A', 
+                            marginLeft: '8px', 
+                            display: 'inline' 
+                          }} />
+                        )}
+                      </div>
+                      <div className="ios-list-item-subtitle">
+                        {species.description} • {species.density} г/см³
+                      </div>
+                    </div>
+                  </div>
+                  {selectedSpecies === species.id && (
+                    <div className="ios-list-item-accessory">
+                      <Check className="w-5 h-5" style={{ color: 'var(--ios-blue)' }} />
+                    </div>
+                  )}
+                </button>
+              ))}
+
+              {/* All Species Sections */}
+              <div style={{ 
+                padding: '16px var(--ios-spacing-md) 4px var(--ios-spacing-md)',
+                fontSize: '13px',
+                fontWeight: '400',
+                color: 'var(--ios-secondary-label)',
+                textTransform: 'uppercase',
+                letterSpacing: '-0.08px'
+              }}>
+                Хвойн��е породы
+              </div>
+              {coniferousSpecies.map((species) => (
+                <button
+                  key={species.id}
+                  onClick={() => handleSpeciesSelect(species.id)}
+                  className="ios-list-item"
+                  style={{ 
+                    border: 'none', 
+                    background: 'transparent', 
+                    width: '100%',
+                    borderBottom: '0.5px solid var(--ios-separator)'
+                  }}
+                >
+                  <div className="ios-list-item-content">
+                    <div 
+                      className="ios-list-item-icon"
+                      style={{ backgroundColor: '#34C759' }}
+                    >
+                      <TreePine className="w-4 h-4" />
+                    </div>
+                    <div className="ios-list-item-text">
+                      <div className="ios-list-item-title">{species.name}</div>
+                      <div className="ios-list-item-subtitle">
+                        Плотность: {species.density} г/см³
+                      </div>
+                    </div>
+                  </div>
+                  {selectedSpecies === species.id && (
+                    <div className="ios-list-item-accessory">
+                      <Check className="w-5 h-5" style={{ color: 'var(--ios-blue)' }} />
+                    </div>
+                  )}
+                </button>
+              ))}
+
+              <div style={{ 
+                padding: '16px var(--ios-spacing-md) 4px var(--ios-spacing-md)',
+                fontSize: '13px',
+                fontWeight: '400',
+                color: 'var(--ios-secondary-label)',
+                textTransform: 'uppercase',
+                letterSpacing: '-0.08px'
+              }}>
+                Лиственные породы
+              </div>
+              {deciduousSpecies.map((species) => (
+                <button
+                  key={species.id}
+                  onClick={() => handleSpeciesSelect(species.id)}
+                  className="ios-list-item"
+                  style={{ 
+                    border: 'none', 
+                    background: 'transparent', 
+                    width: '100%',
+                    borderBottom: species === deciduousSpecies[deciduousSpecies.length - 1] ? 'none' : '0.5px solid var(--ios-separator)'
+                  }}
+                >
+                  <div className="ios-list-item-content">
+                    <div 
+                      className="ios-list-item-icon"
+                      style={{ backgroundColor: '#FF9500' }}
+                    >
+                      <TreePine className="w-4 h-4" />
+                    </div>
+                    <div className="ios-list-item-text">
+                      <div className="ios-list-item-title">{species.name}</div>
+                      <div className="ios-list-item-subtitle">
+                        Плотность: {species.density} г/см³
+                      </div>
+                    </div>
+                  </div>
+                  {selectedSpecies === species.id && (
+                    <div className="ios-list-item-accessory">
+                      <Check className="w-5 h-5" style={{ color: 'var(--ios-blue)' }} />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Continue Button */}
