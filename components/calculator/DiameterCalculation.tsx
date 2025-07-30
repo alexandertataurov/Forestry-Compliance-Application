@@ -121,18 +121,63 @@ export function DiameterCalculation({
   };
 
   // ISO 26 standard diameter classes for forestry measurements
-  // Optimized for harsh field conditions with larger touch targets
+  // Combined medium and large diameters as requested
   const iso26DiameterClasses = {
     small: { label: 'Мелкие (6-14см)', values: [6, 8, 10, 12, 14] },
-    medium: { label: 'Средние (16-24см)', values: [16, 18, 20, 22, 24] },
-    large: { label: 'Крупные (26-36см)', values: [26, 28, 30, 32, 34, 36] },
+    mediumLarge: { label: 'Средние и крупные (16-36см)', values: [16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36] },
     extraLarge: { label: 'Особо крупные (38-60см)', values: [38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60] }
   };
 
-  const [selectedDiameterClass, setSelectedDiameterClass] = useState<keyof typeof iso26DiameterClasses>('medium');
+  const [selectedDiameterClass, setSelectedDiameterClass] = useState<keyof typeof iso26DiameterClasses>('mediumLarge');
 
   return (
     <div>
+      {/* Total Volume Display at Top */}
+      {diameterEntries.length > 0 && (
+        <>
+          <div className="ios-section-header">Общий объём партии</div>
+          <div className="ios-list">
+            <div className="ios-list-item">
+              <div className="ios-list-item-content">
+                <div 
+                  className="ios-list-item-icon"
+                  style={{ backgroundColor: '#34C759' }}
+                >
+                  <CalculatorIcon className="w-4 h-4" />
+                </div>
+                <div className="ios-list-item-text">
+                  <div className="ios-list-item-title" style={{ 
+                    fontSize: '20px', 
+                    fontWeight: '700',
+                    color: '#34C759'
+                  }}>
+                    {getTotalVolume().toFixed(3)} м³
+                  </div>
+                  <div className="ios-list-item-subtitle" style={{
+                    fontSize: '15px',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word',
+                    whiteSpace: 'normal'
+                  }}>
+                    {diameterEntries.length} брёвен • {speciesNames[selectedSpecies]} • {length}м
+                  </div>
+                </div>
+              </div>
+              <div className="ios-list-item-accessory">
+                <div style={{ 
+                  color: '#34C759', 
+                  fontSize: '28px', 
+                  fontWeight: '800',
+                  fontVariantNumeric: 'tabular-nums'
+                }}>
+                  {diameterEntries.length}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Summary Info */}
       <div className="ios-section-header">Информация о партии</div>
       <div className="ios-list">
@@ -145,10 +190,21 @@ export function DiameterCalculation({
               <TreePine className="w-4 h-4" />
             </div>
             <div className="ios-list-item-text">
-              <div className="ios-list-item-title">
+              <div className="ios-list-item-title" style={{
+                fontSize: '17px',
+                fontWeight: '400',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'normal'
+              }}>
                 {speciesNames[selectedSpecies]} • {length}м
               </div>
-              <div className="ios-list-item-subtitle">
+              <div className="ios-list-item-subtitle" style={{
+                fontSize: '15px',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word',
+                whiteSpace: 'normal'
+              }}>
                 Стандарт: {selectedStandard}
               </div>
             </div>
