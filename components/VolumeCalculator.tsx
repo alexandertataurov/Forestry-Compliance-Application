@@ -33,6 +33,15 @@ interface CalculatorState {
   documents: string[];
   diameterEntries: DiameterEntry[];
   currentDiameter: string;
+  hasCompletedFirstCalculation: boolean;
+}
+
+interface SavedSettings {
+  selectedStandard: string;
+  selectedSpecies: string;
+  length: string;
+  operator: string;
+  coordinates: { lat: number; lng: number } | null;
 }
 
 export function VolumeCalculator() {
@@ -59,17 +68,43 @@ export function VolumeCalculator() {
     },
     documents: [],
     diameterEntries: [],
-    currentDiameter: ''
+    currentDiameter: '',
+    hasCompletedFirstCalculation: false
   });
 
   const [calculations, setCalculations] = useState<any[]>([]);
+  const [savedSettings, setSavedSettings] = useState<SavedSettings | null>(null);
 
-  // Load saved calculations
+  // Load saved calculations and settings
   useEffect(() => {
     try {
       const saved = localStorage.getItem('forestry-calculations');
       if (saved) {
         setCalculations(JSON.parse(saved));
+      }
+
+      // Load saved settings for quick restart
+      const settings = localStorage.getItem('forestry-calculator-settings');
+      if (settings) {
+        const parsedSettings = JSON.parse(settings);
+        setSavedSettings(parsedSettings);
+        
+        // Auto-populate with saved settings if available
+        setState(prev => ({
+          ...prev,
+          selectedStandard: parsedSettings.selectedStandard || '',
+          selectedSpecies: parsedSettings.selectedSpecies || '',
+          length: parsedSettings.length || '',
+          batch: {
+            ...prev.batch,
+            operator: parsedSettings.operator || ''
+          },
+          location: {
+            ...prev.location,
+            coordinates: parsedSettings.coordinates || null
+          },
+          hasCompletedFirstCalculation: true
+        }));
       }
     } catch (error) {
       console.error('Error loading calculations:', error);
@@ -120,6 +155,53 @@ export function VolumeCalculator() {
     updateState({ currentScreen: screen });
   };
 
+  const saveCurrentSettings = () => {
+    const settingsToSave: SavedSettings = {
+      selectedStandard: state.selectedStandard,
+      selectedSpecies: state.selectedSpecies,
+      length: state.length,
+      operator: state.batch.operator,
+      coordinates: state.location.coordinates
+    };
+    
+    localStorage.setItem('forestry-calculator-settings', JSON.stringify(settingsToSave));
+    setSavedSettings(settingsToSave);
+  };
+
+  const startQuickCalculation = () => {
+    if (!savedSettings) return;
+    
+    // Generate new batch number
+    const newBatchNumber = `B${Date.now().toString().slice(-6)}`;
+    
+    setState({
+      currentScreen: 'calculation',
+      selectedStandard: savedSettings.selectedStandard,
+      selectedSpecies: savedSettings.selectedSpecies,
+      length: savedSettings.length,
+      location: {
+        coordinates: savedSettings.coordinates,
+        address: '',
+        forest: '',
+        plot: ''
+      },
+      transport: {
+        type: '',
+        plateNumber: '',
+        driverName: ''
+      },
+      batch: {
+        number: newBatchNumber,
+        date: new Date().toISOString().split('T')[0],
+        operator: savedSettings.operator
+      },
+      documents: [],
+      diameterEntries: [],
+      currentDiameter: '',
+      hasCompletedFirstCalculation: true
+    });
+  };
+
   const handleSaveBatch = () => {
     if (state.diameterEntries.length === 0 || !state.length) {
       alert('Добавьте диаметры для сохранения');
@@ -156,31 +238,16 @@ export function VolumeCalculator() {
       batches.push(...batchCalculations);
       localStorage.setItem('forestry-batches', JSON.stringify(batches));
       
+      // Save settings for quick restart if this is the first calculation
+      if (!state.hasCompletedFirstCalculation) {
+        saveCurrentSettings();
+      }
+      
       alert(`Сохранена партия из ${batchCalculations.length} брёвен`);
       
-      // Reset to first screen for new calculation
-      setState({
-        currentScreen: 'standard',
-        selectedStandard: state.selectedStandard, // Keep standard selection
-        selectedSpecies: state.selectedSpecies, // Keep species selection
-        length: '',
-        location: {
-          coordinates: state.location.coordinates, // Keep GPS if available
-          address: '',
-          forest: '',
-          plot: ''
-        },
-        transport: {
-          type: '',
-          plateNumber: '',
-          driverName: ''
-        },
-        batch: {
-          number: '',
-          date: '',
-          operator: state.batch.operator // Keep operator name
-        },
-        documents: [],
+      // Show quick restart option or reset to first screen
+      updateState({ 
+        hasCompletedFirstCalculation: true,
         diameterEntries: [],
         currentDiameter: ''
       });
@@ -235,8 +302,73 @@ export function VolumeCalculator() {
           onCurrentDiameterChange={handleCurrentDiameterChange}
           onSave={handleSaveBatch}
           onBack={() => navigateToScreen('batch')}
+          hasCompletedFirstCalculation={state.hasCompletedFirstCalculation}
+          onQuickRestart={startQuickCalculation}
+          savedSettings={savedSettings}
         />
       )}
+    </div>
+  );
+}
+
+// Quick Start Screen Component
+function QuickStartScreen({ 
+  savedSettings, 
+  onQuickStart, 
+  onFullSetup 
+}: { 
+  savedSettings: SavedSettings;
+  onQuickStart: () => void;
+  onFullSetup: () => void;
+}) {
+  const speciesNames: Record<string, string> = {
+    'pine': 'Сосна',
+    'spruce': 'Ель',
+    'larch': 'Лиственница',
+    'fir': 'Пихта',
+    'cedar': 'Кедр',
+    'birch': 'Берёза',
+    'aspen': 'Осина',
+    'oak': 'Дуб',
+    'beech': 'Бук',
+    'ash': 'Ясень'
+  };
+
+  return (
+    <div>
+      <div className="ios-section-header">Быстрый старт</div>
+      <div className="ios-list">
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className="ios-list-item-text">
+              <div className="ios-list-item-title">Последние настройки</div>
+              <div className="ios-list-item-subtitle">
+                {speciesNames[savedSettings.selectedSpecies]} • {savedSettings.length}м �� {savedSettings.selectedStandard}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: 'var(--ios-spacing-md)', display: 'flex', gap: 'var(--ios-spacing-md)' }}>
+        <button
+          onClick={onQuickStart}
+          className="calculator-button-large"
+          style={{ flex: 2 }}
+        >
+          Быстрый расчёт
+        </button>
+        <button
+          onClick={onFullSetup}
+          className="calculator-button-secondary"
+          style={{ flex: 1 }}
+        >
+          Новые настройки
+        </button>
+      </div>
+    </div>
+  );
+}
     </div>
   );
 }
