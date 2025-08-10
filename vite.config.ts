@@ -13,7 +13,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['sonner@2.0.3', 'next-themes@0.4.6'],
+      external: ['sonner@2.0.3', 'next-themes@0.4.6', '@radix-ui/react-checkbox@1.1.4'],
     },
   },
   define: {
