@@ -27,3 +27,7 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+
+#Ignore vscode AI rules
+.github/copilot-instructions.md
