@@ -1,5 +1,3 @@
-import type { Preview } from "@storybook/react";
+import "../styles/globals.css";
+export const parameters = { actions: { argTypesRegex: "^on[A-Z].*" } };
 
-const preview: Preview = {};
-
-export default preview;
