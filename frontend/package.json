@@ -65,16 +65,22 @@
   },
   "devDependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@storybook/addon-a11y": "^7.6.7",
     "@storybook/addon-essentials": "^7.6.7",
     "@storybook/addon-interactions": "^7.6.7",
     "@storybook/react-vite": "^7.6.7",
 =======
+=======
+>>>>>>> main
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/addon-interactions": "^8.6.14",
     "@storybook/react-vite": "^8.6.14",
     "@storybook/test": "^8.6.14",
+<<<<<<< HEAD
 >>>>>>> 02123ba (Updates)
+=======
+>>>>>>> main
     "@types/node": "^20.11.3",
     "@types/react": "^18.2.43",
     "@types/react-day-picker": "^5.2.1",
@@ -89,10 +95,14 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.4.32",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "storybook": "^7.6.7",
 =======
     "storybook": "^8.6.14",
 >>>>>>> 02123ba (Updates)
+=======
+    "storybook": "^8.6.14",
+>>>>>>> main
     "tailwindcss": "^3.4.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"

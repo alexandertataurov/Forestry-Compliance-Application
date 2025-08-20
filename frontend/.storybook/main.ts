@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import type { StorybookConfig } from "@storybook/react-vite";
 const config: StorybookConfig = {
   stories: ["../components/**/*.stories.@(js|jsx|ts|tsx)"],
@@ -12,6 +13,8 @@ const config: StorybookConfig = {
   },
 };
 =======
+=======
+>>>>>>> main
 import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
 import { resolve } from 'path';
@@ -44,5 +47,8 @@ const config: StorybookConfig = {
   },
 };
 
+<<<<<<< HEAD
 >>>>>>> 02123ba (Updates)
+=======
+>>>>>>> main
 export default config;
