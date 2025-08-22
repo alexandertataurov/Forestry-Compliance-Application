@@ -12,12 +12,12 @@ import {
   Send, 
   BarChart3, 
   Settings as SettingsIcon,
-  Wifi,
-  WifiOff,
-  Plus,
-  ChevronLeft,
-  MoreHorizontal
+  Plus
 } from 'lucide-react';
+import { NavigationBar } from './components/ui/navigation';
+import { TabBar, TabItem } from './components/ui/tab-bar';
+import { FloatingActionButton } from './components/ui/floating-action-button';
+import { ConnectionStatus } from './components/ui/connection-status';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -130,7 +130,7 @@ export default function App() {
     initializeApp();
   }, []);
 
-  const tabItems = [
+  const tabItems: TabItem[] = [
     { id: 'dashboard', label: 'Главная', icon: Home },
     { id: 'calculator', label: 'Расчёт', icon: Calculator },
     { id: 'data', label: 'Данные', icon: Database },
@@ -180,94 +180,61 @@ export default function App() {
     }
   };
 
+  const renderRightContent = () => (
+    <div className="flex items-center gap-2">
+      <ConnectionStatus 
+        isOnline={isOnline}
+        pendingSync={pendingSync}
+        showIcon={true}
+        showText={false}
+        variant="compact"
+        size="sm"
+      />
+    </div>
+  );
+
   return (
-    <div className="ios-app-container">
-      {/* Web-optimized Navigation Bar */}
-      <div className="ios-navigation-bar">
-        <div className="ios-nav-content">
-          <div className="ios-nav-left">
-            {canGoBack && (
-              <button
-                onClick={handleBack}
-                className="ios-back-button"
-              >
-                <ChevronLeft className="ios-back-icon" />
-                <span>Назад</span>
-              </button>
-            )}
-          </div>
-          
-          <div className="ios-nav-center">
-            <h1 className="ios-nav-title">{getSectionTitle()}</h1>
-          </div>
-          
-          <div className="ios-nav-right">
-            {/* Connection Status Indicator */}
-            <div className="connection-status" style={{ display: 'flex', alignItems: 'center', marginRight: '8px' }}>
-              {isOnline ? (
-                <Wifi className="ios-nav-icon" style={{ color: 'var(--ios-green)' }} />
-              ) : (
-                <WifiOff className="ios-nav-icon" style={{ color: 'var(--ios-red)' }} />
-              )}
-              {pendingSync > 0 && (
-                <div className="sync-indicator" style={{
-                  width: '8px',
-                  height: '8px',
-                  background: 'var(--ios-orange)',
-                  borderRadius: '50%',
-                  marginLeft: '4px'
-                }}></div>
-              )}
-            </div>
-            <button className="ios-nav-button">
-              <MoreHorizontal className="ios-nav-icon" />
-            </button>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-surface-bg">
+      {/* Navigation Bar */}
+      <NavigationBar
+        title={getSectionTitle()}
+        showBackButton={canGoBack}
+        onBack={handleBack}
+        rightContent={renderRightContent()}
+        className="pt-safe"
+      />
 
       {/* Main Content with native iOS scroll behavior */}
       <main 
         ref={scrollContainerRef}
-        className="ios-main-content"
+        className="pt-16 pb-20 min-h-screen overflow-y-auto"
       >
-        <div className="ios-content-container">
+        <div className="container mx-auto">
           {renderActiveSection()}
         </div>
       </main>
 
-      {/* Native iOS Floating Action Button (only on calculator section) */}
+      {/* Floating Action Button (only on dashboard section) */}
       {activeSection === 'dashboard' && (
-        <button
+        <FloatingActionButton
           onClick={handleFloatingAction}
-          className="ios-fab"
-        >
-          <Plus className="ios-fab-icon" />
-        </button>
+          icon={Plus}
+          label="Новый расчёт"
+          position="bottom-right"
+          variant="primary"
+        />
       )}
       
-      {/* Native iOS Tab Bar */}
-      <div className={`ios-tab-bar ${tabBarVisible ? 'ios-tab-bar-visible' : 'ios-tab-bar-hidden'}`}>
-        <div className="ios-tab-bar-background"></div>
-        <div className="ios-tab-bar-content">
-          {tabItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.id;
-            
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveSection(item.id)}
-                className={`ios-tab-item ${isActive ? 'ios-tab-item-active' : ''}`}
-              >
-                <Icon className="ios-tab-icon" />
-                <span className="ios-tab-label">{item.label}</span>
-                {isActive && <div className="ios-tab-indicator"></div>}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      {/* Tab Bar */}
+      <TabBar
+        items={tabItems}
+        activeTab={activeSection}
+        onTabChange={setActiveSection}
+        visible={tabBarVisible}
+        showIndicator={true}
+        ariaLabel="Основные разделы"
+        className="pb-safe"
+      />
     </div>
   );
 }

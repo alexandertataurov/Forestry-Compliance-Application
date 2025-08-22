@@ -1,4 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { DataTable } from './ui/data-table';
+import { ProgressIndicator } from './ui/progress-indicator';
+import { StatusBadge } from './ui/status-badge';
+import { Badge } from './ui/badge';
+import { Separator } from './ui/separator';
 import { 
   Database, 
   Download, 
@@ -12,15 +19,47 @@ import {
   ChevronRight,
   CheckCircle,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  FileText,
+  Settings,
+  RefreshCw
 } from 'lucide-react';
 
+interface CalculationData {
+  id: number;
+  calculationId: string;
+  diameter: number;
+  length: number;
+  species: string;
+  standard: string;
+  volume: number;
+  timestamp: string;
+  coordinates: { lat: number; lng: number } | null;
+  location: {
+    forest: string;
+    plot: string;
+  };
+  transport: {
+    type: string;
+    plateNumber: string;
+    driverName: string;
+  };
+  batch: {
+    number: string;
+    date: string;
+    operator: string;
+  };
+  documents: string[];
+  synced: boolean;
+}
+
 export function DataManagement() {
-  const [calculations, setCalculations] = useState<any[]>([]);
+  const [calculations, setCalculations] = useState<CalculationData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSpecies, setFilterSpecies] = useState('');
   const [sortBy, setSortBy] = useState('date');
   const [showSyncOnly, setShowSyncOnly] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Load calculations on component mount
   useEffect(() => {
@@ -29,12 +68,15 @@ export function DataManagement() {
 
   const loadCalculations = () => {
     try {
+      setIsLoading(true);
       const saved = localStorage.getItem('forestry-calculations');
       if (saved) {
         setCalculations(JSON.parse(saved));
       }
     } catch (error) {
       console.error('Error loading calculations:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,10 +134,23 @@ export function DataManagement() {
     }
   };
 
+  const handleSync = () => {
+    // Simulate sync process
+    setIsLoading(true);
+    setTimeout(() => {
+      const updatedCalculations = calculations.map(calc => ({ ...calc, synced: true }));
+      setCalculations(updatedCalculations);
+      localStorage.setItem('forestry-calculations', JSON.stringify(updatedCalculations));
+      setIsLoading(false);
+    }, 2000);
+  };
+
   // Filter and sort calculations
   const filteredCalculations = calculations
     .filter(calc => {
-      const matchesSearch = calc.species.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = calc.species.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           calc.batch.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           calc.transport.plateNumber.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesSpecies = !filterSpecies || calc.species === filterSpecies;
       const matchesSync = !showSyncOnly || !calc.synced;
       return matchesSearch && matchesSpecies && matchesSync;
@@ -115,343 +170,318 @@ export function DataManagement() {
   const totalVolume = filteredCalculations.reduce((sum, calc) => sum + calc.volume, 0);
   const speciesList = [...new Set(calculations.map(calc => calc.species))];
   const unsyncedCount = calculations.filter(calc => !calc.synced).length;
+  const syncProgress = calculations.length > 0 ? ((calculations.length - unsyncedCount) / calculations.length) * 100 : 100;
+
+  // Data table columns
+  const columns = [
+    {
+      key: 'batch' as keyof CalculationData,
+      label: 'Партия',
+      sortable: true,
+      filterable: true,
+      render: (value: any, row: CalculationData) => (
+        <div className="flex flex-col">
+          <div className="font-medium text-surface-on-surface">{row.batch.number}</div>
+          <div className="text-caption text-surface-on-variant">{row.batch.date}</div>
+        </div>
+      )
+    },
+    {
+      key: 'species' as keyof CalculationData,
+      label: 'Порода',
+      sortable: true,
+      filterable: true,
+      render: (value: any, row: CalculationData) => (
+        <div className="flex items-center gap-2">
+          <TreePine className="w-4 h-4 text-brand-primary" />
+          <span>{row.species}</span>
+        </div>
+      )
+    },
+    {
+      key: 'volume' as keyof CalculationData,
+      label: 'Объём',
+      sortable: true,
+      render: (value: any, row: CalculationData) => (
+        <div className="text-right">
+          <div className="font-medium">{row.volume.toFixed(3)} м³</div>
+          <div className="text-caption text-surface-on-variant">
+            Ø{row.diameter}см × {row.length}м
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'transport' as keyof CalculationData,
+      label: 'Транспорт',
+      render: (value: any, row: CalculationData) => (
+        <div className="flex flex-col">
+          <div className="font-medium">{row.transport.plateNumber}</div>
+          <div className="text-caption text-surface-on-variant">{row.transport.type}</div>
+        </div>
+      )
+    },
+    {
+      key: 'timestamp' as keyof CalculationData,
+      label: 'Дата',
+      sortable: true,
+      render: (value: any, row: CalculationData) => (
+        <div className="flex flex-col">
+          <div className="font-medium">
+            {new Date(row.timestamp).toLocaleDateString('ru-RU')}
+          </div>
+          <div className="text-caption text-surface-on-variant">
+            {new Date(row.timestamp).toLocaleTimeString('ru-RU', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            })}
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'synced' as keyof CalculationData,
+      label: 'Статус',
+      render: (value: any, row: CalculationData) => (
+        <StatusBadge
+          status={row.synced ? 'success' : 'pending'}
+          label={row.synced ? 'Синхронизировано' : 'Ожидает'}
+          showIcon={true}
+        />
+      )
+    }
+  ];
 
   return (
-    <div>
-      {/* Statistics */}
-      <div className="ios-section-header">Статистика данных</div>
-      <div className="ios-list">
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
-            >
-              <Database className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Всего записей</div>
-              <div className="ios-list-item-subtitle">{calculations.length} расчётов</div>
-            </div>
-          </div>
-          <div className="ios-list-item-accessory">
-            <div style={{ 
-              color: '#007AFF', 
-              fontSize: '17px', 
-              fontWeight: '600'
-            }}>
-              {calculations.length}
-            </div>
-          </div>
-        </div>
-
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
-            >
-              <TreePine className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Общий объём</div>
-              <div className="ios-list-item-subtitle">{totalVolume.toFixed(3)} м³</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: unsyncedCount > 0 ? '#FF9500' : '#34C759' }}
-            >
-              {unsyncedCount > 0 ? (
-                <Clock className="w-4 h-4" />
-              ) : (
-                <CheckCircle className="w-4 h-4" />
-              )}
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Статус синхронизации</div>
-              <div className="ios-list-item-subtitle">
-                {unsyncedCount > 0 ? `${unsyncedCount} ожидает` : 'Все синхронизировано'}
+    <div className="space-y-6 p-4">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center">
+                <Database className="w-5 h-5 text-brand-on-primary" />
+              </div>
+              <div>
+                <div className="text-caption text-surface-on-variant">Всего записей</div>
+                <div className="text-title font-title text-surface-on-surface">{calculations.length}</div>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-state-success flex items-center justify-center">
+                <TreePine className="w-5 h-5 text-state-on-success" />
+              </div>
+              <div>
+                <div className="text-caption text-surface-on-variant">Общий объём</div>
+                <div className="text-title font-title text-surface-on-surface">{totalVolume.toFixed(3)} м³</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-state-warning flex items-center justify-center">
+                <Clock className="w-5 h-5 text-state-on-warning" />
+              </div>
+              <div>
+                <div className="text-caption text-surface-on-variant">Ожидает синхронизации</div>
+                <div className="text-title font-title text-surface-on-surface">{unsyncedCount}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-brand-secondary flex items-center justify-center">
+                <FileText className="w-5 h-5 text-brand-on-secondary" />
+              </div>
+              <div>
+                <div className="text-caption text-surface-on-variant">Породы</div>
+                <div className="text-title font-title text-surface-on-surface">{speciesList.length}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Search and Filters */}
-      <div className="ios-section-header">Поиск и фильтры</div>
-      <div className="ios-list">
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
-            >
-              <Search className="w-4 h-4" />
+      {/* Sync Progress */}
+      {calculations.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <RefreshCw className="w-5 h-5" />
+              Прогресс синхронизации
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ProgressIndicator
+              value={syncProgress}
+              max={100}
+              label={`${calculations.length - unsyncedCount} из ${calculations.length} записей синхронизировано`}
+              showPercentage={true}
+              variant="default"
+              size="default"
+            />
+            {unsyncedCount > 0 && (
+              <div className="mt-4">
+                <Button onClick={handleSync} disabled={isLoading} className="w-full">
+                  {isLoading ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Синхронизация...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Синхронизировать все
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Filters and Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="w-5 h-5" />
+            Фильтры и действия
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-body font-medium text-surface-on-surface">Поиск</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-on-variant" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Поиск по партии, породе, транспорту..."
+                  className="w-full pl-10 pr-4 py-2 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface placeholder:text-surface-on-variant focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+                />
+              </div>
             </div>
-            <div className="ios-list-item-text" style={{ flex: 1 }}>
+
+            <div className="space-y-2">
+              <label className="text-body font-medium text-surface-on-surface">Порода</label>
+              <select
+                value={filterSpecies}
+                onChange={(e) => setFilterSpecies(e.target.value)}
+                className="w-full px-4 py-2 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+              >
+                <option value="">Все породы</option>
+                {speciesList.map(species => (
+                  <option key={species} value={species}>{species}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-body font-medium text-surface-on-surface">Сортировка</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full px-4 py-2 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+              >
+                <option value="date">По дате</option>
+                <option value="species">По породе</option>
+                <option value="volume">По объёму</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2">
               <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Поиск по породе..."
-                style={{
-                  width: '100%',
-                  padding: '8px 0',
-                  border: 'none',
-                  background: 'transparent',
-                  color: 'var(--ios-label)',
-                  fontSize: '17px',
-                  outline: 'none'
-                }}
+                type="checkbox"
+                checked={showSyncOnly}
+                onChange={(e) => setShowSyncOnly(e.target.checked)}
+                className="w-4 h-4 text-brand-primary border-surface-border rounded focus:ring-brand-primary/20"
               />
-            </div>
+              <span className="text-body text-surface-on-surface">Только несинхронизированные</span>
+            </label>
           </div>
-        </div>
 
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
-            >
-              <Filter className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Порода</div>
-            </div>
-          </div>
-          <select
-            value={filterSpecies}
-            onChange={(e) => setFilterSpecies(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: 'var(--ios-radius-md)',
-              border: '1px solid var(--ios-separator)',
-              background: 'var(--ios-secondary-system-grouped-background)',
-              color: 'var(--ios-label)',
-              fontSize: '17px'
-            }}
-          >
-            <option value="">Все</option>
-            {speciesList.map(species => (
-              <option key={species} value={species}>{species}</option>
-            ))}
-          </select>
-        </div>
+          <Separator />
 
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Только несинхронизированные</div>
-            </div>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleExport} variant="outline">
+              <Download className="w-4 h-4 mr-2" />
+              Экспорт данных
+            </Button>
+            
+            <Button variant="outline" asChild>
+              <label>
+                <Upload className="w-4 h-4 mr-2" />
+                Импорт данных
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+              </label>
+            </Button>
+
+            <Button onClick={handleClearAll} variant="destructive">
+              <Trash2 className="w-4 h-4 mr-2" />
+              Очистить все
+            </Button>
           </div>
-          <button
-            onClick={() => setShowSyncOnly(!showSyncOnly)}
-            style={{
-              width: '44px',
-              height: '28px',
-              borderRadius: '14px',
-              border: 'none',
-              background: showSyncOnly ? 'var(--ios-blue)' : 'var(--ios-system-fill)',
-              position: 'relative',
-              cursor: 'pointer',
-              transition: 'background 0.2s ease'
-            }}
-          >
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                borderRadius: '12px',
-                background: 'white',
-                position: 'absolute',
-                top: '2px',
-                left: showSyncOnly ? '18px' : '2px',
-                transition: 'left 0.2s ease',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        </CardContent>
+      </Card>
+
+      {/* Data Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Данные расчётов</span>
+            <Badge variant="secondary">{filteredCalculations.length} записей</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <RefreshCw className="w-6 h-6 animate-spin text-surface-on-variant" />
+              <span className="ml-2 text-surface-on-variant">Загрузка данных...</span>
+            </div>
+          ) : filteredCalculations.length === 0 ? (
+            <div className="text-center py-8">
+              <Database className="w-12 h-12 mx-auto text-surface-on-variant mb-4" />
+              <div className="text-body text-surface-on-variant">Нет данных для отображения</div>
+              <div className="text-caption text-surface-on-variant mt-2">
+                {calculations.length === 0 ? 'Создайте первый расчёт' : 'Попробуйте изменить фильтры'}
+              </div>
+            </div>
+          ) : (
+            <DataTable
+              data={filteredCalculations}
+              columns={columns}
+              searchable={false}
+              pagination={true}
+              itemsPerPage={10}
+              onRowClick={(row) => {
+                // Handle row click - could show details modal
+                console.log('Row clicked:', row);
               }}
             />
-          </button>
-        </div>
-      </div>
-
-      {/* Data Management Actions */}
-      <div className="ios-section-header">Управление данными</div>
-      <div className="ios-list">
-        <button
-          onClick={handleExport}
-          className="ios-list-item"
-          style={{ border: 'none', background: 'transparent', width: '100%' }}
-        >
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
-            >
-              <Download className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Экспорт данных</div>
-              <div className="ios-list-item-subtitle">Сохранить данные в файл JSON</div>
-            </div>
-          </div>
-          <div className="ios-list-item-accessory">
-            <ChevronRight className="w-5 h-5" />
-          </div>
-        </button>
-
-        <div className="ios-list-item">
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
-            >
-              <Upload className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title">Импорт данных</div>
-              <div className="ios-list-item-subtitle">Загрузить данные из файла</div>
-            </div>
-          </div>
-          <input
-            type="file"
-            accept=".json"
-            onChange={handleImport}
-            style={{ display: 'none' }}
-            id="file-import"
-          />
-          <label 
-            htmlFor="file-import"
-            className="ios-list-item-accessory"
-            style={{ cursor: 'pointer' }}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </label>
-        </div>
-
-        <button
-          onClick={handleClearAll}
-          className="ios-list-item"
-          style={{ border: 'none', background: 'transparent', width: '100%' }}
-        >
-          <div className="ios-list-item-content">
-            <div 
-              className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF3B30' }}
-            >
-              <Trash2 className="w-4 h-4" />
-            </div>
-            <div className="ios-list-item-text">
-              <div className="ios-list-item-title" style={{ color: '#FF3B30' }}>
-                Удалить все данные
-              </div>
-              <div className="ios-list-item-subtitle">
-                Необратимое действие
-              </div>
-            </div>
-          </div>
-          <div className="ios-list-item-accessory">
-            <ChevronRight className="w-5 h-5" />
-          </div>
-        </button>
-      </div>
-
-      {/* Data List */}
-      {filteredCalculations.length > 0 && (
-        <>
-          <div className="ios-section-header">
-            Данные ({filteredCalculations.length} из {calculations.length})
-          </div>
-          <div className="ios-list">
-            {filteredCalculations.map((calc) => (
-              <div key={calc.id} className="ios-list-item">
-                <div className="ios-list-item-content">
-                  <div 
-                    className="ios-list-item-icon"
-                    style={{ backgroundColor: calc.synced ? '#34C759' : '#FF9500' }}
-                  >
-                    {calc.synced ? (
-                      <CheckCircle className="w-4 h-4" />
-                    ) : (
-                      <Clock className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div className="ios-list-item-text">
-                    <div className="ios-list-item-title">
-                      {calc.species} • {calc.volume.toFixed(3)} м³
-                    </div>
-                    <div className="ios-list-item-subtitle">
-                      Ø{calc.diameter}см × {calc.length}м • {new Date(calc.timestamp).toLocaleDateString('ru-RU')}
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleDelete(calc.id)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#FF3B30',
-                    cursor: 'pointer',
-                    padding: '8px',
-                    borderRadius: 'var(--ios-radius-md)'
-                  }}
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {filteredCalculations.length === 0 && calculations.length > 0 && (
-        <>
-          <div className="ios-section-header">Результаты поиска</div>
-          <div className="ios-list">
-            <div className="ios-list-item">
-              <div className="ios-list-item-content">
-                <div 
-                  className="ios-list-item-icon"
-                  style={{ backgroundColor: '#8E8E93' }}
-                >
-                  <Search className="w-4 h-4" />
-                </div>
-                <div className="ios-list-item-text">
-                  <div className="ios-list-item-title">Ничего не найдено</div>
-                  <div className="ios-list-item-subtitle">Попробуйте изменить параметры поиска</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {calculations.length === 0 && (
-        <>
-          <div className="ios-section-header">Нет данных</div>
-          <div className="ios-list">
-            <div className="ios-list-item">
-              <div className="ios-list-item-content">
-                <div 
-                  className="ios-list-item-icon"
-                  style={{ backgroundColor: '#8E8E93' }}
-                >
-                  <Database className="w-4 h-4" />
-                </div>
-                <div className="ios-list-item-text">
-                  <div className="ios-list-item-title">Данные отсутствуют</div>
-                  <div className="ios-list-item-subtitle">Выполните первый расчёт объёма</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
