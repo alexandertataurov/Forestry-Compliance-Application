@@ -135,7 +135,7 @@ export function StandardSpeciesSelection({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Zap className="w-4 h-4" />
             </div>
@@ -164,7 +164,7 @@ export function StandardSpeciesSelection({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <FileText className="w-4 h-4" />
             </div>
@@ -189,7 +189,7 @@ export function StandardSpeciesSelection({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <TreePine className="w-4 h-4" />
             </div>
@@ -220,7 +220,7 @@ export function StandardSpeciesSelection({
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#34C759' }}
+                  style={{ backgroundColor: 'var(--ios-green)' }}
                 >
                   <CheckCircle className="w-4 h-4" />
                 </div>
@@ -295,7 +295,7 @@ export function StandardSpeciesSelection({
                   <div className="ios-list-item-content">
                     <div 
                       className="ios-list-item-icon"
-                      style={{ backgroundColor: standard.official ? '#007AFF' : '#5856D6' }}
+                      style={{ backgroundColor: standard.official ? 'var(--ios-blue)' : 'var(--ios-indigo)' }}
                     >
                       <FileText className="w-4 h-4" />
                     </div>
@@ -387,7 +387,7 @@ export function StandardSpeciesSelection({
                     <div 
                       className="ios-list-item-icon"
                       style={{ 
-                        backgroundColor: species.category === 'Хвойные' ? '#34C759' : '#FF9500',
+                        backgroundColor: species.category === 'Хвойные' ? 'var(--ios-green)' : 'var(--ios-orange)',
                         fontSize: '16px',
                         display: 'flex',
                         alignItems: 'center',
@@ -401,7 +401,7 @@ export function StandardSpeciesSelection({
                         {species.name}
                         {species.id === defaultSpecies && (
                           <Star className="w-4 h-4" style={{ 
-                            color: '#FFD60A', 
+                            color: 'var(--ios-yellow)', 
                             marginLeft: '8px', 
                             display: 'inline' 
                           }} />
@@ -446,7 +446,7 @@ export function StandardSpeciesSelection({
                   <div className="ios-list-item-content">
                     <div 
                       className="ios-list-item-icon"
-                      style={{ backgroundColor: '#34C759' }}
+                      style={{ backgroundColor: 'var(--ios-green)' }}
                     >
                       <TreePine className="w-4 h-4" />
                     </div>
@@ -490,7 +490,7 @@ export function StandardSpeciesSelection({
                   <div className="ios-list-item-content">
                     <div 
                       className="ios-list-item-icon"
-                      style={{ backgroundColor: '#FF9500' }}
+                      style={{ backgroundColor: 'var(--ios-orange)' }}
                     >
                       <TreePine className="w-4 h-4" />
                     </div>

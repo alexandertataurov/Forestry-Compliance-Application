@@ -250,9 +250,9 @@ export function DiameterCalculation({
 
   // Quality grades for hot button selector
   const qualityGrades = [
-    { value: '1', label: '1', description: 'Premium quality', color: '#34C759' },
-    { value: '2', label: '2', description: 'Good quality', color: '#FF9500' },
-    { value: '3', label: '3', description: 'Standard quality', color: '#FF3B30' }
+    { value: '1', label: '1', description: 'Premium quality', color: 'var(--ios-green)' },
+    { value: '2', label: '2', description: 'Good quality', color: 'var(--ios-orange)' },
+    { value: '3', label: '3', description: 'Standard quality', color: 'var(--ios-red)' }
   ];
 
   // Maximum volume warning (35m3 for trucks)
@@ -370,7 +370,7 @@ export function DiameterCalculation({
             width: '28px',
             height: '28px',
             borderRadius: '14px',
-            backgroundColor: '#007AFF',
+            backgroundColor: 'var(--ios-blue)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
@@ -381,14 +381,14 @@ export function DiameterCalculation({
             <div style={{
               fontSize: '15px',
               fontWeight: '600',
-              color: '#1C1C1E',
+              color: 'var(--ios-label)',
               lineHeight: '1.33'
             }}>
               {diameterEntries.length > 0 ? `${getTotalVolume().toFixed(3)} м³` : 'Начните измерения'}
             </div>
             <div style={{
               fontSize: '13px',
-              color: '#8E8E93',
+              color: 'var(--ios-gray)',
               lineHeight: '1.38'
             }}>
               {diameterEntries.length > 0 ? `${diameterEntries.length} брёвен` : 'Выберите диаметр для добавления'}
@@ -398,7 +398,7 @@ export function DiameterCalculation({
         <div style={{
           fontSize: '17px',
           fontWeight: '600',
-          color: '#007AFF',
+          color: 'var(--ios-blue)',
           fontVariantNumeric: 'tabular-nums',
           minWidth: '44px',
           textAlign: 'right'
@@ -422,7 +422,7 @@ export function DiameterCalculation({
           zIndex: 1001,
           width: 'calc(100% - 32px)',
           maxWidth: '390px',
-          background: 'linear-gradient(135deg, #FF3B30 0%, #D12B20 100%)',
+          background: 'var(--ios-red)',
           color: 'white',
           borderRadius: '16px',
           padding: '16px 20px',
@@ -477,7 +477,7 @@ export function DiameterCalculation({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <Ruler className="w-4 h-4" />
             </div>
@@ -495,7 +495,7 @@ export function DiameterCalculation({
           <div style={{
             position: 'relative',
             height: '60px',
-            background: '#F2F2F7',
+            background: 'var(--ios-secondary-system-background)',
             borderRadius: '12px',
             overflow: 'hidden',
             border: '1px solid rgba(0, 0, 0, 0.04)',
@@ -564,10 +564,10 @@ export function DiameterCalculation({
                       width: isSelected ? '8px' : '6px',
                       height: isSelected ? '40px' : isNextCategory && slideInfluence > 0.3 ? `${20 + slideInfluence * 15}px` : '20px',
                       background: isSelected 
-                        ? `linear-gradient(135deg, #007AFF ${100 - slideInfluence * 20}%, #0051D5 100%)` 
+                        ? `linear-gradient(135deg, var(--ios-blue) ${100 - slideInfluence * 20}%, var(--ios-indigo) 100%)` 
                         : isNextCategory && slideInfluence > 0.3
                         ? `rgba(0, 122, 255, ${0.3 + slideInfluence * 0.4})`
-                        : '#C7C7CC',
+                        : 'var(--ios-gray3)',
                       borderRadius: '4px',
                       transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                       boxShadow: isSelected ? '0 2px 8px rgba(0, 122, 255, 0.3)' : 'none'
@@ -576,10 +576,10 @@ export function DiameterCalculation({
                       fontSize: isSelected ? '14px' : '12px',
                       fontWeight: isSelected ? '700' : '500',
                       color: isSelected 
-                        ? '#007AFF' 
+                        ? 'var(--ios-blue)' 
                         : isNextCategory && slideInfluence > 0.3
                         ? `rgba(0, 122, 255, ${0.5 + slideInfluence * 0.3})`
-                        : '#8E8E93',
+                        : 'var(--ios-gray)',
                       marginTop: '6px',
                       transition: isSliding ? 'none' : 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                       textShadow: isSelected ? '0 1px 2px rgba(0, 122, 255, 0.2)' : 'none'
@@ -697,7 +697,7 @@ export function DiameterCalculation({
                   height: '72px', // Large touch target for harsh weather
                   borderRadius: '16px',
                   border: 'none',
-                  background: 'linear-gradient(135deg, #007AFF 0%, #0051D5 100%)',
+                  background: 'linear-gradient(135deg, var(--ios-blue) 0%, var(--ios-indigo) 100%)',
                   color: 'white',
                   fontSize: '24px',
                   fontWeight: '700',
@@ -749,7 +749,7 @@ export function DiameterCalculation({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <Star className="w-4 h-4" />
             </div>
@@ -758,7 +758,7 @@ export function DiameterCalculation({
             </div>
           </div>
           <div style={{
-            background: '#F2F2F7',
+            background: 'var(--ios-secondary-system-background)',
             borderRadius: '10px',
             padding: '2px',
             display: 'flex',
@@ -769,8 +769,8 @@ export function DiameterCalculation({
                 key={grade.value}
                 onClick={() => setSelectedQuality(grade.value)}
                 style={{
-                  background: selectedQuality === grade.value ? '#FFFFFF' : 'transparent',
-                  color: selectedQuality === grade.value ? '#007AFF' : '#8E8E93',
+                  background: selectedQuality === grade.value ? 'var(--ios-system-background)' : 'transparent',
+                  color: selectedQuality === grade.value ? 'var(--ios-blue)' : 'var(--ios-gray)',
                   fontSize: '15px',
                   fontWeight: '600',
                   padding: '8px 12px',
@@ -797,7 +797,7 @@ export function DiameterCalculation({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Ruler className="w-4 h-4" />
             </div>
@@ -811,8 +811,8 @@ export function DiameterCalculation({
               style={{
                 width: '44px',
                 height: '44px',
-                background: '#F2F2F7',
-                color: '#007AFF',
+                background: 'var(--ios-secondary-system-background)',
+                color: 'var(--ios-blue)',
                 border: 'none',
                 borderRadius: '22px',
                 cursor: 'pointer',
@@ -822,11 +822,11 @@ export function DiameterCalculation({
                 fontSize: '20px',
                 transition: 'all 0.2s ease'
               }}
-              onTouchStart={(e) => e.currentTarget.style.backgroundColor = '#E5E5EA'}
-              onTouchEnd={(e) => e.currentTarget.style.backgroundColor = '#F2F2F7'}
-              onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#E5E5EA'}
-              onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#F2F2F7'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F2F2F7'}
+              onTouchStart={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-gray5)'}
+              onTouchEnd={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-secondary-system-background)'}
+              onMouseDown={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-gray5)'}
+              onMouseUp={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-secondary-system-background)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-secondary-system-background)'}
             >
               <Minus className="w-5 h-5" />
             </button>
@@ -841,9 +841,9 @@ export function DiameterCalculation({
                 height: '44px',
                 padding: '0 12px',
                 borderRadius: '12px',
-                border: '1px solid #C7C7CC',
-                background: '#FFFFFF',
-                color: '#1C1C1E',
+                border: '1px solid var(--ios-gray3)',
+                background: 'var(--ios-system-background)',
+                color: 'var(--ios-label)',
                 fontSize: '17px',
                 fontWeight: '400',
                 textAlign: 'center',
@@ -856,7 +856,7 @@ export function DiameterCalculation({
               style={{
                 width: '44px',
                 height: '44px',
-                background: '#007AFF',
+                background: 'var(--ios-blue)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '22px',
@@ -867,11 +867,11 @@ export function DiameterCalculation({
                 fontSize: '20px',
                 transition: 'all 0.2s ease'
               }}
-              onTouchStart={(e) => e.currentTarget.style.backgroundColor = '#0051D5'}
-              onTouchEnd={(e) => e.currentTarget.style.backgroundColor = '#007AFF'}
-              onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#0051D5'}
-              onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#007AFF'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#007AFF'}
+              onTouchStart={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-indigo)'}
+              onTouchEnd={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-blue)'}
+              onMouseDown={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-indigo)'}
+              onMouseUp={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-blue)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--ios-blue)'}
             >
               <Plus className="w-5 h-5" />
             </button>
@@ -941,14 +941,14 @@ export function DiameterCalculation({
                 const qualityGrade = qualityGrades.find(g => g.value === group.quality);
                 return (
                   <div key={`${group.quality}-${group.diameter}`} className="ios-list-item" style={{ 
-                    borderLeft: `4px solid ${qualityGrade?.color || '#34C759'}`,
+                    borderLeft: `4px solid ${qualityGrade?.color || 'var(--ios-green)'}`,
                     backgroundColor: 'var(--ios-system-grouped-background)'
                   }}>
                     <div className="ios-list-item-content">
                       <div 
                         className="ios-list-item-icon"
                         style={{ 
-                          backgroundColor: qualityGrade?.color || '#34C759',
+                          backgroundColor: qualityGrade?.color || 'var(--ios-green)',
                           fontSize: '11px',
                           fontWeight: '700'
                         }}
@@ -1005,7 +1005,7 @@ export function DiameterCalculation({
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#FF3B30',
+                        color: 'var(--ios-red)',
                         cursor: 'pointer',
                         padding: '8px',
                         borderRadius: 'var(--ios-radius-md)',
@@ -1027,7 +1027,7 @@ export function DiameterCalculation({
                 const qualityGrade = qualityGrades.find(g => g.value === entry.quality || '1');
                 return (
                   <div key={entry.id} className="ios-list-item" style={{ 
-                    borderLeft: `3px solid ${qualityGrade?.color || '#34C759'}`,
+                    borderLeft: `3px solid ${qualityGrade?.color || 'var(--ios-green)'}`,
                     backgroundColor: index < 5 ? 'var(--ios-secondary-system-grouped-background)' : 'var(--ios-system-grouped-background)',
                     minHeight: '56px'
                   }}>
@@ -1035,7 +1035,7 @@ export function DiameterCalculation({
                       <div 
                         className="ios-list-item-icon"
                         style={{ 
-                          backgroundColor: qualityGrade?.color || '#34C759',
+                          backgroundColor: qualityGrade?.color || 'var(--ios-green)',
                           fontSize: '10px',
                           fontWeight: '600',
                           width: '28px',
@@ -1118,6 +1118,8 @@ export function DiameterCalculation({
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <button
+                        type="button"
+                        aria-label="Редактировать запись"
                         onClick={() => setEditingEntry(editingEntry === entry.id ? null : entry.id)}
                         style={{
                           background: 'none',
@@ -1135,11 +1137,13 @@ export function DiameterCalculation({
                         <Edit3 className="w-3 h-3" />
                       </button>
                       <button
+                        type="button"
+                        aria-label="Удалить запись"
                         onClick={() => removeDiameterEntry(entry.id)}
                         style={{
                           background: 'none',
                           border: 'none',
-                          color: '#FF3B30',
+                          color: 'var(--ios-red)',
                           cursor: 'pointer',
                           padding: '6px',
                           borderRadius: 'var(--ios-radius-sm)',
@@ -1157,11 +1161,11 @@ export function DiameterCalculation({
               })
             )}
             {showFullTable && diameterEntries.length > 20 && (
-              <div className="ios-list-item" style={{ backgroundColor: '#F2F2F7' }}>
+              <div className="ios-list-item" style={{ backgroundColor: 'var(--ios-secondary-system-grouped-background)' }}>
                 <div className="ios-list-item-content">
                   <div 
                     className="ios-list-item-icon"
-                    style={{ backgroundColor: '#8E8E93' }}
+                    style={{ backgroundColor: 'var(--ios-gray)' }}
                   >
                     <Target className="w-4 h-4" />
                   </div>
@@ -1189,7 +1193,7 @@ export function DiameterCalculation({
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#34C759' }}
+                  style={{ backgroundColor: 'var(--ios-green)' }}
                 >
                   <TreePine className="w-4 h-4" />
                 </div>
@@ -1227,7 +1231,7 @@ export function DiameterCalculation({
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#007AFF' }}
+                  style={{ backgroundColor: 'var(--ios-blue)' }}
                 >
                   <Target className="w-4 h-4" />
                 </div>
@@ -1238,7 +1242,7 @@ export function DiameterCalculation({
               </div>
               <div className="ios-list-item-accessory">
                 <div style={{ 
-                  color: '#007AFF', 
+                  color: 'var(--ios-blue)', 
                   fontSize: '20px', 
                   fontWeight: '600'
                 }}>
@@ -1251,7 +1255,7 @@ export function DiameterCalculation({
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#FF9500' }}
+                  style={{ backgroundColor: 'var(--ios-orange)' }}
                 >
                   <Ruler className="w-4 h-4" />
                 </div>
@@ -1262,7 +1266,7 @@ export function DiameterCalculation({
               </div>
               <div className="ios-list-item-accessory">
                 <div style={{ 
-                  color: '#FF9500', 
+                  color: 'var(--ios-orange)', 
                   fontSize: '17px', 
                   fontWeight: '600'
                 }}>
@@ -1275,7 +1279,7 @@ export function DiameterCalculation({
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#34C759' }}
+                  style={{ backgroundColor: 'var(--ios-green)' }}
                 >
                   <CalculatorIcon className="w-4 h-4" />
                 </div>
@@ -1288,7 +1292,7 @@ export function DiameterCalculation({
               </div>
               <div className="ios-list-item-accessory">
                 <div style={{ 
-                  color: '#34C759', 
+                  color: 'var(--ios-green)', 
                   fontSize: '24px', 
                   fontWeight: '700',
                   fontVariantNumeric: 'tabular-nums'
@@ -1325,7 +1329,7 @@ export function DiameterCalculation({
               onClick={completeBatch}
               className="ios-button"
               style={{ 
-                background: '#FF9500',
+                background: 'var(--ios-orange)',
                 color: 'white',
                 fontWeight: '600'
               }}
@@ -1346,7 +1350,7 @@ export function DiameterCalculation({
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#FF9500' }}
+                  style={{ backgroundColor: 'var(--ios-orange)' }}
                 >
                   <Zap className="w-4 h-4" />
                 </div>
@@ -1394,7 +1398,7 @@ export function DiameterCalculation({
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#8E8E93' }}
+                  style={{ backgroundColor: 'var(--ios-gray)' }}
                 >
                   <Target className="w-4 h-4" />
                 </div>

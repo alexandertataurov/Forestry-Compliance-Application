@@ -133,13 +133,13 @@ export function LesEGAISIntegration() {
   const getSyncStatusColor = () => {
     switch (syncStatus) {
       case 'syncing':
-        return '#FF9500';
+        return 'var(--ios-orange)';
       case 'success':
-        return '#34C759';
+        return 'var(--ios-green)';
       case 'error':
-        return '#FF3B30';
+        return 'var(--ios-red)';
       default:
-        return '#007AFF';
+        return 'var(--ios-blue)';
     }
   };
 
@@ -165,7 +165,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: isConnected ? '#34C759' : '#FF3B30' }}
+              style={{ backgroundColor: isConnected ? 'var(--ios-green)' : 'var(--ios-red)' }}
             >
               {isConnected ? (
                 <Wifi className="w-4 h-4" />
@@ -212,7 +212,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: pendingBatches.length > 0 ? '#FF9500' : '#34C759' }}
+              style={{ backgroundColor: pendingBatches.length > 0 ? 'var(--ios-orange)' : 'var(--ios-green)' }}
             >
               <Clock className="w-4 h-4" />
             </div>
@@ -225,7 +225,7 @@ export function LesEGAISIntegration() {
           </div>
           <div className="ios-list-item-accessory">
             <div style={{ 
-              color: pendingBatches.length > 0 ? '#FF9500' : '#34C759', 
+              color: pendingBatches.length > 0 ? 'var(--ios-orange)' : 'var(--ios-green)', 
               fontSize: '17px', 
               fontWeight: '600'
             }}>
@@ -245,6 +245,9 @@ export function LesEGAISIntegration() {
                 opacity: (!isConnected || syncStatus === 'syncing') ? 0.3 : 1,
                 background: getSyncStatusColor()
               }}
+              type="button"
+              aria-busy={syncStatus === 'syncing'}
+              aria-label="Синхронизировать данные"
             >
               {getSyncStatusIcon()}
               <span style={{ marginLeft: '8px' }}>
@@ -262,7 +265,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
+              style={{ backgroundColor: 'var(--ios-indigo)' }}
             >
               <User className="w-4 h-4" />
             </div>
@@ -282,7 +285,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#AF52DE' }}
+              style={{ backgroundColor: 'var(--ios-purple)' }}
             >
               <Shield className="w-4 h-4" />
             </div>
@@ -302,7 +305,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <MapPin className="w-4 h-4" />
             </div>
@@ -329,7 +332,7 @@ export function LesEGAISIntegration() {
                 <div className="ios-list-item-content">
                   <div 
                     className="ios-list-item-icon"
-                    style={{ backgroundColor: '#34C759' }}
+                    style={{ backgroundColor: 'var(--ios-green)' }}
                   >
                     <FileText className="w-4 h-4" />
                   </div>
@@ -347,12 +350,12 @@ export function LesEGAISIntegration() {
                     className="ios-list-item-icon"
                     style={{ 
                       backgroundColor: 'transparent',
-                      border: '2px solid #FF9500',
+                      border: '2px solid var(--ios-orange)',
                       width: '20px',
                       height: '20px'
                     }}
                   >
-                    <Clock className="w-3 h-3" style={{ color: '#FF9500' }} />
+                    <Clock className="w-3 h-3" style={{ color: 'var(--ios-orange)' }} />
                   </div>
                 </div>
               </div>
@@ -368,7 +371,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5AC8FA' }}
+              style={{ backgroundColor: 'var(--ios-teal)' }}
             >
               <Truck className="w-4 h-4" />
             </div>
@@ -386,7 +389,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <FileText className="w-4 h-4" />
             </div>
@@ -408,7 +411,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <CheckCircle className="w-4 h-4" />
             </div>
@@ -423,7 +426,7 @@ export function LesEGAISIntegration() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <Shield className="w-4 h-4" />
             </div>

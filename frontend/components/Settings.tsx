@@ -165,7 +165,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <User className="w-4 h-4" />
             </div>
@@ -194,7 +194,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
+              style={{ backgroundColor: 'var(--ios-indigo)' }}
             >
               <Shield className="w-4 h-4" />
             </div>
@@ -223,7 +223,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <MapPin className="w-4 h-4" />
             </div>
@@ -256,7 +256,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <SettingsIcon className="w-4 h-4" />
             </div>
@@ -286,7 +286,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#AF52DE' }}
+              style={{ backgroundColor: 'var(--ios-purple)' }}
             >
               <MapPin className="w-4 h-4" />
             </div>
@@ -305,7 +305,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5AC8FA' }}
+              style={{ backgroundColor: 'var(--ios-teal)' }}
             >
               <Database className="w-4 h-4" />
             </div>
@@ -339,7 +339,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <Smartphone className="w-4 h-4" />
             </div>
@@ -358,7 +358,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Clock className="w-4 h-4" />
             </div>
@@ -389,7 +389,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <Database className="w-4 h-4" />
             </div>
@@ -424,7 +424,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
+              style={{ backgroundColor: 'var(--ios-indigo)' }}
             >
               <Globe className="w-4 h-4" />
             </div>
@@ -453,7 +453,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF2D92' }}
+              style={{ backgroundColor: 'var(--ios-pink)' }}
             >
               <Palette className="w-4 h-4" />
             </div>
@@ -483,7 +483,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Bell className="w-4 h-4" />
             </div>
@@ -503,6 +503,8 @@ export function Settings() {
       <div className="ios-section-header">Управление настройками</div>
       <div className="ios-list">
         <button
+          type="button"
+          aria-label="Экспорт настроек"
           onClick={handleExportSettings}
           className="ios-list-item"
           style={{ border: 'none', background: 'transparent', width: '100%' }}
@@ -510,7 +512,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <Database className="w-4 h-4" />
             </div>
@@ -528,7 +530,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <Database className="w-4 h-4" />
             </div>
@@ -554,6 +556,8 @@ export function Settings() {
         </div>
 
         <button
+          type="button"
+          aria-label="Сбросить настройки"
           onClick={handleResetSettings}
           className="ios-list-item"
           style={{ border: 'none', background: 'transparent', width: '100%' }}
@@ -561,12 +565,12 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF3B30' }}
+              style={{ backgroundColor: 'var(--ios-red)' }}
             >
               <Trash2 className="w-4 h-4" />
             </div>
             <div className="ios-list-item-text">
-              <div className="ios-list-item-title" style={{ color: '#FF3B30' }}>
+              <div className="ios-list-item-title" style={{ color: 'var(--ios-red)' }}>
                 Сбросить настройки
               </div>
               <div className="ios-list-item-subtitle">
@@ -587,7 +591,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5AC8FA' }}
+              style={{ backgroundColor: 'var(--ios-teal)' }}
             >
               <Info className="w-4 h-4" />
             </div>
@@ -605,7 +609,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <HelpCircle className="w-4 h-4" />
             </div>
@@ -623,7 +627,7 @@ export function Settings() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#AF52DE' }}
+              style={{ backgroundColor: 'var(--ios-purple)' }}
             >
               <Mail className="w-4 h-4" />
             </div>

@@ -125,7 +125,7 @@ export function DataManagement() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <Database className="w-4 h-4" />
             </div>
@@ -136,7 +136,7 @@ export function DataManagement() {
           </div>
           <div className="ios-list-item-accessory">
             <div style={{ 
-              color: '#007AFF', 
+              color: 'var(--ios-blue)', 
               fontSize: '17px', 
               fontWeight: '600'
             }}>
@@ -149,7 +149,7 @@ export function DataManagement() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <TreePine className="w-4 h-4" />
             </div>
@@ -164,7 +164,7 @@ export function DataManagement() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: unsyncedCount > 0 ? '#FF9500' : '#34C759' }}
+              style={{ backgroundColor: unsyncedCount > 0 ? 'var(--ios-orange)' : 'var(--ios-green)' }}
             >
               {unsyncedCount > 0 ? (
                 <Clock className="w-4 h-4" />
@@ -189,7 +189,7 @@ export function DataManagement() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
+              style={{ backgroundColor: 'var(--ios-indigo)' }}
             >
               <Search className="w-4 h-4" />
             </div>
@@ -217,7 +217,7 @@ export function DataManagement() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Filter className="w-4 h-4" />
             </div>
@@ -291,7 +291,7 @@ export function DataManagement() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <Download className="w-4 h-4" />
             </div>
@@ -309,7 +309,7 @@ export function DataManagement() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <Upload className="w-4 h-4" />
             </div>
@@ -342,12 +342,12 @@ export function DataManagement() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF3B30' }}
+              style={{ backgroundColor: 'var(--ios-red)' }}
             >
               <Trash2 className="w-4 h-4" />
             </div>
             <div className="ios-list-item-text">
-              <div className="ios-list-item-title" style={{ color: '#FF3B30' }}>
+              <div className="ios-list-item-title" style={{ color: 'var(--ios-red)' }}>
                 Удалить все данные
               </div>
               <div className="ios-list-item-subtitle">
@@ -373,7 +373,7 @@ export function DataManagement() {
                 <div className="ios-list-item-content">
                   <div 
                     className="ios-list-item-icon"
-                    style={{ backgroundColor: calc.synced ? '#34C759' : '#FF9500' }}
+                    style={{ backgroundColor: calc.synced ? 'var(--ios-green)' : 'var(--ios-orange)' }}
                   >
                     {calc.synced ? (
                       <CheckCircle className="w-4 h-4" />
@@ -395,7 +395,7 @@ export function DataManagement() {
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#FF3B30',
+                    color: 'var(--ios-red)',
                     cursor: 'pointer',
                     padding: '8px',
                     borderRadius: 'var(--ios-radius-md)'
@@ -417,7 +417,7 @@ export function DataManagement() {
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#8E8E93' }}
+                  style={{ backgroundColor: 'var(--ios-gray)' }}
                 >
                   <Search className="w-4 h-4" />
                 </div>
@@ -439,7 +439,7 @@ export function DataManagement() {
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#8E8E93' }}
+                  style={{ backgroundColor: 'var(--ios-gray)' }}
                 >
                   <Database className="w-4 h-4" />
                 </div>

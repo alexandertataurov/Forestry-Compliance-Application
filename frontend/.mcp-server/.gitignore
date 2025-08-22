@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Logs and databases
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+temp/
+*.tmp
+*.bak
+*~
+
+# Session summaries (generated at runtime)
+session_summary_*.json
+
+# Test artifacts
+/tmp/cursor_test_*
+/tmp/cursor_clipboard/
+*.test.db
+test_messages.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Development
+.env
+.env.local
+debug_*.py
+scratch_*.py
+
+# Other
+.claude
+.mcp-server
+.pytest-cache
