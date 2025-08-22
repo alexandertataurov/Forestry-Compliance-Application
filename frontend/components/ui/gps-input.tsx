@@ -1,408 +1,641 @@
-import * as React from "react";
-import { cn } from "./utils";
-import { MapPin, Navigation, RotateCcw, AlertCircle, CheckCircle } from "lucide-react";
-import { Button } from "./button";
+import * as React from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from './utils';
+import { useFieldOperations } from './use-mobile';
+import { 
+  MapPin, 
+  Gps, 
+  GpsOff, 
+  RefreshCw, 
+  CheckCircle, 
+  AlertTriangle,
+  Clock,
+  Wifi,
+  WifiOff,
+  Save,
+  Loader2,
+  Navigation,
+  Compass
+} from 'lucide-react';
+import { GPSBadge } from './status-badge';
 
-interface GPSCoordinates {
+export interface GPSCoordinates {
   lat: number;
   lng: number;
   accuracy?: number;
   timestamp?: number;
+  altitude?: number;
+  heading?: number;
+  speed?: number;
 }
 
-interface GPSInputProps {
+export interface GPSInputProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof gpsInputVariants> {
   value?: GPSCoordinates | null;
-  onChange: (coordinates: GPSCoordinates | null) => void;
-  label?: string;
+  onChange?: (coordinates: GPSCoordinates | null) => void;
   placeholder?: string;
-  error?: string;
-  success?: string;
-  required?: boolean;
-  disabled?: boolean;
-  readOnly?: boolean;
-  size?: "sm" | "default" | "lg";
-  variant?: "default" | "outline" | "filled";
-  showValidation?: boolean;
   showAccuracy?: boolean;
   showTimestamp?: boolean;
   allowManualEntry?: boolean;
   precision?: number;
-  className?: string;
-  inputClassName?: string;
-  labelClassName?: string;
-  errorClassName?: string;
-  successClassName?: string;
+  required?: boolean;
+  disabled?: boolean;
+  autoCapture?: boolean;
+  showMap?: boolean;
+  showCompass?: boolean;
+  showSpeed?: boolean;
+  showAltitude?: boolean;
+  forestry?: boolean;
+  fieldMode?: boolean;
 }
 
-const GPSInput = React.forwardRef<HTMLDivElement, GPSInputProps>(
-  (
-    {
-      value,
-      onChange,
-      label,
-      placeholder = "Click to get current location",
-      error,
-      success,
-      required = false,
-      disabled = false,
-      readOnly = false,
-      size = "default",
-      variant = "default",
-      showValidation = true,
-      showAccuracy = true,
-      showTimestamp = false,
-      allowManualEntry = true,
-      precision = 6,
-      className,
-      inputClassName,
-      labelClassName,
-      errorClassName,
-      successClassName,
+const gpsInputVariants = cva(
+  "relative w-full",
+  {
+    variants: {
+      variant: {
+        default: "",
+        field: "border-2 border-surface-border rounded-lg",
+        compact: "border border-surface-border rounded-md",
+      },
+      size: {
+        sm: "p-2",
+        default: "p-3",
+        lg: "p-4",
+      },
+      state: {
+        default: "",
+        capturing: "ring-2 ring-status-info/20",
+        success: "ring-2 ring-status-success/20",
+        error: "ring-2 ring-status-error/20",
+        offline: "ring-2 ring-status-warning/20",
+      },
     },
-    ref
-  ) => {
-    const [isGettingLocation, setIsGettingLocation] = React.useState(false);
-    const [manualEntry, setManualEntry] = React.useState(false);
-    const [latInput, setLatInput] = React.useState("");
-    const [lngInput, setLngInput] = React.useState("");
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+      state: "default",
+    },
+  }
+);
 
-    // Update manual inputs when value changes
-    React.useEffect(() => {
-      if (value) {
-        setLatInput(value.lat.toFixed(precision));
-        setLngInput(value.lng.toFixed(precision));
-      } else {
-        setLatInput("");
-        setLngInput("");
+export const GPSInput = React.forwardRef<HTMLDivElement, GPSInputProps>(
+  ({ 
+    className, 
+    variant, 
+    size, 
+    state,
+    value,
+    onChange,
+    placeholder = "Определить GPS координаты",
+    showAccuracy = true,
+    showTimestamp = true,
+    allowManualEntry = true,
+    precision = 6,
+    required = false,
+    disabled = false,
+    autoCapture = false,
+    showMap = false,
+    showCompass = false,
+    showSpeed = false,
+    showAltitude = false,
+    forestry = false,
+    fieldMode = false,
+    ...props 
+  }, ref) => {
+    const fieldOps = useFieldOperations();
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [lastKnownLocation, setLastKnownLocation] = useState<GPSCoordinates | null>(null);
+    const [watchId, setWatchId] = useState<number | null>(null);
+    const [manualLat, setManualLat] = useState('');
+    const [manualLng, setManualLng] = useState('');
+    const [showManualInput, setShowManualInput] = useState(false);
+
+    // Check GPS availability
+    const isGPSAvailable = 'geolocation' in navigator;
+    const isOnline = navigator.onLine;
+
+    // Format coordinates for display
+    const formatCoordinate = (coord: number, precision: number = 6) => {
+      return coord.toFixed(precision);
+    };
+
+    // Format accuracy for display
+    const formatAccuracy = (accuracy: number) => {
+      if (accuracy < 1) return '< 1м';
+      if (accuracy < 10) return `${accuracy.toFixed(1)}м`;
+      return `${Math.round(accuracy)}м`;
+    };
+
+    // Format timestamp for display
+    const formatTimestamp = (timestamp: number) => {
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    };
+
+    // Handle GPS success
+    const handleGPSSuccess = useCallback((position: GeolocationPosition) => {
+      const coordinates: GPSCoordinates = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        timestamp: position.timestamp,
+        altitude: position.coords.altitude || undefined,
+        heading: position.coords.heading || undefined,
+        speed: position.coords.speed || undefined,
+      };
+
+      setLastKnownLocation(coordinates);
+      setError(null);
+      setIsCapturing(false);
+      
+      if (onChange) {
+        onChange(coordinates);
       }
-    }, [value, precision]);
+    }, [onChange]);
 
-    const getCurrentLocation = async () => {
-      if (!navigator.geolocation) {
+    // Handle GPS error
+    const handleGPSError = useCallback((error: GeolocationPositionError) => {
+      setIsCapturing(false);
+      setError(getErrorMessage(error.code));
+    }, []);
+
+    // Get error message
+    const getErrorMessage = (code: number): string => {
+      switch (code) {
+        case 1:
+          return forestry ? 'Доступ к GPS запрещён' : 'Permission denied';
+        case 2:
+          return forestry ? 'GPS недоступен' : 'Position unavailable';
+        case 3:
+          return forestry ? 'Превышено время ожидания GPS' : 'Timeout';
+        default:
+          return forestry ? 'Ошибка GPS' : 'GPS error';
+      }
+    };
+
+    // Start GPS capture
+    const startCapture = useCallback(() => {
+      if (!isGPSAvailable) {
+        setError(forestry ? 'GPS не поддерживается' : 'GPS not supported');
         return;
       }
 
-      setIsGettingLocation(true);
+      setIsCapturing(true);
+      setError(null);
 
-      try {
-        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 60000,
-          });
-        });
+      const options: PositionOptions = {
+        enableHighAccuracy: true,
+        timeout: 30000,
+        maximumAge: 60000,
+      };
 
-        const coordinates: GPSCoordinates = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          accuracy: position.coords.accuracy,
-          timestamp: position.timestamp,
-        };
+      if (autoCapture) {
+        // Continuous tracking
+        const id = navigator.geolocation.watchPosition(
+          handleGPSSuccess,
+          handleGPSError,
+          options
+        );
+        setWatchId(id);
+      } else {
+        // Single capture
+        navigator.geolocation.getCurrentPosition(
+          handleGPSSuccess,
+          handleGPSError,
+          options
+        );
+      }
+    }, [isGPSAvailable, autoCapture, handleGPSSuccess, handleGPSError, forestry]);
 
+    // Stop GPS capture
+    const stopCapture = useCallback(() => {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        setWatchId(null);
+      }
+      setIsCapturing(false);
+    }, [watchId]);
+
+    // Handle manual coordinate entry
+    const handleManualSubmit = () => {
+      const lat = parseFloat(manualLat);
+      const lng = parseFloat(manualLng);
+
+      if (isNaN(lat) || isNaN(lng)) {
+        setError(forestry ? 'Неверные координаты' : 'Invalid coordinates');
+        return;
+      }
+
+      if (lat < -90 || lat > 90) {
+        setError(forestry ? 'Широта должна быть от -90 до 90' : 'Latitude must be between -90 and 90');
+        return;
+      }
+
+      if (lng < -180 || lng > 180) {
+        setError(forestry ? 'Долгота должна быть от -180 до 180' : 'Longitude must be between -180 and 180');
+        return;
+      }
+
+      const coordinates: GPSCoordinates = {
+        lat,
+        lng,
+        timestamp: Date.now(),
+      };
+
+      setError(null);
+      setShowManualInput(false);
+      
+      if (onChange) {
         onChange(coordinates);
-      } catch (error) {
-        console.error("Error getting location:", error);
-      } finally {
-        setIsGettingLocation(false);
       }
     };
 
-    const clearLocation = () => {
-      onChange(null);
-      setLatInput("");
-      setLngInput("");
+    // Use last known location
+    const useLastKnown = () => {
+      if (lastKnownLocation && onChange) {
+        onChange(lastKnownLocation);
+      }
     };
 
-    const formatCoordinate = (coord: number, type: "lat" | "lng"): string => {
-      const direction = type === "lat" ? (coord >= 0 ? "N" : "S") : (coord >= 0 ? "E" : "W");
-      return `${Math.abs(coord).toFixed(precision)}° ${direction}`;
+    // Clear coordinates
+    const clearCoordinates = () => {
+      if (onChange) {
+        onChange(null);
+      }
+      setError(null);
     };
 
-    const validateCoordinate = (lat: string, lng: string): { isValid: boolean; error?: string } => {
-      if (!lat && !lng) {
-        if (required) {
-          return { isValid: false, error: "GPS coordinates are required" };
+    // Auto-capture on mount if enabled
+    useEffect(() => {
+      if (autoCapture && isGPSAvailable && !value) {
+        startCapture();
+      }
+
+      return () => {
+        if (watchId) {
+          navigator.geolocation.clearWatch(watchId);
         }
-        return { isValid: true };
-      }
+      };
+    }, [autoCapture, isGPSAvailable, value, startCapture, watchId]);
 
-      if (!lat || !lng) {
-        return { isValid: false, error: "Both latitude and longitude are required" };
-      }
-
-      const latNum = parseFloat(lat);
-      const lngNum = parseFloat(lng);
-
-      if (isNaN(latNum) || isNaN(lngNum)) {
-        return { isValid: false, error: "Please enter valid coordinates" };
-      }
-
-      if (latNum < -90 || latNum > 90) {
-        return { isValid: false, error: "Latitude must be between -90 and 90" };
-      }
-
-      if (lngNum < -180 || lngNum > 180) {
-        return { isValid: false, error: "Longitude must be between -180 and 180" };
-      }
-
-      return { isValid: true };
+    // Determine current state
+    const getCurrentState = () => {
+      if (error) return 'error';
+      if (isCapturing) return 'capturing';
+      if (value) return 'success';
+      if (!isOnline) return 'offline';
+      return 'default';
     };
 
-    const handleManualUpdate = () => {
-      const validation = validateCoordinate(latInput, lngInput);
-      if (validation.isValid && latInput && lngInput) {
-        const coordinates: GPSCoordinates = {
-          lat: parseFloat(latInput),
-          lng: parseFloat(lngInput),
-          timestamp: Date.now(),
-        };
-        onChange(coordinates);
-        setManualEntry(false);
-      }
-    };
-
-    const validation = validateCoordinate(latInput, lngInput);
-    const hasError = showValidation && (error || validation.error);
-    const hasSuccess = showValidation && success && !hasError;
-
-    const sizeClasses = {
-      sm: "text-sm p-2",
-      default: "text-base p-3",
-      lg: "text-lg p-4"
-    };
-
-    const variantClasses = {
-      default: "border-surface-border bg-surface-bg",
-      outline: "border-2 border-surface-border bg-transparent",
-      filled: "border-transparent bg-surface-bg-variant"
-    };
+    const currentState = getCurrentState();
 
     return (
-      <div ref={ref} className={cn("space-y-2", className)}>
-        {label && (
-          <label
-            className={cn(
-              "text-label font-label text-surface-on-surface",
-              size === "sm" && "text-sm",
-              size === "lg" && "text-base",
-              labelClassName
-            )}
-          >
-            {label}
-            {required && <span className="text-brand-error ml-1">*</span>}
-          </label>
+      <div
+        ref={ref}
+        className={cn(
+          gpsInputVariants({ variant, size, state: currentState }),
+          fieldOps.shouldUseLargeButtons && "p-4",
+          fieldOps.shouldUseLargerText && "p-4",
+          className
         )}
+        {...props}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Gps className={cn(
+              "text-status-info",
+              fieldOps.shouldUseLargeButtons ? "w-5 h-5" : "w-4 h-4"
+            )} />
+            <span className={cn(
+              "font-medium text-surface-on-surface",
+              fieldOps.shouldUseLargerText && "text-field-lg"
+            )}>
+              {forestry ? 'Местоположение' : 'Location'}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <GPSBadge 
+              active={isGPSAvailable && isOnline} 
+              fieldMode={fieldMode}
+              compact={fieldOps.shouldUseCompactLayout}
+            />
+            {!isOnline && (
+              <WifiOff className={cn(
+                "text-status-warning",
+                fieldOps.shouldUseLargeButtons ? "w-5 h-5" : "w-4 h-4"
+              )} />
+            )}
+          </div>
+        </div>
 
-        <div
-          className={cn(
-            "relative rounded-md border transition-all",
-            "min-touch-target",
-            sizeClasses[size],
-            variantClasses[variant],
-            hasError && "border-brand-error",
-            hasSuccess && "border-state-success",
-            disabled && "opacity-50 cursor-not-allowed",
-            inputClassName
-          )}
-        >
-          {!manualEntry && !value && (
-            <div className="flex items-center justify-center py-8">
-              <div className="text-center space-y-3">
-                <MapPin className="h-8 w-8 text-surface-on-variant mx-auto" />
-                <p className="text-surface-on-variant text-body-small">
-                  {placeholder}
-                </p>
-                <div className="flex gap-2 justify-center">
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={getCurrentLocation}
-                    disabled={disabled || isGettingLocation}
-                    className="gap-2"
-                  >
-                    <Navigation className="h-4 w-4" />
-                    {isGettingLocation ? "Getting Location..." : "Get Current Location"}
-                  </Button>
-                  {allowManualEntry && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setManualEntry(true)}
-                      disabled={disabled}
-                    >
-                      Enter Manually
-                    </Button>
-                  )}
-                </div>
+        {/* Current Coordinates Display */}
+        {value && (
+          <div className="ios-card p-3 mb-3">
+            <div className="grid gap-2">
+              <div className="flex items-center justify-between">
+                <span className={cn(
+                  "text-field-sm text-surface-on-variant",
+                  fieldOps.shouldUseLargerText && "text-field-base"
+                )}>
+                  {forestry ? 'Широта' : 'Latitude'}:
+                </span>
+                <span className={cn(
+                  "font-mono font-medium",
+                  fieldOps.shouldUseLargerText && "text-field-lg"
+                )}>
+                  {formatCoordinate(value.lat, precision)}°
+                </span>
               </div>
-            </div>
-          )}
-
-          {!manualEntry && value && (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-brand-primary" />
-                <div className="flex-1">
-                  <div className="text-surface-on-surface font-medium">
-                    {formatCoordinate(value.lat, "lat")}, {formatCoordinate(value.lng, "lng")}
-                  </div>
-                  <div className="text-surface-on-variant text-caption">
-                    Lat: {value.lat.toFixed(precision)}, Lng: {value.lng.toFixed(precision)}
-                  </div>
-                </div>
+              
+              <div className="flex items-center justify-between">
+                <span className={cn(
+                  "text-field-sm text-surface-on-variant",
+                  fieldOps.shouldUseLargerText && "text-field-base"
+                )}>
+                  {forestry ? 'Долгота' : 'Longitude'}:
+                </span>
+                <span className={cn(
+                  "font-mono font-medium",
+                  fieldOps.shouldUseLargerText && "text-field-lg"
+                )}>
+                  {formatCoordinate(value.lng, precision)}°
+                </span>
               </div>
 
               {showAccuracy && value.accuracy && (
-                <div className="text-surface-on-variant text-caption">
-                  Accuracy: ±{Math.round(value.accuracy)}m
+                <div className="flex items-center justify-between">
+                  <span className={cn(
+                    "text-field-sm text-surface-on-variant",
+                    fieldOps.shouldUseLargerText && "text-field-base"
+                  )}>
+                    {forestry ? 'Точность' : 'Accuracy'}:
+                  </span>
+                  <span className={cn(
+                    "font-medium",
+                    value.accuracy < 5 ? "text-status-success" : 
+                    value.accuracy < 20 ? "text-status-warning" : "text-status-error",
+                    fieldOps.shouldUseLargerText && "text-field-lg"
+                  )}>
+                    {formatAccuracy(value.accuracy)}
+                  </span>
                 </div>
               )}
 
               {showTimestamp && value.timestamp && (
-                <div className="text-surface-on-variant text-caption">
-                  Captured: {new Date(value.timestamp).toLocaleString()}
+                <div className="flex items-center justify-between">
+                  <span className={cn(
+                    "text-field-sm text-surface-on-variant",
+                    fieldOps.shouldUseLargerText && "text-field-base"
+                  )}>
+                    {forestry ? 'Время' : 'Time'}:
+                  </span>
+                  <span className={cn(
+                    "font-medium",
+                    fieldOps.shouldUseLargerText && "text-field-lg"
+                  )}>
+                    {formatTimestamp(value.timestamp)}
+                  </span>
                 </div>
               )}
 
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={getCurrentLocation}
-                  disabled={disabled || isGettingLocation}
-                  className="gap-2"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                  {isGettingLocation ? "Updating..." : "Update"}
-                </Button>
-                {allowManualEntry && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setManualEntry(true)}
-                    disabled={disabled}
-                  >
-                    Edit Manually
-                  </Button>
-                )}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearLocation}
-                  disabled={disabled}
-                >
-                  Clear
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {manualEntry && (
-            <div className="space-y-3">
-              <div className="text-surface-on-surface font-medium text-body-small">
-                Enter GPS Coordinates
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-label-small font-label-small text-surface-on-variant">
-                    Latitude
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    placeholder="e.g. 40.7128"
-                    value={latInput}
-                    onChange={(e) => setLatInput(e.target.value)}
-                    className="w-full mt-1 px-2 py-1 text-sm border border-surface-border rounded focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/20 outline-none"
-                    disabled={disabled}
-                  />
+              {showAltitude && value.altitude && (
+                <div className="flex items-center justify-between">
+                  <span className={cn(
+                    "text-field-sm text-surface-on-variant",
+                    fieldOps.shouldUseLargerText && "text-field-base"
+                  )}>
+                    {forestry ? 'Высота' : 'Altitude'}:
+                  </span>
+                  <span className={cn(
+                    "font-medium",
+                    fieldOps.shouldUseLargerText && "text-field-lg"
+                  )}>
+                    {value.altitude.toFixed(1)}м
+                  </span>
                 </div>
-                <div>
-                  <label className="text-label-small font-label-small text-surface-on-variant">
-                    Longitude
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    placeholder="e.g. -74.0060"
-                    value={lngInput}
-                    onChange={(e) => setLngInput(e.target.value)}
-                    className="w-full mt-1 px-2 py-1 text-sm border border-surface-border rounded focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/20 outline-none"
-                    disabled={disabled}
-                  />
+              )}
+
+              {showSpeed && value.speed && (
+                <div className="flex items-center justify-between">
+                  <span className={cn(
+                    "text-field-sm text-surface-on-variant",
+                    fieldOps.shouldUseLargerText && "text-field-base"
+                  )}>
+                    {forestry ? 'Скорость' : 'Speed'}:
+                  </span>
+                  <span className={cn(
+                    "font-medium",
+                    fieldOps.shouldUseLargerText && "text-field-lg"
+                  )}>
+                    {(value.speed * 3.6).toFixed(1)} км/ч
+                  </span>
                 </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={handleManualUpdate}
-                  disabled={disabled || !validation.isValid}
-                >
-                  Save Coordinates
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setManualEntry(false)}
-                  disabled={disabled}
-                >
-                  Cancel
-                </Button>
-              </div>
+              )}
             </div>
+          </div>
+        )}
+
+        {/* Error Display */}
+        {error && (
+          <div className="flex items-center gap-2 p-3 mb-3 bg-status-error/10 border border-status-error/20 rounded-lg">
+            <AlertTriangle className={cn(
+              "text-status-error",
+              fieldOps.shouldUseLargeButtons ? "w-5 h-5" : "w-4 h-4"
+            )} />
+            <span className={cn(
+              "text-status-error text-field-sm",
+              fieldOps.shouldUseLargerText && "text-field-base"
+            )}>
+              {error}
+            </span>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className={cn(
+          "grid gap-2",
+          fieldOps.isMobile ? "grid-cols-1" : "grid-cols-2",
+          fieldOps.isLandscape && "grid-cols-3 gap-1"
+        )}>
+          {!value && (
+            <button
+              onClick={startCapture}
+              disabled={disabled || !isGPSAvailable || isCapturing}
+              className={cn(
+                "ios-button ios-button-primary touch-target",
+                fieldOps.shouldUseLargeButtons && "ios-button-lg"
+              )}
+            >
+              {isCapturing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Gps className="w-4 h-4" />
+              )}
+              <span>
+                {isCapturing 
+                  ? (forestry ? 'Определение...' : 'Capturing...')
+                  : (forestry ? 'Определить GPS' : 'Capture GPS')
+                }
+              </span>
+            </button>
           )}
 
-          {hasError && (
-            <div className="absolute -right-1 -top-1">
-              <AlertCircle className="h-4 w-4 text-brand-error" />
-            </div>
+          {value && (
+            <button
+              onClick={startCapture}
+              disabled={disabled || !isGPSAvailable || isCapturing}
+              className={cn(
+                "ios-button ios-button-secondary touch-target",
+                fieldOps.shouldUseLargeButtons && "ios-button-lg"
+              )}
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>{forestry ? 'Обновить' : 'Update'}</span>
+            </button>
           )}
 
-          {hasSuccess && (
-            <div className="absolute -right-1 -top-1">
-              <CheckCircle className="h-4 w-4 text-state-success" />
-            </div>
+          {allowManualEntry && (
+            <button
+              onClick={() => setShowManualInput(!showManualInput)}
+              disabled={disabled}
+              className={cn(
+                "ios-button ios-button-secondary touch-target",
+                fieldOps.shouldUseLargeButtons && "ios-button-lg"
+              )}
+            >
+              <MapPin className="w-4 h-4" />
+              <span>{forestry ? 'Ввести вручную' : 'Manual Entry'}</span>
+            </button>
+          )}
+
+          {lastKnownLocation && !value && (
+            <button
+              onClick={useLastKnown}
+              disabled={disabled}
+              className={cn(
+                "ios-button ios-button-secondary touch-target",
+                fieldOps.shouldUseLargeButtons && "ios-button-lg"
+              )}
+            >
+              <Clock className="w-4 h-4" />
+              <span>{forestry ? 'Последнее местоположение' : 'Last Known'}</span>
+            </button>
+          )}
+
+          {value && (
+            <button
+              onClick={clearCoordinates}
+              disabled={disabled}
+              className={cn(
+                "ios-button ios-button-secondary touch-target",
+                fieldOps.shouldUseLargeButtons && "ios-button-lg"
+              )}
+            >
+              <GpsOff className="w-4 h-4" />
+              <span>{forestry ? 'Очистить' : 'Clear'}</span>
+            </button>
           )}
         </div>
 
-        {hasError && (
-          <p
-            className={cn(
-              "text-brand-error text-caption flex items-center gap-1",
-              errorClassName
-            )}
-          >
-            <AlertCircle className="h-3 w-3" />
-            {error || validation.error}
-          </p>
+        {/* Manual Input Form */}
+        {showManualInput && (
+          <div className="ios-card p-3 mt-3">
+            <div className={cn(
+              "text-field-sm font-medium mb-3",
+              fieldOps.shouldUseLargerText && "text-field-base"
+            )}>
+              {forestry ? 'Введите координаты вручную' : 'Enter coordinates manually'}
+            </div>
+            
+            <div className="grid gap-3">
+              <div>
+                <label className={cn(
+                  "block text-field-sm font-medium mb-1",
+                  fieldOps.shouldUseLargerText && "text-field-base"
+                )}>
+                  {forestry ? 'Широта' : 'Latitude'} (-90 до 90)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  value={manualLat}
+                  onChange={(e) => setManualLat(e.target.value)}
+                  placeholder="55.7558"
+                  className={cn(
+                    "w-full p-3 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface placeholder-surface-on-variant focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary",
+                    fieldOps.shouldUseLargeButtons && "py-4 text-field-base",
+                    fieldOps.shouldUseLargerText && "text-field-lg"
+                  )}
+                />
+              </div>
+              
+              <div>
+                <label className={cn(
+                  "block text-field-sm font-medium mb-1",
+                  fieldOps.shouldUseLargerText && "text-field-base"
+                )}>
+                  {forestry ? 'Долгота' : 'Longitude'} (-180 до 180)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  value={manualLng}
+                  onChange={(e) => setManualLng(e.target.value)}
+                  placeholder="37.6176"
+                  className={cn(
+                    "w-full p-3 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface placeholder-surface-on-variant focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary",
+                    fieldOps.shouldUseLargeButtons && "py-4 text-field-base",
+                    fieldOps.shouldUseLargerText && "text-field-lg"
+                  )}
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={handleManualSubmit}
+                  disabled={!manualLat || !manualLng}
+                  className={cn(
+                    "ios-button ios-button-primary touch-target flex-1",
+                    fieldOps.shouldUseLargeButtons && "ios-button-lg"
+                  )}
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>{forestry ? 'Сохранить' : 'Save'}</span>
+                </button>
+                
+                <button
+                  onClick={() => setShowManualInput(false)}
+                  className={cn(
+                    "ios-button ios-button-secondary touch-target",
+                    fieldOps.shouldUseLargeButtons && "ios-button-lg"
+                  )}
+                >
+                  <span>{forestry ? 'Отмена' : 'Cancel'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
-        {hasSuccess && (
-          <p
-            className={cn(
-              "text-state-success text-caption flex items-center gap-1",
-              successClassName
-            )}
-          >
-            <CheckCircle className="h-3 w-3" />
-            {success}
-          </p>
+        {/* Required Field Indicator */}
+        {required && !value && (
+          <div className="mt-2 text-status-error text-field-xs">
+            {forestry ? 'Местоположение обязательно' : 'Location is required'}
+          </div>
         )}
       </div>
     );
   }
 );
 
-GPSInput.displayName = "GPSInput";
-
-export { GPSInput };
-export type { GPSInputProps, GPSCoordinates };
+GPSInput.displayName = 'GPSInput';

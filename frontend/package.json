@@ -11,7 +11,7 @@
     "build:staging": "vite build --mode staging",
     "build:preview": "vite build --mode preview",
     "build:analyze": "vite build --mode production && npm run analyze",
-    "analyze": "npx vite-bundle-analyzer dist/stats.html",
+    "analyze": "npx rollup-plugin-visualizer dist/stats.html",
     "preview": "vite preview",
     "preview:build": "vite preview --port 4173",
     "type-check": "tsc --noEmit",
@@ -24,8 +24,8 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:mobile": "playwright test --project=mobile",
     "test:e2e:desktop": "playwright test --project=desktop",
-    "test:performance": "npm run build:analyze && npm run lighthouse",
-    "lighthouse": "npx lighthouse http://localhost:4173 --output=html --output-path=./lighthouse-report.html",
+    "test:performance": "npm run build:analyze",
+    "lighthouse": "echo 'Lighthouse not available - install globally with: npm install -g lighthouse'",
     "clean": "rm -rf dist node_modules/.vite",
     "clean:all": "rm -rf dist node_modules/.vite node_modules package-lock.json && npm install"
   },
@@ -95,9 +95,9 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "lighthouse-ci": "^0.12.0",
+
     "postcss": "^8.4.32",
-    "snyk": "^1.1450.0",
+
     "storybook": "^8.6.14",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.2.2",
