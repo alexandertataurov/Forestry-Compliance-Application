@@ -1,0 +1,584 @@
+/* Mobile Responsive Design System for Forestry Compliance */
+
+/* ===== TOUCH TARGETS ===== */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.touch-target-lg {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.touch-target-xl {
+  min-height: 56px;
+  min-width: 56px;
+}
+
+/* ===== FIELD OPERATION MODES ===== */
+.field-mode .touch-target {
+  min-height: 52px;
+  min-width: 52px;
+}
+
+.field-mode .touch-target-lg {
+  min-height: 60px;
+  min-width: 60px;
+}
+
+.field-mode .touch-target-xl {
+  min-height: 72px;
+  min-width: 72px;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+@media (max-width: 480px) {
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  .ios-card {
+    padding: 16px;
+  }
+  
+  .ios-list-item {
+    padding: 12px 16px;
+  }
+  
+  .ios-button {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+  
+  .ios-button-lg {
+    padding: 16px 24px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 375px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .ios-card {
+    padding: 12px;
+  }
+  
+  .ios-list-item {
+    padding: 10px 12px;
+  }
+  
+  .ios-button {
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+  
+  .ios-button-lg {
+    padding: 14px 20px;
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 320px) {
+  .container {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  
+  .ios-card {
+    padding: 10px;
+  }
+  
+  .ios-list-item {
+    padding: 8px 10px;
+  }
+  
+  .ios-button {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .ios-button-lg {
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+}
+
+/* ===== LANDSCAPE OPTIMIZATIONS ===== */
+@media (max-width: 768px) and (orientation: landscape) {
+  .ios-nav-content {
+    padding: 0 8px;
+  }
+  
+  .ios-list {
+    margin: var(--ios-spacing-sm);
+  }
+  
+  .ios-card {
+    padding: 12px;
+  }
+  
+  .ios-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  
+  .ios-button-lg {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+  
+  /* Compact grid layouts */
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .ios-button,
+  .ios-card {
+    transition: opacity 0.1s ease;
+  }
+  
+  .ios-button:active,
+  .ios-card:active {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --ios-separator: rgba(60, 60, 67, 0.6);
+  }
+  
+  .dark {
+    --ios-separator: rgba(84, 84, 88, 1);
+  }
+  
+  .ios-button,
+  .ios-card {
+    border: 2px solid currentColor;
+  }
+  
+  .ios-button-secondary {
+    border: 2px solid var(--ios-blue);
+  }
+}
+
+/* ===== LARGE TEXT MODE ===== */
+@media (prefers-reduced-motion: no-preference) {
+  .large-text-mode .ios-button {
+    font-size: 18px;
+    padding: 16px 24px;
+  }
+  
+  .large-text-mode .ios-button-lg {
+    font-size: 20px;
+    padding: 20px 28px;
+  }
+  
+  .large-text-mode .ios-card {
+    padding: 20px;
+  }
+  
+  .large-text-mode .ios-list-item {
+    padding: 16px 20px;
+  }
+  
+  .large-text-mode .text-field-base {
+    font-size: 18px;
+  }
+  
+  .large-text-mode .text-field-lg {
+    font-size: 20px;
+  }
+  
+  .large-text-mode .text-field-xl {
+    font-size: 24px;
+  }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+.high-contrast-mode {
+  --surface-border: #000000;
+  --surface-on-surface: #000000;
+  --surface-on-variant: #333333;
+  --brand-primary: #0000FF;
+  --status-success: #008000;
+  --status-warning: #FF8C00;
+  --status-error: #FF0000;
+}
+
+.high-contrast-mode .ios-button,
+.high-contrast-mode .ios-card {
+  border: 2px solid currentColor;
+}
+
+.high-contrast-mode .ios-list-item {
+  border-bottom: 1px solid #000000;
+}
+
+/* ===== FIELD OPERATION SPECIFIC ===== */
+.field-operation-mode {
+  /* Enhanced touch targets for glove use */
+  --touch-target-size: 56px;
+  --touch-target-size-lg: 72px;
+  --touch-target-size-xl: 88px;
+}
+
+.field-operation-mode .touch-target {
+  min-height: var(--touch-target-size);
+  min-width: var(--touch-target-size);
+}
+
+.field-operation-mode .touch-target-lg {
+  min-height: var(--touch-target-size-lg);
+  min-width: var(--touch-target-size-lg);
+}
+
+.field-operation-mode .touch-target-xl {
+  min-height: var(--touch-target-size-xl);
+  min-width: var(--touch-target-size-xl);
+}
+
+/* Enhanced visual feedback for outdoor use */
+.field-operation-mode .ios-button:active {
+  transform: scale(0.95);
+  background-color: var(--brand-primary);
+  color: white;
+}
+
+.field-operation-mode .ios-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== COMPONENT-SPECIFIC RESPONSIVE ===== */
+
+/* Navigation Bar */
+@media (max-width: 480px) {
+  .ios-nav-title {
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 320px) {
+  .ios-nav-title {
+    max-width: 200px;
+  }
+}
+
+/* Calculator Buttons */
+@media (max-width: 375px) {
+  .calculator-button {
+    font-size: 17px;
+    padding: 14px 20px;
+    min-height: 52px;
+    min-width: 70px;
+  }
+  
+  .calculator-button-large {
+    font-size: 18px;
+    padding: 18px 28px;
+    min-height: 60px;
+    min-width: 100px;
+  }
+  
+  .calculator-button-preset {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 48px;
+    min-width: 60px;
+  }
+}
+
+/* Data Table */
+@media (max-width: 768px) {
+  .data-table {
+    font-size: 14px;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 8px 4px;
+  }
+  
+  .data-table .mobile-hidden {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .data-table {
+    font-size: 13px;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 6px 2px;
+  }
+}
+
+/* Form Components */
+@media (max-width: 480px) {
+  .form-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 16px;
+  }
+  
+  .form-select {
+    font-size: 16px;
+    padding: 12px 16px;
+  }
+  
+  .form-textarea {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 80px;
+  }
+}
+
+/* Modal and Sheet Components */
+@media (max-width: 480px) {
+  .modal-content {
+    margin: 16px;
+    max-height: calc(100vh - 32px);
+  }
+  
+  .sheet-content {
+    padding: 16px;
+  }
+  
+  .drawer-content {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/* Reduce animations on low-end devices */
+@media (max-width: 480px) {
+  .ios-button,
+  .ios-card {
+    transition: all 0.15s ease;
+  }
+  
+  .hover\:scale-105:hover {
+    transform: scale(1.02);
+  }
+  
+  .active\:scale-95:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Optimize for battery life */
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation: none;
+  }
+  
+  .animate-pulse {
+    animation: none;
+  }
+  
+  .animate-bounce {
+    animation: none;
+  }
+}
+
+/* ===== SAFE AREA HANDLING ===== */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(env(safe-area-inset-top), 16px);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 16px);
+  }
+  
+  .safe-area-left {
+    padding-left: max(env(safe-area-inset-left), 16px);
+  }
+  
+  .safe-area-right {
+    padding-right: max(env(safe-area-inset-right), 16px);
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .ios-button,
+  .ios-card {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .touch-target {
+    min-height: auto;
+    min-width: auto;
+  }
+  
+  .field-operation-mode .touch-target {
+    min-height: auto;
+    min-width: auto;
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Landscape-specific utilities */
+.landscape-only {
+  display: none;
+}
+
+@media (orientation: landscape) and (max-width: 768px) {
+  .landscape-only {
+    display: block;
+  }
+  
+  .portrait-only {
+    display: none;
+  }
+}
+
+/* ===== ACCESSIBILITY UTILITIES ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.focus-visible:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* ===== FIELD OPERATION UTILITIES ===== */
+.field-gps-active {
+  border-left: 4px solid var(--status-success);
+}
+
+.field-offline {
+  border-left: 4px solid var(--status-warning);
+}
+
+.field-error {
+  border-left: 4px solid var(--status-error);
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY ===== */
+@media (max-width: 480px) {
+  .text-responsive-xs {
+    font-size: 0.75rem;
+  }
+  
+  .text-responsive-sm {
+    font-size: 0.875rem;
+  }
+  
+  .text-responsive-base {
+    font-size: 1rem;
+  }
+  
+  .text-responsive-lg {
+    font-size: 1.125rem;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .text-responsive-xs {
+    font-size: 0.8rem;
+  }
+  
+  .text-responsive-sm {
+    font-size: 0.9rem;
+  }
+  
+  .text-responsive-base {
+    font-size: 1.05rem;
+  }
+  
+  .text-responsive-lg {
+    font-size: 1.2rem;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.35rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .text-responsive-xs {
+    font-size: 0.875rem;
+  }
+  
+  .text-responsive-sm {
+    font-size: 1rem;
+  }
+  
+  .text-responsive-base {
+    font-size: 1.125rem;
+  }
+  
+  .text-responsive-lg {
+    font-size: 1.25rem;
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.5rem;
+  }
+}

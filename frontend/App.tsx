@@ -195,12 +195,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-surface-bg">
-      {/* Navigation Bar */}
+      {/* Enhanced Navigation Bar */}
       <NavigationBar
         title={getSectionTitle()}
         showBackButton={canGoBack}
         onBack={handleBack}
         rightContent={renderRightContent()}
+        showConnectionStatus={true}
+        isOnline={isOnline}
+        pendingSync={pendingSync}
+        fieldMode={true}
         className="pt-safe"
       />
 
@@ -225,7 +229,7 @@ export default function App() {
         />
       )}
       
-      {/* Tab Bar */}
+      {/* Enhanced Tab Bar */}
       <TabBar
         items={tabItems}
         activeTab={activeSection}
@@ -233,6 +237,7 @@ export default function App() {
         visible={tabBarVisible}
         showIndicator={true}
         ariaLabel="Основные разделы"
+        fieldMode={true}
         className="pb-safe"
       />
     </div>

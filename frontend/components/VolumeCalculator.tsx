@@ -8,6 +8,8 @@ import { MeasurementInput } from './ui/measurement-input';
 import { FormValidation } from './ui/form-validation';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
+import { useFieldOperations } from './ui/use-mobile';
+import { cn } from './ui/utils';
 import { 
   TreePine, 
   FileText, 
@@ -82,6 +84,7 @@ interface GPSCoordinates {
 }
 
 export function VolumeCalculator() {
+  const fieldOps = useFieldOperations();
   const [state, setState] = useState<CalculatorState>({
     currentScreen: 'standard',
     selectedStandard: '',
@@ -360,463 +363,699 @@ export function VolumeCalculator() {
       id: 'GOST-2708-75',
       name: 'ГОСТ 2708-75',
       description: 'Российский стандарт для круглых лесоматериалов',
-      official: true
+      official: true,
+      icon: TreePine
     },
     {
       id: 'GOST-2292-88',
       name: 'ГОСТ 2292-88',
       description: 'Лесоматериалы круглые. Маркировка, сортировка',
-      official: true
+      official: true,
+      icon: FileText
     },
     {
       id: 'ISO-4480',
       name: 'ISO 4480',
       description: 'Международный стандарт измерения древесины',
-      official: false
+      official: false,
+      icon: Info
     },
     {
       id: 'EN-1309',
       name: 'EN 1309',
       description: 'Европейский стандарт круглых лесоматериалов',
-      official: false
+      official: false,
+      icon: Zap
     }
   ];
 
   const transportTypes = [
-    { id: 'truck', name: 'Автомобиль', icon: '🚛' },
-    { id: 'rail', name: 'Железная дорога', icon: '🚂' },
-    { id: 'ship', name: 'Водный транспорт', icon: '🚢' },
-    { id: 'other', name: 'Другое', icon: '📦' }
+    { id: 'truck', name: 'Автомобиль', icon: Truck },
+    { id: 'rail', name: 'Железная дорога', icon: ChevronRight },
+    { id: 'ship', name: 'Водный транспорт', icon: Truck },
+    { id: 'other', name: 'Другое', icon: Info }
   ];
 
-  return (
-    <div className="space-y-6 p-4">
-      {/* Progress Indicator */}
-      <div className="flex items-center justify-center space-x-2 mb-6">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-          state.currentScreen === 'standard' ? 'bg-brand-primary text-brand-on-primary' : 
-          state.currentScreen === 'batch' ? 'bg-brand-primary text-brand-on-primary' : 
-          'bg-surface-border text-surface-on-variant'
-        }`}>
-          1
+  const renderStandardSelection = () => (
+    <div className={cn(
+      "space-y-4",
+      fieldOps.shouldUseCompactLayout && "space-y-3"
+    )}>
+      <div className={cn(
+        "ios-section-header",
+        fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+      )}>
+        Выберите стандарт
+      </div>
+      
+      <div className={cn(
+        "grid gap-3",
+        fieldOps.isMobile ? "grid-cols-1" : "grid-cols-2",
+        fieldOps.isLandscape && "grid-cols-2 gap-2"
+      )}>
+        {standards.map((standard) => (
+          <button
+            key={standard.id}
+            onClick={() => handleStandardChange(standard.id)}
+            className={cn(
+              "ios-card touch-target p-4 text-left transition-all duration-200 hover:scale-105 active:scale-95",
+              state.selectedStandard === standard.id && "ring-2 ring-brand-primary bg-brand-primary/5",
+              fieldOps.shouldUseLargeButtons && "p-5",
+              fieldOps.shouldUseLargerText && "p-4"
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className={cn(
+                "ios-list-item-icon",
+                fieldOps.shouldUseLargeButtons && "w-12 h-12"
+              )}>
+                <standard.icon className={cn(
+                  fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-5 h-5"
+                )} />
+              </div>
+              {state.selectedStandard === standard.id && (
+                <CheckCircle className={cn(
+                  "text-status-success",
+                  fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-5 h-5"
+                )} />
+              )}
+            </div>
+            <div className={cn(
+              "text-field-base font-semibold text-surface-on-surface mb-1",
+              fieldOps.shouldUseLargerText && "text-field-lg"
+            )}>
+              {standard.name}
+            </div>
+            <div className={cn(
+              "text-field-xs text-surface-on-variant",
+              fieldOps.shouldUseLargerText && "text-field-sm"
+            )}>
+              {standard.description}
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderSpeciesSelection = () => (
+    <div className={cn(
+      "space-y-4",
+      fieldOps.shouldUseCompactLayout && "space-y-3"
+    )}>
+      <div className={cn(
+        "ios-section-header",
+        fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+      )}>
+        Выберите породу дерева
+      </div>
+      
+      <SpeciesSelector
+        value={state.selectedSpecies}
+        onValueChange={handleSpeciesChange}
+        placeholder="Выберите породу дерева..."
+        showSearch={true}
+        showCategoryFilter={true}
+        showScientificName={true}
+        showDensity={true}
+        fieldMode={true}
+        compact={fieldOps.shouldUseCompactLayout}
+        largeButtons={fieldOps.shouldUseLargeButtons}
+        largerText={fieldOps.shouldUseLargerText}
+      />
+    </div>
+  );
+
+  const renderMeasurementInput = () => (
+    <div className={cn(
+      "space-y-4",
+      fieldOps.shouldUseCompactLayout && "space-y-3"
+    )}>
+      <div className={cn(
+        "ios-section-header",
+        fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+      )}>
+        Измерения
+      </div>
+      
+      <div className="ios-list space-y-2">
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <Ruler className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-4 h-4"
+              )} />
+            </div>
+            <div className="ios-list-item-text">
+              <div className={cn(
+                "ios-list-item-title",
+                fieldOps.shouldUseLargerText && "text-field-base font-medium"
+              )}>
+                Длина ствола
+              </div>
+              <div className={cn(
+                "ios-list-item-subtitle",
+                fieldOps.shouldUseLargerText && "text-field-sm"
+              )}>
+                {state.length ? `${state.length.value} ${state.length.unit}` : 'Не указана'}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => setState(prev => ({ ...prev, currentScreen: 'measurement' }))}
+            className={cn(
+              "ios-button ios-button-secondary touch-target",
+              fieldOps.shouldUseLargeButtons && "ios-button-lg"
+            )}
+          >
+            <span>Изменить</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-          state.currentScreen === 'batch' ? 'bg-brand-primary text-brand-on-primary' : 
-          state.currentScreen === 'calculation' ? 'bg-brand-primary text-brand-on-primary' : 
-          'bg-surface-border text-surface-on-variant'
-        }`}>
-          2
+
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <MapPin className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-4 h-4"
+              )} />
+            </div>
+            <div className="ios-list-item-text">
+              <div className={cn(
+                "ios-list-item-title",
+                fieldOps.shouldUseLargerText && "text-field-base font-medium"
+              )}>
+                Местоположение
+              </div>
+              <div className={cn(
+                "ios-list-item-subtitle",
+                fieldOps.shouldUseLargerText && "text-field-sm"
+              )}>
+                {state.location ? `${state.location.lat.toFixed(6)}, ${state.location.lng.toFixed(6)}` : 'Не указано'}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => setState(prev => ({ ...prev, currentScreen: 'location' }))}
+            className={cn(
+              "ios-button ios-button-secondary touch-target",
+              fieldOps.shouldUseLargeButtons && "ios-button-lg"
+            )}
+          >
+            <span>Указать</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-          state.currentScreen === 'calculation' ? 'bg-brand-primary text-brand-on-primary' : 
-          'bg-surface-border text-surface-on-variant'
-        }`}>
-          3
+      </div>
+    </div>
+  );
+
+  const renderDiameterInput = () => (
+    <div className={cn(
+      "space-y-4",
+      fieldOps.shouldUseCompactLayout && "space-y-3"
+    )}>
+      <div className={cn(
+        "ios-section-header",
+        fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+      )}>
+        Диаметр ствола
+      </div>
+      
+      <div className="ios-card p-4">
+        <div className={cn(
+          "grid gap-3",
+          fieldOps.isMobile ? "grid-cols-1" : "grid-cols-2",
+          fieldOps.isLandscape && "grid-cols-2 gap-2"
+        )}>
+          <NumericInput
+            label="Диаметр (см)"
+            value={state.currentDiameter}
+            onChange={handleCurrentDiameterChange}
+            placeholder="0.0"
+            precision={1}
+            min={0}
+            max={200}
+            fieldMode={true}
+            compact={fieldOps.shouldUseCompactLayout}
+            largeButtons={fieldOps.shouldUseLargeButtons}
+            largerText={fieldOps.shouldUseLargerText}
+          />
+          
+          <div className="flex items-end gap-2">
+            <button
+              onClick={() => {
+                if (state.currentDiameter && parseFloat(state.currentDiameter) > 0) {
+                  const diameter = parseFloat(state.currentDiameter);
+                  const volume = calculateVolume(diameter, state.length?.value || 0);
+                  const newEntry: DiameterEntry = {
+                    id: Date.now().toString(),
+                    diameter,
+                    volume
+                  };
+                  handleDiameterEntriesChange([...state.diameterEntries, newEntry]);
+                  handleCurrentDiameterChange('');
+                }
+              }}
+              disabled={!state.currentDiameter || parseFloat(state.currentDiameter) <= 0}
+              className={cn(
+                "ios-button ios-button-primary touch-target flex-1",
+                fieldOps.shouldUseLargeButtons && "ios-button-lg"
+              )}
+            >
+              <Plus className="w-4 h-4" />
+              <span>Добавить</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Standard and Species Selection Screen */}
-      {state.currentScreen === 'standard' && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Выбор стандарта и породы
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Standard Selection */}
-              <div className="space-y-3">
-                <label className="text-body font-medium text-surface-on-surface">
-                  Стандарт измерения
-                </label>
-                <div className="grid grid-cols-1 gap-3">
-                  {standards.map((standard) => (
-                    <Button
-                      key={standard.id}
-                      variant={state.selectedStandard === standard.id ? "default" : "outline"}
-                      className="justify-start h-auto p-4"
-                      onClick={() => handleStandardChange(standard.id)}
-                    >
-                      <div className="flex items-center gap-3 w-full">
-                        <div className="flex items-center gap-2">
-                          {standard.official && <Star className="w-4 h-4 text-brand-primary" />}
-                          <div className="text-left">
-                            <div className="text-body font-medium">{standard.name}</div>
-                            <div className="text-caption text-surface-on-variant">{standard.description}</div>
-                          </div>
-                        </div>
-                        {state.selectedStandard === standard.id && (
-                          <CheckCircle className="w-5 h-5 ml-auto" />
-                        )}
-                      </div>
-                    </Button>
-                  ))}
+      {state.diameterEntries.length > 0 && (
+        <div className="ios-card p-4">
+          <div className={cn(
+            "text-field-base font-semibold mb-3",
+            fieldOps.shouldUseLargerText && "text-field-lg"
+          )}>
+            Измерения ({state.diameterEntries.length})
+          </div>
+          
+          <div className="space-y-2">
+            {state.diameterEntries.map((entry, index) => (
+              <div key={entry.id} className="flex items-center justify-between p-2 bg-surface-card rounded-md">
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    "text-field-sm font-medium",
+                    fieldOps.shouldUseLargerText && "text-field-base"
+                  )}>
+                    {index + 1}.
+                  </span>
+                  <span className={cn(
+                    "text-field-base",
+                    fieldOps.shouldUseLargerText && "text-field-lg"
+                  )}>
+                    {entry.diameter} см
+                  </span>
+                  <span className={cn(
+                    "text-field-sm text-surface-on-variant",
+                    fieldOps.shouldUseLargerText && "text-field-base"
+                  )}>
+                    → {entry.volume.toFixed(3)} м³
+                  </span>
                 </div>
-                {errors.standard && (
-                  <div className="text-caption text-state-error">{errors.standard}</div>
-                )}
+                <button
+                  onClick={() => {
+                    const newEntries = state.diameterEntries.filter(e => e.id !== entry.id);
+                    handleDiameterEntriesChange(newEntries);
+                  }}
+                  className={cn(
+                    "text-status-error hover:text-status-error/80 touch-target p-1",
+                    fieldOps.shouldUseLargeButtons && "p-2"
+                  )}
+                >
+                  <Minus className={cn(
+                    "w-4 h-4",
+                    fieldOps.shouldUseLargeButtons && "w-5 h-5"
+                  )} />
+                </button>
               </div>
-
-              <Separator />
-
-              {/* Species Selection */}
-              <div className="space-y-3">
-                <label className="text-body font-medium text-surface-on-surface">
-                  Порода дерева
-                </label>
-                <SpeciesSelector
-                  value={state.selectedSpecies}
-                  onValueChange={handleSpeciesChange}
-                  placeholder="Выберите породу дерева..."
-                  showSearch={true}
-                  showCategoryFilter={true}
-                  showScientificName={true}
-                  showDensity={true}
-                />
-                {errors.species && (
-                  <div className="text-caption text-state-error">{errors.species}</div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-end">
-            <Button 
-              onClick={() => navigateToScreen('batch')}
-              disabled={!state.selectedStandard || !state.selectedSpecies}
-              className="min-w-[120px]"
-            >
-              Далее
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
+            ))}
+          </div>
+          
+          <div className="mt-3 pt-3 border-t border-surface-border">
+            <div className="flex items-center justify-between">
+              <span className={cn(
+                "text-field-base font-semibold",
+                fieldOps.shouldUseLargerText && "text-field-lg"
+              )}>
+                Общий объём:
+              </span>
+              <span className={cn(
+                "text-field-lg font-bold text-brand-primary",
+                fieldOps.shouldUseLargerText && "text-field-xl"
+              )}>
+                {calculateTotalVolume().toFixed(3)} м³
+              </span>
+            </div>
           </div>
         </div>
       )}
+    </div>
+  );
 
-      {/* Batch Configuration Screen */}
-      {state.currentScreen === 'batch' && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5" />
-                Настройка партии
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Length Input */}
-              <div className="space-y-3">
-                <label className="text-body font-medium text-surface-on-surface">
-                  Длина бревна
-                </label>
-                <MeasurementInput
-                  value={state.length}
-                  onChange={handleLengthChange}
-                  category="length"
-                  defaultUnit="m"
-                  placeholder="Введите длину бревна"
-                  min={0.1}
-                  max={50}
-                  step={0.1}
-                  showValidation={true}
-                  showConversion={true}
-                  allowUnitChange={true}
-                />
-                {errors.length && (
-                  <div className="text-caption text-state-error">{errors.length}</div>
-                )}
+  const renderTransportInfo = () => (
+    <div className={cn(
+      "space-y-4",
+      fieldOps.shouldUseCompactLayout && "space-y-3"
+    )}>
+      <div className={cn(
+        "ios-section-header",
+        fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+      )}>
+        Транспортная информация
+      </div>
+      
+      <div className="ios-list space-y-2">
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <Truck className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-4 h-4"
+              )} />
+            </div>
+            <div className="ios-list-item-text">
+              <div className={cn(
+                "ios-list-item-title",
+                fieldOps.shouldUseLargerText && "text-field-base font-medium"
+              )}>
+                Тип транспорта
               </div>
-
-              <Separator />
-
-              {/* GPS Location */}
-              <div className="space-y-3">
-                <label className="text-body font-medium text-surface-on-surface">
-                  Местоположение
-                </label>
-                <GPSInput
-                  value={state.location}
-                  onChange={handleLocationChange}
-                  placeholder="Определить GPS координаты"
-                  showAccuracy={true}
-                  showTimestamp={true}
-                  allowManualEntry={true}
-                  precision={6}
-                />
+              <div className={cn(
+                "ios-list-item-subtitle",
+                fieldOps.shouldUseLargerText && "text-field-sm"
+              )}>
+                {state.transport.type}
               </div>
-
-              <Separator />
-
-              {/* Transport Information */}
-              <div className="space-y-4">
-                <label className="text-body font-medium text-surface-on-surface">
-                  Транспорт
-                </label>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  {transportTypes.map((type) => (
-                    <Button
-                      key={type.id}
-                      variant={state.transport.type === type.id ? "default" : "outline"}
-                      className="justify-start h-auto p-3"
-                      onClick={() => handleTransportChange('type', type.id)}
-                    >
-                      <span className="mr-2">{type.icon}</span>
-                      {type.name}
-                    </Button>
-                  ))}
-                </div>
-
-                <div className="space-y-3">
-                  <NumericInput
-                    label="Номер транспорта"
-                    value={state.transport.plateNumber}
-                    onChange={(value) => handleTransportChange('plateNumber', value)}
-                    placeholder="А123БВ77"
-                    showValidation={true}
-                    required={true}
-                  />
-                  {errors.plateNumber && (
-                    <div className="text-caption text-state-error">{errors.plateNumber}</div>
-                  )}
-
-                  <NumericInput
-                    label="Имя водителя"
-                    value={state.transport.driverName}
-                    onChange={(value) => handleTransportChange('driverName', value)}
-                    placeholder="Иванов И.И."
-                    showValidation={false}
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Batch Information */}
-              <div className="space-y-4">
-                <label className="text-body font-medium text-surface-on-surface">
-                  Информация о партии
-                </label>
-                
-                <div className="space-y-3">
-                  <NumericInput
-                    label="Номер партии"
-                    value={state.batch.number}
-                    onChange={(value) => handleBatchChange('number', value)}
-                    placeholder="20241201-ABC123"
-                    showValidation={true}
-                    required={true}
-                  />
-
-                  <NumericInput
-                    label="Дата"
-                    value={state.batch.date}
-                    onChange={(value) => handleBatchChange('date', value)}
-                    placeholder="2024-12-01"
-                    showValidation={true}
-                    required={true}
-                  />
-
-                  <NumericInput
-                    label="Оператор"
-                    value={state.batch.operator}
-                    onChange={(value) => handleBatchChange('operator', value)}
-                    placeholder="Иванов И.И."
-                    showValidation={true}
-                    required={true}
-                  />
-                  {errors.operator && (
-                    <div className="text-caption text-state-error">{errors.operator}</div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-between">
-            <Button 
-              variant="outline"
-              onClick={() => navigateToScreen('standard')}
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Назад
-            </Button>
-            <Button 
-              onClick={() => navigateToScreen('calculation')}
-              disabled={!state.length || !state.batch.operator || !state.transport.plateNumber}
-              className="min-w-[120px]"
-            >
-              Далее
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Diameter Calculation Screen */}
-      {state.currentScreen === 'calculation' && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CalculatorIcon className="w-5 h-5" />
-                Измерение диаметров
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Current Settings Summary */}
-              <div className="p-4 rounded-lg bg-surface-bg-variant">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <div className="text-surface-on-variant">Стандарт:</div>
-                    <div className="font-medium">{standards.find(s => s.id === state.selectedStandard)?.name}</div>
-                  </div>
-                  <div>
-                    <div className="text-surface-on-variant">Порода:</div>
-                    <div className="font-medium">{state.selectedSpecies}</div>
-                  </div>
-                  <div>
-                    <div className="text-surface-on-variant">Длина:</div>
-                    <div className="font-medium">{state.length?.value} {state.length?.unit}</div>
-                  </div>
-                  <div>
-                    <div className="text-surface-on-variant">Партия:</div>
-                    <div className="font-medium">{state.batch.number}</div>
-                  </div>
-                </div>
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <Hash className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-4 h-4"
+              )} />
+            </div>
+            <div className="ios-list-item-text">
+              <div className={cn(
+                "ios-list-item-title",
+                fieldOps.shouldUseLargerText && "text-field-base font-medium"
+              )}>
+                Номер транспорта
               </div>
-
-              {/* Diameter Input */}
-              <div className="space-y-3">
-                <label className="text-body font-medium text-surface-on-surface">
-                  Диаметр бревна (см)
-                </label>
-                <NumericInput
-                  value={state.currentDiameter}
-                  onChange={handleCurrentDiameterChange}
-                  placeholder="Введите диаметр"
-                  min={10}
-                  max={100}
-                  step={0.1}
-                  precision={1}
-                  unit="см"
-                  showValidation={true}
-                  allowDecimal={true}
-                />
+              <div className={cn(
+                "ios-list-item-subtitle",
+                fieldOps.shouldUseLargerText && "text-field-sm"
+              )}>
+                {state.transport.plateNumber || 'Не указан'}
               </div>
-
-              {/* Preset Diameters */}
-              <div className="space-y-3">
-                <label className="text-body font-medium text-surface-on-surface">
-                  Быстрый выбор диаметров
-                </label>
-                <div className="grid grid-cols-5 gap-2">
-                  {presetDiameters.map((diameter) => (
-                    <Button
-                      key={diameter}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleCurrentDiameterChange(diameter.toString())}
-                      className="h-8"
-                    >
-                      {diameter}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Add Diameter Button */}
-              <Button
-                onClick={() => {
-                  if (state.currentDiameter && parseFloat(state.currentDiameter) > 0) {
-                    const diameter = parseFloat(state.currentDiameter);
-                    const volume = calculateVolume(diameter, state.length?.value || 0);
-                    const newEntry: DiameterEntry = {
-                      id: Date.now().toString(),
-                      diameter,
-                      volume
-                    };
-                    handleDiameterEntriesChange([...state.diameterEntries, newEntry]);
-                    handleCurrentDiameterChange('');
-                  }
-                }}
-                disabled={!state.currentDiameter || parseFloat(state.currentDiameter) <= 0}
-                className="w-full"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Добавить диаметр
-              </Button>
-
-              {/* Diameter Entries List */}
-              {state.diameterEntries.length > 0 && (
-                <div className="space-y-3">
-                  <label className="text-body font-medium text-surface-on-surface">
-                    Измеренные диаметры ({state.diameterEntries.length})
-                  </label>
-                  <div className="space-y-2">
-                    {state.diameterEntries.map((entry, index) => (
-                      <div key={entry.id} className="flex items-center justify-between p-3 rounded-lg bg-surface-bg-variant">
-                        <div className="flex items-center gap-3">
-                          <Badge variant="secondary">{index + 1}</Badge>
-                          <div>
-                            <div className="text-body font-medium">{entry.diameter} см</div>
-                            <div className="text-caption text-surface-on-variant">
-                              Объём: {entry.volume.toFixed(3)} м³
-                            </div>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            const newEntries = state.diameterEntries.filter(e => e.id !== entry.id);
-                            handleDiameterEntriesChange(newEntries);
-                          }}
-                        >
-                          <Minus className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Total Volume */}
-              {state.diameterEntries.length > 0 && (
-                <div className="p-4 rounded-lg bg-brand-primary/10 border border-brand-primary/20">
-                  <div className="text-center">
-                    <div className="text-caption text-surface-on-variant">Общий объём партии</div>
-                    <div className="text-title font-title text-brand-primary">
-                      {state.diameterEntries.reduce((sum, entry) => sum + entry.volume, 0).toFixed(3)} м³
-                    </div>
-                    <div className="text-caption text-surface-on-variant">
-                      {state.diameterEntries.length} брёвен
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-between">
-            <Button 
-              variant="outline"
-              onClick={() => navigateToScreen('batch')}
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Назад
-            </Button>
-            <Button 
-              onClick={handleSaveBatch}
-              disabled={state.diameterEntries.length === 0}
-              className="min-w-[120px]"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Сохранить партию
-            </Button>
+            </div>
           </div>
+        </div>
+
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <User className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-4 h-4"
+              )} />
+            </div>
+            <div className="ios-list-item-text">
+              <div className={cn(
+                "ios-list-item-title",
+                fieldOps.shouldUseLargerText && "text-field-base font-medium"
+              )}>
+                Водитель
+              </div>
+              <div className={cn(
+                "ios-list-item-subtitle",
+                fieldOps.shouldUseLargerText && "text-field-sm"
+              )}>
+                {state.transport.driverName || 'Не указан'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBatchInfo = () => (
+    <div className={cn(
+      "space-y-4",
+      fieldOps.shouldUseCompactLayout && "space-y-3"
+    )}>
+      <div className={cn(
+        "ios-section-header",
+        fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+      )}>
+        Информация о партии
+      </div>
+      
+      <div className="ios-list space-y-2">
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <Hash className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-4 h-4"
+              )} />
+            </div>
+            <div className="ios-list-item-text">
+              <div className={cn(
+                "ios-list-item-title",
+                fieldOps.shouldUseLargerText && "text-field-base font-medium"
+              )}>
+                Номер партии
+              </div>
+              <div className={cn(
+                "ios-list-item-subtitle",
+                fieldOps.shouldUseLargerText && "text-field-sm"
+              )}>
+                {state.batch.number || 'Не указан'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <Calendar className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-4 h-4"
+              )} />
+            </div>
+            <div className="ios-list-item-text">
+              <div className={cn(
+                "ios-list-item-title",
+                fieldOps.shouldUseLargerText && "text-field-base font-medium"
+              )}>
+                Дата
+              </div>
+              <div className={cn(
+                "ios-list-item-subtitle",
+                fieldOps.shouldUseLargerText && "text-field-sm"
+              )}>
+                {state.batch.date}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="ios-list-item">
+          <div className="ios-list-item-content">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <User className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-4 h-4"
+              )} />
+            </div>
+            <div className="ios-list-item-text">
+              <div className={cn(
+                "ios-list-item-title",
+                fieldOps.shouldUseLargerText && "text-field-base font-medium"
+              )}>
+                Оператор
+              </div>
+              <div className={cn(
+                "ios-list-item-subtitle",
+                fieldOps.shouldUseLargerText && "text-field-sm"
+              )}>
+                {state.batch.operator || 'Не указан'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const calculateTotalVolume = () => {
+    return state.diameterEntries.reduce((sum, entry) => sum + entry.volume, 0);
+  };
+
+  const getProgressPercentage = () => {
+    if (state.currentScreen === 'standard') return 25;
+    if (state.currentScreen === 'species') return 50;
+    if (state.currentScreen === 'measurement') return 75;
+    if (state.currentScreen === 'diameter') return 90;
+    return 100;
+  };
+
+  const canGoBack = () => {
+    return state.currentScreen !== 'standard';
+  };
+
+  const handlePrevious = () => {
+    if (state.currentScreen === 'standard') return;
+    if (state.currentScreen === 'species') {
+      setState(prev => ({ ...prev, currentScreen: 'standard' }));
+    } else if (state.currentScreen === 'measurement') {
+      setState(prev => ({ ...prev, currentScreen: 'species' }));
+    } else if (state.currentScreen === 'diameter') {
+      setState(prev => ({ ...prev, currentScreen: 'measurement' }));
+    }
+  };
+
+  const canProceed = () => {
+    if (state.currentScreen === 'standard') return state.selectedStandard && state.selectedSpecies;
+    if (state.currentScreen === 'species') return state.selectedSpecies;
+    if (state.currentScreen === 'measurement') return state.length && state.location;
+    if (state.currentScreen === 'diameter') return state.currentDiameter && parseFloat(state.currentDiameter) > 0;
+    if (state.currentScreen === 'transport') return state.transport.plateNumber;
+    if (state.currentScreen === 'batch') return state.batch.operator && state.batch.number && state.batch.date;
+    return true;
+  };
+
+  const getNextButtonText = () => {
+    if (state.currentScreen === 'standard') return 'Далее';
+    if (state.currentScreen === 'species') return 'Далее';
+    if (state.currentScreen === 'measurement') return 'Далее';
+    if (state.currentScreen === 'diameter') return 'Далее';
+    if (state.currentScreen === 'transport') return 'Далее';
+    if (state.currentScreen === 'batch') return 'Сохранить партию';
+    return 'Готово';
+  };
+
+  const handleNext = () => {
+    if (state.currentScreen === 'standard') {
+      if (!state.selectedStandard || !state.selectedSpecies) return;
+      setState(prev => ({ ...prev, currentScreen: 'species' }));
+    } else if (state.currentScreen === 'species') {
+      setState(prev => ({ ...prev, currentScreen: 'measurement' }));
+    } else if (state.currentScreen === 'measurement') {
+      if (!state.length || !state.location) return;
+      setState(prev => ({ ...prev, currentScreen: 'diameter' }));
+    } else if (state.currentScreen === 'diameter') {
+      if (state.currentDiameter && parseFloat(state.currentDiameter) <= 0) return;
+      setState(prev => ({ ...prev, currentScreen: 'transport' }));
+    } else if (state.currentScreen === 'transport') {
+      if (!state.transport.plateNumber) return;
+      setState(prev => ({ ...prev, currentScreen: 'batch' }));
+    } else if (state.currentScreen === 'batch') {
+      if (state.diameterEntries.length === 0) {
+        alert('Добавьте диаметры для сохранения');
+        return;
+      }
+      handleSaveBatch();
+    }
+  };
+
+  return (
+    <div className={cn(
+      "space-y-6 pb-6",
+      fieldOps.shouldUseCompactLayout && "space-y-4",
+      fieldOps.isLandscape && "space-y-3"
+    )}>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => setState(prev => ({ ...prev, currentScreen: 'standard' }))}
+          className={cn(
+            "ios-button ios-button-secondary touch-target",
+            fieldOps.shouldUseLargeButtons && "ios-button-lg"
+          )}
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Назад</span>
+        </button>
+        <div className={cn(
+          "text-field-lg font-semibold",
+          fieldOps.shouldUseLargerText && "text-field-xl"
+        )}>
+          Расчёт объёма
+        </div>
+      </div>
+
+      {/* Progress Indicator */}
+      <div className="ios-card p-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className={cn(
+            "text-field-sm font-medium",
+            fieldOps.shouldUseLargerText && "text-field-base"
+          )}>
+            Прогресс
+          </span>
+          <span className={cn(
+            "text-field-sm text-surface-on-variant",
+            fieldOps.shouldUseLargerText && "text-field-base"
+          )}>
+            {getProgressPercentage()}%
+          </span>
+        </div>
+        <div className="w-full bg-surface-border rounded-full h-2">
+          <div 
+            className="bg-brand-primary h-2 rounded-full transition-all duration-300"
+            style={{ width: `${getProgressPercentage()}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Content based on current screen */}
+      {state.currentScreen === 'standard' && renderStandardSelection()}
+      {state.currentScreen === 'species' && renderSpeciesSelection()}
+      {state.currentScreen === 'measurement' && renderMeasurementInput()}
+      {state.currentScreen === 'diameter' && renderDiameterInput()}
+      {state.currentScreen === 'transport' && renderTransportInfo()}
+      {state.currentScreen === 'batch' && renderBatchInfo()}
+      {state.currentScreen === 'summary' && renderSummary()}
+
+      {/* Navigation */}
+      {state.currentScreen !== 'summary' && (
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrevious}
+            disabled={!canGoBack()}
+            className={cn(
+              "ios-button ios-button-secondary touch-target flex-1",
+              fieldOps.shouldUseLargeButtons && "ios-button-lg"
+            )}
+          >
+            <span>Назад</span>
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={!canProceed()}
+            className={cn(
+              "ios-button ios-button-primary touch-target flex-1",
+              fieldOps.shouldUseLargeButtons && "ios-button-lg"
+            )}
+          >
+            <span>{getNextButtonText()}</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       )}
     </div>

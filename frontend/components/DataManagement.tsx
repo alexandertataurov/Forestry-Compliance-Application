@@ -6,6 +6,8 @@ import { ProgressIndicator } from './ui/progress-indicator';
 import { StatusBadge } from './ui/status-badge';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
+import { useFieldOperations } from './ui/use-mobile';
+import { cn } from './ui/utils';
 import { 
   Database, 
   Download, 
@@ -22,7 +24,8 @@ import {
   AlertTriangle,
   FileText,
   Settings,
-  RefreshCw
+  RefreshCw,
+  User
 } from 'lucide-react';
 
 interface CalculationData {
@@ -54,6 +57,7 @@ interface CalculationData {
 }
 
 export function DataManagement() {
+  const fieldOps = useFieldOperations();
   const [calculations, setCalculations] = useState<CalculationData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSpecies, setFilterSpecies] = useState('');
@@ -145,23 +149,35 @@ export function DataManagement() {
     }, 2000);
   };
 
+  const handleDeleteCalculation = (id: number) => {
+    if (confirm('Удалить эту запись расчёта?')) {
+      const updatedCalculations = calculations.filter(calc => calc.id !== id);
+      setCalculations(updatedCalculations);
+      localStorage.setItem('forestry-calculations', JSON.stringify(updatedCalculations));
+    }
+  };
+
   // Filter and sort calculations
   const filteredCalculations = calculations
     .filter(calc => {
-      const matchesSearch = calc.species.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           calc.batch.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           calc.transport.plateNumber.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesSpecies = !filterSpecies || calc.species === filterSpecies;
+      const matchesSearch = searchTerm === '' || 
+        calc.calculationId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        calc.species.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        calc.batch.operator.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesSpecies = filterSpecies === '' || calc.species === filterSpecies;
       const matchesSync = !showSyncOnly || !calc.synced;
+      
       return matchesSearch && matchesSpecies && matchesSync;
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case 'species':
-          return a.species.localeCompare(b.species);
         case 'volume':
           return b.volume - a.volume;
-        case 'date':
+        case 'species':
+          return a.species.localeCompare(b.species);
+        case 'operator':
+          return a.batch.operator.localeCompare(b.batch.operator);
         default:
           return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
       }
@@ -252,236 +268,544 @@ export function DataManagement() {
     }
   ];
 
-  return (
-    <div className="space-y-6 p-4">
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center">
-                <Database className="w-5 h-5 text-brand-on-primary" />
-              </div>
-              <div>
-                <div className="text-caption text-surface-on-variant">Всего записей</div>
-                <div className="text-title font-title text-surface-on-surface">{calculations.length}</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-state-success flex items-center justify-center">
-                <TreePine className="w-5 h-5 text-state-on-success" />
-              </div>
-              <div>
-                <div className="text-caption text-surface-on-variant">Общий объём</div>
-                <div className="text-title font-title text-surface-on-surface">{totalVolume.toFixed(3)} м³</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-state-warning flex items-center justify-center">
-                <Clock className="w-5 h-5 text-state-on-warning" />
-              </div>
-              <div>
-                <div className="text-caption text-surface-on-variant">Ожидает синхронизации</div>
-                <div className="text-title font-title text-surface-on-surface">{unsyncedCount}</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-brand-secondary flex items-center justify-center">
-                <FileText className="w-5 h-5 text-brand-on-secondary" />
-              </div>
-              <div>
-                <div className="text-caption text-surface-on-variant">Породы</div>
-                <div className="text-title font-title text-surface-on-surface">{speciesList.length}</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+  const renderSearchAndFilters = () => (
+    <div className={cn(
+      "space-y-4",
+      fieldOps.shouldUseCompactLayout && "space-y-3"
+    )}>
+      {/* Search Bar */}
+      <div className="ios-card p-4">
+        <div className="relative">
+          <Search className={cn(
+            "absolute left-3 top-1/2 transform -translate-y-1/2 text-surface-on-variant",
+            fieldOps.shouldUseLargeButtons ? "w-5 h-5" : "w-4 h-4"
+          )} />
+          <input
+            type="text"
+            placeholder="Поиск по ID, породе, оператору..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={cn(
+              "w-full pl-10 pr-4 py-3 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface placeholder-surface-on-variant focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary",
+              fieldOps.shouldUseLargeButtons && "py-4 text-field-base",
+              fieldOps.shouldUseLargerText && "text-field-lg"
+            )}
+          />
+        </div>
       </div>
 
-      {/* Sync Progress */}
-      {calculations.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <RefreshCw className="w-5 h-5" />
-              Прогресс синхронизации
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProgressIndicator
-              value={syncProgress}
-              max={100}
-              label={`${calculations.length - unsyncedCount} из ${calculations.length} записей синхронизировано`}
-              showPercentage={true}
-              variant="default"
-              size="default"
-            />
-            {unsyncedCount > 0 && (
-              <div className="mt-4">
-                <Button onClick={handleSync} disabled={isLoading} className="w-full">
-                  {isLoading ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      Синхронизация...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-4 h-4 mr-2" />
-                      Синхронизировать все
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Filters and Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="w-5 h-5" />
-            Фильтры и действия
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label className="text-body font-medium text-surface-on-surface">Поиск</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-surface-on-variant" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Поиск по партии, породе, транспорту..."
-                  className="w-full pl-10 pr-4 py-2 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface placeholder:text-surface-on-variant focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-body font-medium text-surface-on-surface">Порода</label>
-              <select
-                value={filterSpecies}
-                onChange={(e) => setFilterSpecies(e.target.value)}
-                className="w-full px-4 py-2 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
-              >
-                <option value="">Все породы</option>
-                {speciesList.map(species => (
-                  <option key={species} value={species}>{species}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-body font-medium text-surface-on-surface">Сортировка</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-4 py-2 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
-              >
-                <option value="date">По дате</option>
-                <option value="species">По породе</option>
-                <option value="volume">По объёму</option>
-              </select>
-            </div>
+      {/* Filters */}
+      <div className={cn(
+        "grid gap-3",
+        fieldOps.isMobile ? "grid-cols-1" : "grid-cols-2",
+        fieldOps.isLandscape && "grid-cols-3 gap-2"
+      )}>
+        <div className="ios-card p-4">
+          <div className={cn(
+            "text-field-sm font-medium mb-2",
+            fieldOps.shouldUseLargerText && "text-field-base"
+          )}>
+            Порода дерева
           </div>
+          <select
+            value={filterSpecies}
+            onChange={(e) => setFilterSpecies(e.target.value)}
+            className={cn(
+              "w-full p-3 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary",
+              fieldOps.shouldUseLargeButtons && "py-4 text-field-base",
+              fieldOps.shouldUseLargerText && "text-field-lg"
+            )}
+          >
+            <option value="">Все породы</option>
+            <option value="Сосна">Сосна</option>
+            <option value="Ель">Ель</option>
+            <option value="Берёза">Берёза</option>
+            <option value="Дуб">Дуб</option>
+            <option value="Осина">Осина</option>
+          </select>
+        </div>
 
-          <div className="flex items-center gap-4">
+        <div className="ios-card p-4">
+          <div className={cn(
+            "text-field-sm font-medium mb-2",
+            fieldOps.shouldUseLargerText && "text-field-base"
+          )}>
+            Сортировка
+          </div>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className={cn(
+              "w-full p-3 border border-surface-border rounded-lg bg-surface-bg text-surface-on-surface focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary",
+              fieldOps.shouldUseLargeButtons && "py-4 text-field-base",
+              fieldOps.shouldUseLargerText && "text-field-lg"
+            )}
+          >
+            <option value="date">По дате</option>
+            <option value="volume">По объёму</option>
+            <option value="species">По породе</option>
+            <option value="operator">По оператору</option>
+          </select>
+        </div>
+
+        {fieldOps.isLandscape && (
+          <div className="ios-card p-4">
+            <div className={cn(
+              "text-field-sm font-medium mb-2",
+              fieldOps.shouldUseLargerText && "text-field-base"
+            )}>
+              Статус синхронизации
+            </div>
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={showSyncOnly}
                 onChange={(e) => setShowSyncOnly(e.target.checked)}
-                className="w-4 h-4 text-brand-primary border-surface-border rounded focus:ring-brand-primary/20"
+                className={cn(
+                  "w-4 h-4 text-brand-primary border-surface-border rounded focus:ring-brand-primary/20",
+                  fieldOps.shouldUseLargeButtons && "w-5 h-5"
+                )}
               />
-              <span className="text-body text-surface-on-surface">Только несинхронизированные</span>
+              <span className={cn(
+                "text-field-sm",
+                fieldOps.shouldUseLargerText && "text-field-base"
+              )}>
+                Только несинхронизированные
+              </span>
             </label>
           </div>
+        )}
+      </div>
 
-          <Separator />
+      {/* Sync Filter for Mobile */}
+      {!fieldOps.isLandscape && (
+        <div className="ios-card p-4">
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={showSyncOnly}
+              onChange={(e) => setShowSyncOnly(e.target.checked)}
+              className={cn(
+                "w-5 h-5 text-brand-primary border-surface-border rounded focus:ring-brand-primary/20",
+                fieldOps.shouldUseLargeButtons && "w-6 h-6"
+              )}
+            />
+            <span className={cn(
+              "text-field-base font-medium",
+              fieldOps.shouldUseLargerText && "text-field-lg"
+            )}>
+              Показать только несинхронизированные записи
+            </span>
+          </label>
+        </div>
+      )}
+    </div>
+  );
 
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={handleExport} variant="outline">
-              <Download className="w-4 h-4 mr-2" />
-              Экспорт данных
-            </Button>
-            
-            <Button variant="outline" asChild>
-              <label>
-                <Upload className="w-4 h-4 mr-2" />
-                Импорт данных
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={handleImport}
-                  className="hidden"
-                />
-              </label>
-            </Button>
+  const renderStatistics = () => {
+    const totalVolume = calculations.reduce((sum, calc) => sum + calc.volume, 0);
+    const syncedCount = calculations.filter(calc => calc.synced).length;
+    const pendingCount = calculations.length - syncedCount;
+    const uniqueSpecies = new Set(calculations.map(calc => calc.species)).size;
 
-            <Button onClick={handleClearAll} variant="destructive">
-              <Trash2 className="w-4 h-4 mr-2" />
-              Очистить все
-            </Button>
+    return (
+      <div className={cn(
+        "space-y-4",
+        fieldOps.shouldUseCompactLayout && "space-y-3"
+      )}>
+        <div className={cn(
+          "ios-section-header",
+          fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+        )}>
+          Статистика
+        </div>
+        
+        <div className={cn(
+          "grid gap-3",
+          fieldOps.isMobile ? "grid-cols-2" : "grid-cols-4",
+          fieldOps.isLandscape && "grid-cols-4 gap-2"
+        )}>
+          <div className="ios-card p-4 text-center">
+            <div className={cn(
+              "text-field-lg font-bold text-brand-primary mb-1",
+              fieldOps.shouldUseLargerText && "text-field-xl"
+            )}>
+              {calculations.length}
+            </div>
+            <div className={cn(
+              "text-field-xs text-surface-on-variant",
+              fieldOps.shouldUseLargerText && "text-field-sm"
+            )}>
+              Всего записей
+            </div>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="ios-card p-4 text-center">
+            <div className={cn(
+              "text-field-lg font-bold text-status-success mb-1",
+              fieldOps.shouldUseLargerText && "text-field-xl"
+            )}>
+              {totalVolume.toFixed(1)}
+            </div>
+            <div className={cn(
+              "text-field-xs text-surface-on-variant",
+              fieldOps.shouldUseLargerText && "text-field-sm"
+            )}>
+              Общий объём (м³)
+            </div>
+          </div>
+
+          <div className="ios-card p-4 text-center">
+            <div className={cn(
+              "text-field-lg font-bold text-status-info mb-1",
+              fieldOps.shouldUseLargerText && "text-field-xl"
+            )}>
+              {uniqueSpecies}
+            </div>
+            <div className={cn(
+              "text-field-xs text-surface-on-variant",
+              fieldOps.shouldUseLargerText && "text-field-sm"
+            )}>
+              Породы деревьев
+            </div>
+          </div>
+
+          <div className="ios-card p-4 text-center">
+            <div className={cn(
+              "text-field-lg font-bold text-status-warning mb-1",
+              fieldOps.shouldUseLargerText && "text-field-xl"
+            )}>
+              {pendingCount}
+            </div>
+            <div className={cn(
+              "text-field-xs text-surface-on-variant",
+              fieldOps.shouldUseLargerText && "text-field-sm"
+            )}>
+              Ожидают синхронизации
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderActions = () => (
+    <div className={cn(
+      "space-y-4",
+      fieldOps.shouldUseCompactLayout && "space-y-3"
+    )}>
+      <div className={cn(
+        "ios-section-header",
+        fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+      )}>
+        Действия
+      </div>
+      
+      <div className={cn(
+        "grid gap-3",
+        fieldOps.isMobile ? "grid-cols-1" : "grid-cols-2",
+        fieldOps.isLandscape && "grid-cols-3 gap-2"
+      )}>
+        <button
+          onClick={handleExport}
+          className={cn(
+            "ios-card touch-target p-4 text-left transition-all duration-200 hover:scale-105 active:scale-95",
+            fieldOps.shouldUseLargeButtons && "p-5"
+          )}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <Download className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-5 h-5"
+              )} />
+            </div>
+          </div>
+          <div className={cn(
+            "text-field-base font-semibold text-surface-on-surface mb-1",
+            fieldOps.shouldUseLargerText && "text-field-lg"
+          )}>
+            Экспорт данных
+          </div>
+          <div className={cn(
+            "text-field-xs text-surface-on-variant",
+            fieldOps.shouldUseLargerText && "text-field-sm"
+          )}>
+            Скачать все записи в JSON
+          </div>
+        </button>
+
+        <button
+          onClick={() => document.getElementById('import-file')?.click()}
+          className={cn(
+            "ios-card touch-target p-4 text-left transition-all duration-200 hover:scale-105 active:scale-95",
+            fieldOps.shouldUseLargeButtons && "p-5"
+          )}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <Upload className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-5 h-5"
+              )} />
+            </div>
+          </div>
+          <div className={cn(
+            "text-field-base font-semibold text-surface-on-surface mb-1",
+            fieldOps.shouldUseLargerText && "text-field-lg"
+          )}>
+            Импорт данных
+          </div>
+          <div className={cn(
+            "text-field-xs text-surface-on-variant",
+            fieldOps.shouldUseLargerText && "text-field-sm"
+          )}>
+            Загрузить данные из файла
+          </div>
+        </button>
+
+        <button
+          onClick={loadCalculations}
+          disabled={isLoading}
+          className={cn(
+            "ios-card touch-target p-4 text-left transition-all duration-200 hover:scale-105 active:scale-95",
+            fieldOps.shouldUseLargeButtons && "p-5",
+            isLoading && "opacity-50 cursor-not-allowed"
+          )}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <div className={cn(
+              "ios-list-item-icon",
+              fieldOps.shouldUseLargeButtons && "w-12 h-12"
+            )}>
+              <RefreshCw className={cn(
+                fieldOps.shouldUseLargeButtons ? "w-6 h-6" : "w-5 h-5",
+                isLoading && "animate-spin"
+              )} />
+            </div>
+          </div>
+          <div className={cn(
+            "text-field-base font-semibold text-surface-on-surface mb-1",
+            fieldOps.shouldUseLargerText && "text-field-lg"
+          )}>
+            Обновить
+          </div>
+          <div className={cn(
+            "text-field-xs text-surface-on-variant",
+            fieldOps.shouldUseLargerText && "text-field-sm"
+          )}>
+            Загрузить данные заново
+          </div>
+        </button>
+      </div>
+
+      <input
+        id="import-file"
+        type="file"
+        accept=".json"
+        onChange={handleImport}
+        className="hidden"
+      />
+    </div>
+  );
+
+  const renderDataTable = () => {
+    const filteredCalculations = calculations
+      .filter(calc => {
+        const matchesSearch = searchTerm === '' || 
+          calc.calculationId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          calc.species.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          calc.batch.operator.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesSpecies = filterSpecies === '' || calc.species === filterSpecies;
+        const matchesSync = !showSyncOnly || !calc.synced;
+        
+        return matchesSearch && matchesSpecies && matchesSync;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case 'volume':
+            return b.volume - a.volume;
+          case 'species':
+            return a.species.localeCompare(b.species);
+          case 'operator':
+            return a.batch.operator.localeCompare(b.batch.operator);
+          default:
+            return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+        }
+      });
+
+    return (
+      <div className={cn(
+        "space-y-4",
+        fieldOps.shouldUseCompactLayout && "space-y-3"
+      )}>
+        <div className={cn(
+          "ios-section-header",
+          fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+        )}>
+          Записи ({filteredCalculations.length})
+        </div>
+        
+        {filteredCalculations.length === 0 ? (
+          <div className="ios-card p-8 text-center">
+            <Database className={cn(
+              "mx-auto mb-4 text-surface-on-variant",
+              fieldOps.shouldUseLargeButtons ? "w-12 h-12" : "w-8 h-8"
+            )} />
+            <div className={cn(
+              "text-field-base text-surface-on-variant",
+              fieldOps.shouldUseLargerText && "text-field-lg"
+            )}>
+              {calculations.length === 0 ? 'Нет сохранённых записей' : 'Записи не найдены'}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filteredCalculations.map((calc) => (
+              <div key={calc.id} className="ios-card p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className={cn(
+                      fieldOps.shouldUseLargerText && "text-field-sm"
+                    )}>
+                      {calc.calculationId}
+                    </Badge>
+                    <StatusBadge
+                      status={calc.synced ? 'success' : 'pending'}
+                      fieldMode={true}
+                      compact={fieldOps.shouldUseCompactLayout}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-field-lg font-bold text-brand-primary",
+                      fieldOps.shouldUseLargerText && "text-field-xl"
+                    )}>
+                      {calc.volume.toFixed(3)} м³
+                    </span>
+                  </div>
+                </div>
+                
+                <div className={cn(
+                  "grid gap-2",
+                  fieldOps.isMobile ? "grid-cols-1" : "grid-cols-2",
+                  fieldOps.isLandscape && "grid-cols-3 gap-1"
+                )}>
+                  <div className="flex items-center gap-2">
+                    <TreePine className={cn(
+                      "text-surface-on-variant",
+                      fieldOps.shouldUseLargeButtons ? "w-5 h-5" : "w-4 h-4"
+                    )} />
+                    <span className={cn(
+                      "text-field-sm",
+                      fieldOps.shouldUseLargerText && "text-field-base"
+                    )}>
+                      {calc.species}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <User className={cn(
+                      "text-surface-on-variant",
+                      fieldOps.shouldUseLargeButtons ? "w-5 h-5" : "w-4 h-4"
+                    )} />
+                    <span className={cn(
+                      "text-field-sm",
+                      fieldOps.shouldUseLargerText && "text-field-base"
+                    )}>
+                      {calc.batch.operator}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Calendar className={cn(
+                      "text-surface-on-variant",
+                      fieldOps.shouldUseLargeButtons ? "w-5 h-5" : "w-4 h-4"
+                    )} />
+                    <span className={cn(
+                      "text-field-sm",
+                      fieldOps.shouldUseLargerText && "text-field-base"
+                    )}>
+                      {new Date(calc.timestamp).toLocaleDateString()}
+                    </span>
+                  </div>
+                  
+                  {calc.coordinates && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className={cn(
+                        "text-surface-on-variant",
+                        fieldOps.shouldUseLargeButtons ? "w-5 h-5" : "w-4 h-4"
+                      )} />
+                      <span className={cn(
+                        "text-field-sm",
+                        fieldOps.shouldUseLargerText && "text-field-base"
+                      )}>
+                        {calc.coordinates.lat.toFixed(4)}, {calc.coordinates.lng.toFixed(4)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mt-3 pt-3 border-t border-surface-border">
+                  <div className="flex items-center justify-between">
+                    <span className={cn(
+                      "text-field-xs text-surface-on-variant",
+                      fieldOps.shouldUseLargerText && "text-field-sm"
+                    )}>
+                      Диаметр: {calc.diameter} см, Длина: {calc.length} м
+                    </span>
+                    <button
+                      onClick={() => handleDeleteCalculation(calc.id)}
+                      className={cn(
+                        "text-status-error hover:text-status-error/80 touch-target p-1",
+                        fieldOps.shouldUseLargeButtons && "p-2"
+                      )}
+                    >
+                      <Trash2 className={cn(
+                        "w-4 h-4",
+                        fieldOps.shouldUseLargeButtons && "w-5 h-5"
+                      )} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className={cn(
+      "space-y-6 pb-6",
+      fieldOps.shouldUseCompactLayout && "space-y-4",
+      fieldOps.isLandscape && "space-y-3"
+    )}>
+      {/* Header */}
+      <div className={cn(
+        "ios-section-header",
+        fieldOps.shouldUseLargerText && "text-field-lg font-semibold"
+      )}>
+        Управление данными
+      </div>
+
+      {/* Search and Filters */}
+      {renderSearchAndFilters()}
+
+      {/* Statistics */}
+      {renderStatistics()}
+
+      {/* Actions */}
+      {renderActions()}
 
       {/* Data Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Данные расчётов</span>
-            <Badge variant="secondary">{filteredCalculations.length} записей</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <RefreshCw className="w-6 h-6 animate-spin text-surface-on-variant" />
-              <span className="ml-2 text-surface-on-variant">Загрузка данных...</span>
-            </div>
-          ) : filteredCalculations.length === 0 ? (
-            <div className="text-center py-8">
-              <Database className="w-12 h-12 mx-auto text-surface-on-variant mb-4" />
-              <div className="text-body text-surface-on-variant">Нет данных для отображения</div>
-              <div className="text-caption text-surface-on-variant mt-2">
-                {calculations.length === 0 ? 'Создайте первый расчёт' : 'Попробуйте изменить фильтры'}
-              </div>
-            </div>
-          ) : (
-            <DataTable
-              data={filteredCalculations}
-              columns={columns}
-              searchable={false}
-              pagination={true}
-              itemsPerPage={10}
-              onRowClick={(row) => {
-                // Handle row click - could show details modal
-                console.log('Row clicked:', row);
-              }}
-            />
-          )}
-        </CardContent>
-      </Card>
+      {renderDataTable()}
     </div>
   );
 }
