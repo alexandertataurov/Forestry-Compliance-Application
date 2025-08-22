@@ -50,10 +50,10 @@ export function Dashboard({ onSectionChange, isOnline, pendingSync }: DashboardP
   ]);
 
   const quickStats = [
-    { label: 'Сегодня', value: '12.4 м³', icon: TreePine, color: '#34C759' },
-    { label: 'Неделя', value: '89.2 м³', icon: TrendingUp, color: '#007AFF' },
-    { label: 'Участки', value: '5', icon: MapPin, color: '#FF9500' },
-    { label: 'Операторы', value: '3', icon: Users, color: '#AF52DE' },
+    { label: 'Сегодня', value: '12.4 м³', icon: TreePine, color: 'var(--ios-green)' },
+    { label: 'Неделя', value: '89.2 м³', icon: TrendingUp, color: 'var(--ios-blue)' },
+    { label: 'Участки', value: '5', icon: MapPin, color: 'var(--ios-orange)' },
+    { label: 'Операторы', value: '3', icon: Users, color: 'var(--ios-purple)' },
   ];
 
   const handleQuickAction = (action: string) => {
@@ -81,7 +81,7 @@ export function Dashboard({ onSectionChange, isOnline, pendingSync }: DashboardP
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: isOnline ? '#34C759' : '#FF3B30' }}
+              style={{ backgroundColor: isOnline ? 'var(--ios-green)' : 'var(--ios-red)' }}
             >
               {isOnline ? (
                 <Wifi className="w-4 h-4" />
@@ -107,7 +107,7 @@ export function Dashboard({ onSectionChange, isOnline, pendingSync }: DashboardP
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: pendingSync > 0 ? '#FF9500' : '#34C759' }}
+              style={{ backgroundColor: pendingSync > 0 ? 'var(--ios-orange)' : 'var(--ios-green)' }}
             >
               <Clock className="w-4 h-4" />
             </div>
@@ -133,11 +133,12 @@ export function Dashboard({ onSectionChange, isOnline, pendingSync }: DashboardP
           onClick={() => handleQuickAction('new-calc')}
           className="ios-list-item"
           style={{ border: 'none', background: 'transparent', width: '100%' }}
+          type="button"
         >
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <Calculator className="w-4 h-4" />
             </div>
@@ -155,11 +156,12 @@ export function Dashboard({ onSectionChange, isOnline, pendingSync }: DashboardP
           onClick={() => handleQuickAction('history')}
           className="ios-list-item"
           style={{ border: 'none', background: 'transparent', width: '100%' }}
+          type="button"
         >
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
+              style={{ backgroundColor: 'var(--ios-indigo)' }}
             >
               <History className="w-4 h-4" />
             </div>
@@ -177,11 +179,12 @@ export function Dashboard({ onSectionChange, isOnline, pendingSync }: DashboardP
           onClick={() => handleQuickAction('settings')}
           className="ios-list-item"
           style={{ border: 'none', background: 'transparent', width: '100%' }}
+          type="button"
         >
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#8E8E93' }}
+              style={{ backgroundColor: 'var(--ios-gray)' }}
             >
               <Settings className="w-4 h-4" />
             </div>
@@ -226,10 +229,10 @@ export function Dashboard({ onSectionChange, isOnline, pendingSync }: DashboardP
         {recentActivity.map((activity) => (
           <div key={activity.id} className="ios-list-item">
             <div className="ios-list-item-content">
-              <div 
-                className="ios-list-item-icon"
-                style={{ backgroundColor: '#34C759' }}
-              >
+                <div 
+                  className="ios-list-item-icon"
+                  style={{ backgroundColor: 'var(--ios-green)' }}
+                >
                 <TreePine className="w-4 h-4" />
               </div>
               <div className="ios-list-item-text">

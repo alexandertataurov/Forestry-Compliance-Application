@@ -20,24 +20,21 @@ const QUALITY_GRADES = [
     label: 'Grade 1', 
     description: 'Premium quality - no defects, straight grain',
     multiplier: 1.0,
-    color: 'bg-green-500 text-white border-green-500',
-    colorInactive: 'bg-green-50 text-green-700 border-green-200'
+    tokenColor: 'var(--ios-green)'
   },
   { 
     value: '2', 
     label: 'Grade 2', 
     description: 'Good quality - minor defects allowed',
     multiplier: 0.8,
-    color: 'bg-yellow-500 text-white border-yellow-500',
-    colorInactive: 'bg-yellow-50 text-yellow-700 border-yellow-200'
+    tokenColor: 'var(--ios-orange)'
   },
   { 
     value: '3', 
     label: 'Grade 3', 
     description: 'Standard quality - some defects allowed',
     multiplier: 0.6,
-    color: 'bg-orange-500 text-white border-orange-500',
-    colorInactive: 'bg-orange-50 text-orange-700 border-orange-200'
+    tokenColor: 'var(--ios-red)'
   }
 ];
 
@@ -86,17 +83,19 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
 
   return (
     <TooltipProvider>
-      <div className="bg-white touch-action-manipulation">
+      <div className="bg-background touch-action-manipulation">
         {/* Header - iOS 16 Style */}
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200/50">
+        <div className="flex items-center justify-between px-6 py-4 bg-background border-b border-border/50">
           <div className="flex items-center gap-4">
             <button 
+              type="button"
+              aria-label="Назад"
               onClick={onBack}
-              className="w-11 h-11 rounded-full bg-gray-100/80 hover:bg-gray-200/80 flex items-center justify-center transition-all duration-200 active:scale-96"
+              className="w-11 h-11 rounded-full bg-secondary/60 hover:bg-secondary flex items-center justify-center transition-all duration-200 active:scale-96 focus-visible:ring-2 focus-visible:ring-ring/50"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
+              <ArrowLeft className="w-5 h-5 text-muted-foreground" />
             </button>
-            <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Quality & Price</h1>
+            <h1 className="text-2xl font-semibold text-foreground tracking-tight">Quality & Price</h1>
           </div>
         </div>
 
@@ -105,11 +104,11 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
           {/* Quality Grade Selector */}
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <Label className="text-lg font-semibold text-gray-900 tracking-tight">Quality Grade</Label>
+              <Label className="text-lg font-semibold text-foreground tracking-tight">Quality Grade</Label>
               <Tooltip>
                 <TooltipTrigger>
-                  <div className="w-6 h-6 rounded-full bg-gray-200/80 flex items-center justify-center">
-                    <Info className="w-3 h-3 text-gray-500" />
+                  <div className="w-6 h-6 rounded-full bg-secondary/80 flex items-center justify-center">
+                    <Info className="w-3 h-3 text-muted-foreground" />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="rounded-xl shadow-lg backdrop-blur-lg">
@@ -119,16 +118,19 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
             </div>
             
             {/* Segmented Control - iOS 16 Style */}
-            <div className="flex bg-gray-100/80 p-2 rounded-2xl border border-gray-200/50">
+            <div className="flex bg-secondary/60 p-2 rounded-2xl border border-border/50">
               {QUALITY_GRADES.map((grade) => (
                 <button
                   key={grade.value}
                   onClick={() => setSelectedGrade(grade.value)}
+                  type="button"
+                  aria-pressed={selectedGrade === grade.value}
                   className={`flex-1 px-4 py-4 rounded-xl font-semibold transition-all duration-200 ${
-                    selectedGrade === grade.value
-                      ? grade.color + ' shadow-md scale-105'
-                      : 'text-gray-600 hover:bg-gray-50 active:scale-96'
+                    selectedGrade === grade.value ? 'shadow-md scale-105' : 'hover:bg-secondary active:scale-96'
                   }`}
+                  style={selectedGrade === grade.value 
+                    ? { background: grade.tokenColor, color: 'white', border: '1px solid transparent' }
+                    : { background: 'transparent', color: 'var(--ios-gray)' }}
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Star className="w-4 h-4" />
@@ -140,12 +142,12 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
 
             {/* Grade Description - iOS 16 Style */}
             {selectedGradeData && (
-              <div className={`mt-5 p-5 rounded-2xl border shadow-sm ${selectedGradeData.colorInactive}`}>
+              <div className="mt-5 p-5 rounded-2xl border shadow-sm" style={{ background: 'var(--ios-secondary-system-grouped-background)', borderColor: selectedGradeData.tokenColor, color: 'var(--ios-label)' }}>
                 <p className="text-base font-semibold mb-2">{selectedGradeData.label}</p>
                 <p className="text-sm leading-relaxed">{selectedGradeData.description}</p>
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-current/20">
                   <span className="text-sm font-medium">Price multiplier:</span>
-                  <div className="px-3 py-1.5 bg-white/60 rounded-xl text-sm font-bold">
+                  <div className="px-3 py-1.5 bg-background/60 rounded-xl text-sm font-bold">
                     ×{selectedGradeData.multiplier}
                   </div>
                 </div>
@@ -155,7 +157,7 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
 
           {/* Price Entry - iOS 16 Style */}
           <div>
-            <Label className="text-lg font-semibold text-gray-900 mb-5 block tracking-tight">
+            <Label className="text-lg font-semibold text-foreground mb-5 block tracking-tight">
               Base Price per m³ (₽)
             </Label>
             
@@ -165,10 +167,11 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
                 <button
                   key={preset}
                   onClick={() => setBasePrice(preset.toString())}
+                  type="button"
                   className={`h-16 rounded-2xl text-xl font-bold transition-all duration-200 shadow-sm ${
                     basePrice === preset.toString()
-                      ? 'bg-blue-500 text-white shadow-md scale-105'
-                      : 'bg-gray-100/80 text-gray-900 hover:bg-gray-200/80 active:scale-96 border border-gray-200/50'
+                      ? 'bg-primary text-primary-foreground shadow-md scale-105'
+                      : 'bg-secondary/60 text-foreground hover:bg-secondary active:scale-96 border border-border/50'
                   }`}
                 >
                   {preset}₽
@@ -179,7 +182,8 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
             {/* Other Button - iOS 16 Style */}
             <button
               onClick={() => setIsKeypadOpen(true)}
-              className="w-full h-14 rounded-2xl bg-gray-100/80 border border-gray-200/50 text-base font-semibold text-gray-700 hover:bg-gray-200/80 transition-all duration-200 active:scale-98 flex items-center justify-center gap-3"
+              type="button"
+              className="w-full h-14 rounded-2xl bg-secondary/60 border border-border/50 text-base font-semibold text-muted-foreground hover:bg-secondary transition-all duration-200 active:scale-98 flex items-center justify-center gap-3"
             >
               <Calculator className="w-5 h-5" />
               Other {basePrice && !PRICE_PRESETS.includes(parseFloat(basePrice)) ? `(${basePrice}₽)` : ''}
@@ -187,15 +191,15 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
 
             {/* Current Price Display - iOS 16 Style */}
             {basePrice && (
-              <div className="mt-5 p-5 bg-blue-50/80 rounded-2xl border border-blue-200/50 shadow-sm">
+              <div className="mt-5 p-5 bg-card rounded-2xl border border-border/50 shadow-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-blue-700">Base price:</span>
-                  <span className="font-bold text-blue-900">{basePrice}₽/m³</span>
+                  <span className="text-sm font-medium text-primary">Base price:</span>
+                  <span className="font-bold text-foreground">{basePrice}₽/m³</span>
                 </div>
                 {selectedGradeData && selectedGradeData.multiplier !== 1.0 && (
-                  <div className="flex items-center justify-between pt-3 border-t border-blue-200/50">
-                    <span className="text-sm font-medium text-blue-700">After grade adjustment:</span>
-                    <span className="font-bold text-blue-600">{finalPrice.toFixed(2)}₽/m³</span>
+                  <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                    <span className="text-sm font-medium text-primary">After grade adjustment:</span>
+                    <span className="font-bold text-primary">{finalPrice.toFixed(2)}₽/m³</span>
                   </div>
                 )}
               </div>
@@ -204,27 +208,27 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
 
           {/* Summary Card - iOS 16 Style */}
           {volume > 0 && basePrice && selectedGrade && (
-            <div className="bg-gradient-to-r from-green-50 to-green-100/50 rounded-2xl p-6 border-2 border-green-200/50 shadow-sm">
+            <div className="bg-card rounded-2xl p-6 border-2 border-border/50 shadow-sm">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-green-700">Volume:</span>
-                  <span className="font-bold text-green-900">{formatVolume(volume)}</span>
+                  <span className="text-sm font-semibold text-primary">Volume:</span>
+                  <span className="font-bold text-foreground">{formatVolume(volume)}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-green-700">Final price:</span>
-                  <span className="font-bold text-green-900">{finalPrice.toFixed(2)}₽/m³</span>
+                  <span className="text-sm font-semibold text-primary">Final price:</span>
+                  <span className="font-bold text-foreground">{finalPrice.toFixed(2)}₽/m³</span>
                 </div>
                 
-                <div className="border-t border-green-200/50 pt-4">
+                <div className="border-t border-border/50 pt-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-500 rounded-2xl flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: 'var(--ios-green)' }}>
                         <DollarSign className="w-5 h-5 text-white" />
                       </div>
-                      <span className="font-semibold text-green-900 text-lg">Total Value:</span>
+                      <span className="font-semibold text-foreground text-lg">Total Value:</span>
                     </div>
-                    <span className="text-2xl font-bold text-green-900 tracking-tight">
+                    <span className="text-2xl font-bold text-foreground tracking-tight">
                       {total.toFixed(2)}₽
                     </span>
                   </div>
@@ -237,7 +241,10 @@ export function QualityPriceScreen({ volume, onBack, onNext }: QualityPriceScree
           <button
             onClick={handleNext}
             disabled={!selectedGrade || !basePrice}
-            className="w-full h-16 rounded-2xl bg-blue-500 text-white text-lg font-bold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-98 shadow-lg mt-8"
+            type="button"
+            aria-label="Next"
+            className="w-full h-16 rounded-2xl text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-98 shadow-lg mt-8"
+            style={{ background: 'var(--ios-blue)', color: 'white' }}
           >
             Next
           </button>

@@ -7,13 +7,13 @@ const meta: Meta<typeof Button> = {
   component: Button,
   args: {
     children: 'Button',
-    variant: 'default',
+    variant: 'primary',
     size: 'default',
   },
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+      options: ['primary', 'secondary', 'tertiary', 'destructive', 'outline', 'ghost', 'link'],
     },
     size: {
       control: 'select',

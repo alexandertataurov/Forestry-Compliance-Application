@@ -8,9 +8,10 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
       type={type}
       data-slot="input"
       className={cn(
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base bg-input-background transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        "file:text-surface-on-surface placeholder:text-surface-on-variant selection:bg-brand-primary selection:text-brand-on-primary bg-surface-bg border-surface-border flex h-10 w-full min-w-0 rounded-md border px-md py-sm text-body bg-surface-bg transition-all outline-none file:inline-flex file:h-8 file:border-0 file:bg-transparent file:text-label file:font-label disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+        "focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/20 focus-visible:ring-offset-2",
+        "aria-invalid:ring-brand-error/20 aria-invalid:border-brand-error",
+        "min-touch-target",
         className,
       )}
       {...props}

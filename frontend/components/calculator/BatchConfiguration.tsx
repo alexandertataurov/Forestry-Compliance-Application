@@ -134,7 +134,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Ruler className="w-4 h-4" />
             </div>
@@ -201,7 +201,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: location.coordinates ? '#34C759' : '#8E8E93' }}
+              style={{ backgroundColor: location.coordinates ? 'var(--ios-green)' : 'var(--ios-gray)' }}
             >
               <MapPin className="w-4 h-4" />
             </div>
@@ -223,7 +223,7 @@ export function BatchConfiguration({
             style={{
               background: 'none',
               border: 'none',
-              color: '#007AFF',
+              color: 'var(--ios-blue)',
               cursor: 'pointer',
               padding: '8px',
               borderRadius: 'var(--ios-radius-md)',
@@ -238,7 +238,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
+              style={{ backgroundColor: 'var(--ios-indigo)' }}
             >
               <MapPin className="w-4 h-4" />
             </div>
@@ -267,7 +267,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#AF52DE' }}
+              style={{ backgroundColor: 'var(--ios-purple)' }}
             >
               <Hash className="w-4 h-4" />
             </div>
@@ -306,7 +306,7 @@ export function BatchConfiguration({
             <div className="ios-list-item-content">
               <div 
                 className="ios-list-item-icon"
-                style={{ backgroundColor: '#5AC8FA' }}
+                style={{ backgroundColor: 'var(--ios-teal)' }}
               >
                 <Truck className="w-4 h-4" />
               </div>
@@ -316,7 +316,7 @@ export function BatchConfiguration({
             </div>
             {transport.type === type.id && (
               <div className="ios-list-item-accessory">
-                <div style={{ color: '#007AFF', fontSize: '17px', fontWeight: '600' }}>✓</div>
+                <div style={{ color: 'var(--ios-blue)', fontSize: '17px', fontWeight: '600' }}>✓</div>
               </div>
             )}
           </button>
@@ -326,7 +326,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Hash className="w-4 h-4" />
             </div>
@@ -355,7 +355,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <User className="w-4 h-4" />
             </div>
@@ -388,7 +388,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <Hash className="w-4 h-4" />
             </div>
@@ -402,7 +402,7 @@ export function BatchConfiguration({
             style={{
               background: 'none',
               border: 'none',
-              color: '#007AFF',
+              color: 'var(--ios-blue)',
               cursor: 'pointer',
               padding: '8px',
               borderRadius: 'var(--ios-radius-md)'
@@ -416,7 +416,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Calendar className="w-4 h-4" />
             </div>
@@ -459,7 +459,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
+              style={{ backgroundColor: 'var(--ios-indigo)' }}
             >
               <User className="w-4 h-4" />
             </div>
@@ -495,7 +495,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF2D92' }}
+              style={{ backgroundColor: 'var(--ios-pink)' }}
             >
               <Camera className="w-4 h-4" />
             </div>
@@ -518,7 +518,7 @@ export function BatchConfiguration({
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <FileText className="w-4 h-4" />
             </div>

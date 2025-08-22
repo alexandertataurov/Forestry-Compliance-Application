@@ -188,8 +188,10 @@ export default function App() {
           <div className="ios-nav-left">
             {canGoBack && (
               <button
+                type="button"
                 onClick={handleBack}
                 className="ios-back-button"
+                aria-label="Назад"
               >
                 <ChevronLeft className="ios-back-icon" />
                 <span>Назад</span>
@@ -219,7 +221,7 @@ export default function App() {
                 }}></div>
               )}
             </div>
-            <button className="ios-nav-button">
+            <button type="button" className="ios-nav-button" aria-label="Меню">
               <MoreHorizontal className="ios-nav-icon" />
             </button>
           </div>
@@ -239,8 +241,10 @@ export default function App() {
       {/* Native iOS Floating Action Button (only on calculator section) */}
       {activeSection === 'dashboard' && (
         <button
+          type="button"
           onClick={handleFloatingAction}
           className="ios-fab"
+          aria-label="Новый расчёт"
         >
           <Plus className="ios-fab-icon" />
         </button>
@@ -249,7 +253,7 @@ export default function App() {
       {/* Native iOS Tab Bar */}
       <div className={`ios-tab-bar ${tabBarVisible ? 'ios-tab-bar-visible' : 'ios-tab-bar-hidden'}`}>
         <div className="ios-tab-bar-background"></div>
-        <div className="ios-tab-bar-content">
+        <div className="ios-tab-bar-content" role="tablist" aria-label="Основные разделы">
           {tabItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -258,6 +262,11 @@ export default function App() {
               <button
                 key={item.id}
                 onClick={() => setActiveSection(item.id)}
+                type="button"
+                role="tab"
+                aria-current={isActive ? 'page' : undefined}
+                aria-selected={isActive}
+                aria-label={item.label}
                 className={`ios-tab-item ${isActive ? 'ios-tab-item-active' : ''}`}
               >
                 <Icon className="ios-tab-icon" />

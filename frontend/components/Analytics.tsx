@@ -109,15 +109,15 @@ export function Analytics() {
 
   const getGradeColor = (grade: number) => {
     switch (grade) {
-      case 1: return '#34C759';
-      case 2: return '#FF9500';
-      case 3: return '#FF3B30';
-      default: return '#8E8E93';
+      case 1: return 'var(--ios-green)';
+      case 2: return 'var(--ios-orange)';
+      case 3: return 'var(--ios-red)';
+      default: return 'var(--ios-gray)';
     }
   };
 
   const getSpeciesColor = (index: number) => {
-    const colors = ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#5AC8FA'];
+  const colors = ['var(--ios-blue)', 'var(--ios-green)', 'var(--ios-orange)', 'var(--ios-purple)', 'var(--ios-teal)'];
     return colors[index % colors.length];
   };
 
@@ -140,7 +140,7 @@ export function Analytics() {
             <div className="ios-list-item-content">
               <div 
                 className="ios-list-item-icon"
-                style={{ backgroundColor: '#007AFF' }}
+                style={{ backgroundColor: 'var(--ios-blue)' }}
               >
                 <Calendar className="w-4 h-4" />
               </div>
@@ -151,7 +151,7 @@ export function Analytics() {
             </div>
             {timeRange === option.value && (
               <div className="ios-list-item-accessory">
-                <div style={{ color: '#007AFF', fontSize: '17px', fontWeight: '600' }}>✓</div>
+                <div style={{ color: 'var(--ios-blue)', fontSize: '17px', fontWeight: '600' }}>✓</div>
               </div>
             )}
           </button>
@@ -165,7 +165,7 @@ export function Analytics() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#5856D6' }}
+              style={{ backgroundColor: 'var(--ios-indigo)' }}
             >
               <Filter className="w-4 h-4" />
             </div>
@@ -200,7 +200,7 @@ export function Analytics() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#34C759' }}
+              style={{ backgroundColor: 'var(--ios-green)' }}
             >
               <TreePine className="w-4 h-4" />
             </div>
@@ -211,7 +211,7 @@ export function Analytics() {
           </div>
           <div className="ios-list-item-accessory">
             <div style={{ 
-              color: '#34C759', 
+              color: 'var(--ios-green)', 
               fontSize: '20px', 
               fontWeight: '600',
               fontVariantNumeric: 'tabular-nums'
@@ -225,7 +225,7 @@ export function Analytics() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#007AFF' }}
+              style={{ backgroundColor: 'var(--ios-blue)' }}
             >
               <BarChart3 className="w-4 h-4" />
             </div>
@@ -236,7 +236,7 @@ export function Analytics() {
           </div>
           <div className="ios-list-item-accessory">
             <div style={{ 
-              color: '#007AFF', 
+              color: 'var(--ios-blue)', 
               fontSize: '17px', 
               fontWeight: '600',
               fontVariantNumeric: 'tabular-nums'
@@ -250,7 +250,7 @@ export function Analytics() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#FF9500' }}
+              style={{ backgroundColor: 'var(--ios-orange)' }}
             >
               <Target className="w-4 h-4" />
             </div>
@@ -261,7 +261,7 @@ export function Analytics() {
           </div>
           <div className="ios-list-item-accessory">
             <div style={{ 
-              color: '#FF9500', 
+              color: 'var(--ios-orange)', 
               fontSize: '17px', 
               fontWeight: '600'
             }}>
@@ -359,7 +359,7 @@ export function Analytics() {
                   <div className="ios-list-item-content">
                     <div 
                       className="ios-list-item-icon"
-                      style={{ backgroundColor: '#5AC8FA' }}
+                      style={{ backgroundColor: 'var(--ios-teal)' }}
                     >
                       <Activity className="w-4 h-4" />
                     </div>
@@ -370,7 +370,7 @@ export function Analytics() {
                   </div>
                   <div className="ios-list-item-accessory">
                     <div style={{ 
-                      color: '#5AC8FA', 
+                      color: 'var(--ios-teal)', 
                       fontSize: '17px', 
                       fontWeight: '600',
                       fontVariantNumeric: 'tabular-nums'
@@ -391,7 +391,7 @@ export function Analytics() {
           <div className="ios-list-item-content">
             <div 
               className="ios-list-item-icon"
-              style={{ backgroundColor: '#AF52DE' }}
+              style={{ backgroundColor: 'var(--ios-purple)' }}
             >
               <TrendingUp className="w-4 h-4" />
             </div>
@@ -412,7 +412,7 @@ export function Analytics() {
             <div className="ios-list-item-content">
               <div 
                 className="ios-list-item-icon"
-                style={{ backgroundColor: '#34C759' }}
+                style={{ backgroundColor: 'var(--ios-green)' }}
               >
                 <Award className="w-4 h-4" />
               </div>
@@ -436,7 +436,7 @@ export function Analytics() {
               <div className="ios-list-item-content">
                 <div 
                   className="ios-list-item-icon"
-                  style={{ backgroundColor: '#8E8E93' }}
+                  style={{ backgroundColor: 'var(--ios-gray)' }}
                 >
                   <BarChart3 className="w-4 h-4" />
                 </div>
