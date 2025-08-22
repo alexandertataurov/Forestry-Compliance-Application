@@ -1,0 +1,2034 @@
+{
+  "color": {
+    "brand": {
+      "primary": {
+        "key": "{color.brand.primary}",
+        "value": "#335CFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#335CFF",
+          "key": "{color.brand.primary}"
+        },
+        "name": "color-brand-primary",
+        "attributes": {},
+        "path": [
+          "color",
+          "brand",
+          "primary"
+        ]
+      },
+      "onPrimary": {
+        "key": "{color.brand.onPrimary}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.brand.onPrimary}"
+        },
+        "name": "color-brand-on-primary",
+        "attributes": {},
+        "path": [
+          "color",
+          "brand",
+          "onPrimary"
+        ]
+      },
+      "secondary": {
+        "key": "{color.brand.secondary}",
+        "value": "#6B8AFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#6B8AFF",
+          "key": "{color.brand.secondary}"
+        },
+        "name": "color-brand-secondary",
+        "attributes": {},
+        "path": [
+          "color",
+          "brand",
+          "secondary"
+        ]
+      },
+      "onSecondary": {
+        "key": "{color.brand.onSecondary}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.brand.onSecondary}"
+        },
+        "name": "color-brand-on-secondary",
+        "attributes": {},
+        "path": [
+          "color",
+          "brand",
+          "onSecondary"
+        ]
+      },
+      "tertiary": {
+        "key": "{color.brand.tertiary}",
+        "value": "#00BFA5",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#00BFA5",
+          "key": "{color.brand.tertiary}"
+        },
+        "name": "color-brand-tertiary",
+        "attributes": {},
+        "path": [
+          "color",
+          "brand",
+          "tertiary"
+        ]
+      },
+      "onTertiary": {
+        "key": "{color.brand.onTertiary}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.brand.onTertiary}"
+        },
+        "name": "color-brand-on-tertiary",
+        "attributes": {},
+        "path": [
+          "color",
+          "brand",
+          "onTertiary"
+        ]
+      },
+      "error": {
+        "key": "{color.brand.error}",
+        "value": "#D14343",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#D14343",
+          "key": "{color.brand.error}"
+        },
+        "name": "color-brand-error",
+        "attributes": {},
+        "path": [
+          "color",
+          "brand",
+          "error"
+        ]
+      },
+      "onError": {
+        "key": "{color.brand.onError}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.brand.onError}"
+        },
+        "name": "color-brand-on-error",
+        "attributes": {},
+        "path": [
+          "color",
+          "brand",
+          "onError"
+        ]
+      }
+    },
+    "neutral": {
+      "0": {
+        "key": "{color.neutral.0}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.neutral.0}"
+        },
+        "name": "color-neutral-0",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "0"
+        ]
+      },
+      "10": {
+        "key": "{color.neutral.10}",
+        "value": "#F6F7F9",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#F6F7F9",
+          "key": "{color.neutral.10}"
+        },
+        "name": "color-neutral-10",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "10"
+        ]
+      },
+      "50": {
+        "key": "{color.neutral.50}",
+        "value": "#EBEEF5",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#EBEEF5",
+          "key": "{color.neutral.50}"
+        },
+        "name": "color-neutral-50",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "50"
+        ]
+      },
+      "100": {
+        "key": "{color.neutral.100}",
+        "value": "#DDE3EE",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#DDE3EE",
+          "key": "{color.neutral.100}"
+        },
+        "name": "color-neutral-100",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "100"
+        ]
+      },
+      "200": {
+        "key": "{color.neutral.200}",
+        "value": "#C7D0E0",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#C7D0E0",
+          "key": "{color.neutral.200}"
+        },
+        "name": "color-neutral-200",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "200"
+        ]
+      },
+      "300": {
+        "key": "{color.neutral.300}",
+        "value": "#AFB9CF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#AFB9CF",
+          "key": "{color.neutral.300}"
+        },
+        "name": "color-neutral-300",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "300"
+        ]
+      },
+      "400": {
+        "key": "{color.neutral.400}",
+        "value": "#97A1BE",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#97A1BE",
+          "key": "{color.neutral.400}"
+        },
+        "name": "color-neutral-400",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "400"
+        ]
+      },
+      "500": {
+        "key": "{color.neutral.500}",
+        "value": "#7E8AAD",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#7E8AAD",
+          "key": "{color.neutral.500}"
+        },
+        "name": "color-neutral-500",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "500"
+        ]
+      },
+      "600": {
+        "key": "{color.neutral.600}",
+        "value": "#6B7A9C",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#6B7A9C",
+          "key": "{color.neutral.600}"
+        },
+        "name": "color-neutral-600",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "600"
+        ]
+      },
+      "700": {
+        "key": "{color.neutral.700}",
+        "value": "#4A5568",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#4A5568",
+          "key": "{color.neutral.700}"
+        },
+        "name": "color-neutral-700",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "700"
+        ]
+      },
+      "800": {
+        "key": "{color.neutral.800}",
+        "value": "#2D3748",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#2D3748",
+          "key": "{color.neutral.800}"
+        },
+        "name": "color-neutral-800",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "800"
+        ]
+      },
+      "900": {
+        "key": "{color.neutral.900}",
+        "value": "#1A202C",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#1A202C",
+          "key": "{color.neutral.900}"
+        },
+        "name": "color-neutral-900",
+        "attributes": {},
+        "path": [
+          "color",
+          "neutral",
+          "900"
+        ]
+      }
+    },
+    "surface": {
+      "bg": {
+        "key": "{color.surface.bg}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.surface.bg}"
+        },
+        "name": "color-surface-bg",
+        "attributes": {},
+        "path": [
+          "color",
+          "surface",
+          "bg"
+        ]
+      },
+      "bgVariant": {
+        "key": "{color.surface.bgVariant}",
+        "value": "#F6F7F9",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#F6F7F9",
+          "key": "{color.surface.bgVariant}"
+        },
+        "name": "color-surface-bg-variant",
+        "attributes": {},
+        "path": [
+          "color",
+          "surface",
+          "bgVariant"
+        ]
+      },
+      "onSurface": {
+        "key": "{color.surface.onSurface}",
+        "value": "#111418",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#111418",
+          "key": "{color.surface.onSurface}"
+        },
+        "name": "color-surface-on-surface",
+        "attributes": {},
+        "path": [
+          "color",
+          "surface",
+          "onSurface"
+        ]
+      },
+      "onVariant": {
+        "key": "{color.surface.onVariant}",
+        "value": "#2B303A",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#2B303A",
+          "key": "{color.surface.onVariant}"
+        },
+        "name": "color-surface-on-variant",
+        "attributes": {},
+        "path": [
+          "color",
+          "surface",
+          "onVariant"
+        ]
+      },
+      "border": {
+        "key": "{color.surface.border}",
+        "value": "#DDE3EE",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#DDE3EE",
+          "key": "{color.surface.border}"
+        },
+        "name": "color-surface-border",
+        "attributes": {},
+        "path": [
+          "color",
+          "surface",
+          "border"
+        ]
+      },
+      "borderVariant": {
+        "key": "{color.surface.borderVariant}",
+        "value": "#C7D0E0",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#C7D0E0",
+          "key": "{color.surface.borderVariant}"
+        },
+        "name": "color-surface-border-variant",
+        "attributes": {},
+        "path": [
+          "color",
+          "surface",
+          "borderVariant"
+        ]
+      }
+    },
+    "state": {
+      "success": {
+        "key": "{color.state.success}",
+        "value": "#17A34A",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#17A34A",
+          "key": "{color.state.success}"
+        },
+        "name": "color-state-success",
+        "attributes": {},
+        "path": [
+          "color",
+          "state",
+          "success"
+        ]
+      },
+      "onSuccess": {
+        "key": "{color.state.onSuccess}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.state.onSuccess}"
+        },
+        "name": "color-state-on-success",
+        "attributes": {},
+        "path": [
+          "color",
+          "state",
+          "onSuccess"
+        ]
+      },
+      "warning": {
+        "key": "{color.state.warning}",
+        "value": "#D97706",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#D97706",
+          "key": "{color.state.warning}"
+        },
+        "name": "color-state-warning",
+        "attributes": {},
+        "path": [
+          "color",
+          "state",
+          "warning"
+        ]
+      },
+      "onWarning": {
+        "key": "{color.state.onWarning}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.state.onWarning}"
+        },
+        "name": "color-state-on-warning",
+        "attributes": {},
+        "path": [
+          "color",
+          "state",
+          "onWarning"
+        ]
+      },
+      "info": {
+        "key": "{color.state.info}",
+        "value": "#0284C7",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#0284C7",
+          "key": "{color.state.info}"
+        },
+        "name": "color-state-info",
+        "attributes": {},
+        "path": [
+          "color",
+          "state",
+          "info"
+        ]
+      },
+      "onInfo": {
+        "key": "{color.state.onInfo}",
+        "value": "#FFFFFF",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "#FFFFFF",
+          "key": "{color.state.onInfo}"
+        },
+        "name": "color-state-on-info",
+        "attributes": {},
+        "path": [
+          "color",
+          "state",
+          "onInfo"
+        ]
+      }
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": {
+        "key": "{typography.fontFamily.primary}",
+        "value": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Noto, sans-serif",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Noto, sans-serif",
+          "key": "{typography.fontFamily.primary}"
+        },
+        "name": "typography-font-family-primary",
+        "attributes": {},
+        "path": [
+          "typography",
+          "fontFamily",
+          "primary"
+        ]
+      },
+      "sf": {
+        "key": "{typography.fontFamily.sf}",
+        "value": "SF Pro Text, -apple-system, system-ui, Helvetica Neue, Arial",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "SF Pro Text, -apple-system, system-ui, Helvetica Neue, Arial",
+          "key": "{typography.fontFamily.sf}"
+        },
+        "name": "typography-font-family-sf",
+        "attributes": {},
+        "path": [
+          "typography",
+          "fontFamily",
+          "sf"
+        ]
+      },
+      "roboto": {
+        "key": "{typography.fontFamily.roboto}",
+        "value": "Roboto, Noto, system-ui",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "Roboto, Noto, system-ui",
+          "key": "{typography.fontFamily.roboto}"
+        },
+        "name": "typography-font-family-roboto",
+        "attributes": {},
+        "path": [
+          "typography",
+          "fontFamily",
+          "roboto"
+        ]
+      },
+      "mono": {
+        "key": "{typography.fontFamily.mono}",
+        "value": "SF Mono, Monaco, Inconsolata, 'Roboto Mono', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "SF Mono, Monaco, Inconsolata, 'Roboto Mono', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace",
+          "key": "{typography.fontFamily.mono}"
+        },
+        "name": "typography-font-family-mono",
+        "attributes": {},
+        "path": [
+          "typography",
+          "fontFamily",
+          "mono"
+        ]
+      }
+    },
+    "scale": {
+      "display": {
+        "size": {
+          "key": "{typography.scale.display.size}",
+          "value": "57px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "57px",
+            "key": "{typography.scale.display.size}"
+          },
+          "name": "typography-scale-display-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "display",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.display.weight}",
+          "value": "700",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "700",
+            "key": "{typography.scale.display.weight}"
+          },
+          "name": "typography-scale-display-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "display",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.display.line}",
+          "value": "64px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "64px",
+            "key": "{typography.scale.display.line}"
+          },
+          "name": "typography-scale-display-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "display",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.display.letter}",
+          "value": "-0.25px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "-0.25px",
+            "key": "{typography.scale.display.letter}"
+          },
+          "name": "typography-scale-display-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "display",
+            "letter"
+          ]
+        }
+      },
+      "headline": {
+        "size": {
+          "key": "{typography.scale.headline.size}",
+          "value": "32px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "32px",
+            "key": "{typography.scale.headline.size}"
+          },
+          "name": "typography-scale-headline-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "headline",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.headline.weight}",
+          "value": "700",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "700",
+            "key": "{typography.scale.headline.weight}"
+          },
+          "name": "typography-scale-headline-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "headline",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.headline.line}",
+          "value": "40px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "40px",
+            "key": "{typography.scale.headline.line}"
+          },
+          "name": "typography-scale-headline-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "headline",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.headline.letter}",
+          "value": "0px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0px",
+            "key": "{typography.scale.headline.letter}"
+          },
+          "name": "typography-scale-headline-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "headline",
+            "letter"
+          ]
+        }
+      },
+      "title": {
+        "size": {
+          "key": "{typography.scale.title.size}",
+          "value": "22px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "22px",
+            "key": "{typography.scale.title.size}"
+          },
+          "name": "typography-scale-title-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "title",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.title.weight}",
+          "value": "600",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "600",
+            "key": "{typography.scale.title.weight}"
+          },
+          "name": "typography-scale-title-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "title",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.title.line}",
+          "value": "28px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "28px",
+            "key": "{typography.scale.title.line}"
+          },
+          "name": "typography-scale-title-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "title",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.title.letter}",
+          "value": "0px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0px",
+            "key": "{typography.scale.title.letter}"
+          },
+          "name": "typography-scale-title-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "title",
+            "letter"
+          ]
+        }
+      },
+      "subtitle": {
+        "size": {
+          "key": "{typography.scale.subtitle.size}",
+          "value": "18px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "18px",
+            "key": "{typography.scale.subtitle.size}"
+          },
+          "name": "typography-scale-subtitle-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "subtitle",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.subtitle.weight}",
+          "value": "500",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "500",
+            "key": "{typography.scale.subtitle.weight}"
+          },
+          "name": "typography-scale-subtitle-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "subtitle",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.subtitle.line}",
+          "value": "24px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "24px",
+            "key": "{typography.scale.subtitle.line}"
+          },
+          "name": "typography-scale-subtitle-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "subtitle",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.subtitle.letter}",
+          "value": "0.15px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0.15px",
+            "key": "{typography.scale.subtitle.letter}"
+          },
+          "name": "typography-scale-subtitle-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "subtitle",
+            "letter"
+          ]
+        }
+      },
+      "body": {
+        "size": {
+          "key": "{typography.scale.body.size}",
+          "value": "16px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "16px",
+            "key": "{typography.scale.body.size}"
+          },
+          "name": "typography-scale-body-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "body",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.body.weight}",
+          "value": "400",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "400",
+            "key": "{typography.scale.body.weight}"
+          },
+          "name": "typography-scale-body-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "body",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.body.line}",
+          "value": "24px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "24px",
+            "key": "{typography.scale.body.line}"
+          },
+          "name": "typography-scale-body-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "body",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.body.letter}",
+          "value": "0.5px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0.5px",
+            "key": "{typography.scale.body.letter}"
+          },
+          "name": "typography-scale-body-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "body",
+            "letter"
+          ]
+        }
+      },
+      "bodyLarge": {
+        "size": {
+          "key": "{typography.scale.bodyLarge.size}",
+          "value": "18px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "18px",
+            "key": "{typography.scale.bodyLarge.size}"
+          },
+          "name": "typography-scale-body-large-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "bodyLarge",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.bodyLarge.weight}",
+          "value": "400",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "400",
+            "key": "{typography.scale.bodyLarge.weight}"
+          },
+          "name": "typography-scale-body-large-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "bodyLarge",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.bodyLarge.line}",
+          "value": "26px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "26px",
+            "key": "{typography.scale.bodyLarge.line}"
+          },
+          "name": "typography-scale-body-large-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "bodyLarge",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.bodyLarge.letter}",
+          "value": "0.15px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0.15px",
+            "key": "{typography.scale.bodyLarge.letter}"
+          },
+          "name": "typography-scale-body-large-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "bodyLarge",
+            "letter"
+          ]
+        }
+      },
+      "bodySmall": {
+        "size": {
+          "key": "{typography.scale.bodySmall.size}",
+          "value": "14px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "14px",
+            "key": "{typography.scale.bodySmall.size}"
+          },
+          "name": "typography-scale-body-small-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "bodySmall",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.bodySmall.weight}",
+          "value": "400",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "400",
+            "key": "{typography.scale.bodySmall.weight}"
+          },
+          "name": "typography-scale-body-small-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "bodySmall",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.bodySmall.line}",
+          "value": "20px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "20px",
+            "key": "{typography.scale.bodySmall.line}"
+          },
+          "name": "typography-scale-body-small-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "bodySmall",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.bodySmall.letter}",
+          "value": "0.25px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0.25px",
+            "key": "{typography.scale.bodySmall.letter}"
+          },
+          "name": "typography-scale-body-small-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "bodySmall",
+            "letter"
+          ]
+        }
+      },
+      "label": {
+        "size": {
+          "key": "{typography.scale.label.size}",
+          "value": "14px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "14px",
+            "key": "{typography.scale.label.size}"
+          },
+          "name": "typography-scale-label-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "label",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.label.weight}",
+          "value": "600",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "600",
+            "key": "{typography.scale.label.weight}"
+          },
+          "name": "typography-scale-label-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "label",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.label.line}",
+          "value": "20px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "20px",
+            "key": "{typography.scale.label.line}"
+          },
+          "name": "typography-scale-label-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "label",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.label.letter}",
+          "value": "0.1px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0.1px",
+            "key": "{typography.scale.label.letter}"
+          },
+          "name": "typography-scale-label-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "label",
+            "letter"
+          ]
+        }
+      },
+      "labelSmall": {
+        "size": {
+          "key": "{typography.scale.labelSmall.size}",
+          "value": "12px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "12px",
+            "key": "{typography.scale.labelSmall.size}"
+          },
+          "name": "typography-scale-label-small-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "labelSmall",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.labelSmall.weight}",
+          "value": "500",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "500",
+            "key": "{typography.scale.labelSmall.weight}"
+          },
+          "name": "typography-scale-label-small-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "labelSmall",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.labelSmall.line}",
+          "value": "16px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "16px",
+            "key": "{typography.scale.labelSmall.line}"
+          },
+          "name": "typography-scale-label-small-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "labelSmall",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.labelSmall.letter}",
+          "value": "0.5px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0.5px",
+            "key": "{typography.scale.labelSmall.letter}"
+          },
+          "name": "typography-scale-label-small-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "labelSmall",
+            "letter"
+          ]
+        }
+      },
+      "caption": {
+        "size": {
+          "key": "{typography.scale.caption.size}",
+          "value": "12px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "12px",
+            "key": "{typography.scale.caption.size}"
+          },
+          "name": "typography-scale-caption-size",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "caption",
+            "size"
+          ]
+        },
+        "weight": {
+          "key": "{typography.scale.caption.weight}",
+          "value": "400",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "400",
+            "key": "{typography.scale.caption.weight}"
+          },
+          "name": "typography-scale-caption-weight",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "caption",
+            "weight"
+          ]
+        },
+        "line": {
+          "key": "{typography.scale.caption.line}",
+          "value": "16px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "16px",
+            "key": "{typography.scale.caption.line}"
+          },
+          "name": "typography-scale-caption-line",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "caption",
+            "line"
+          ]
+        },
+        "letter": {
+          "key": "{typography.scale.caption.letter}",
+          "value": "0.4px",
+          "filePath": "tokens/design-tokens.json",
+          "isSource": true,
+          "original": {
+            "value": "0.4px",
+            "key": "{typography.scale.caption.letter}"
+          },
+          "name": "typography-scale-caption-letter",
+          "attributes": {},
+          "path": [
+            "typography",
+            "scale",
+            "caption",
+            "letter"
+          ]
+        }
+      }
+    }
+  },
+  "spacing": {
+    "xs": {
+      "key": "{spacing.xs}",
+      "value": "4px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "4px",
+        "key": "{spacing.xs}"
+      },
+      "name": "spacing-xs",
+      "attributes": {},
+      "path": [
+        "spacing",
+        "xs"
+      ]
+    },
+    "sm": {
+      "key": "{spacing.sm}",
+      "value": "8px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "8px",
+        "key": "{spacing.sm}"
+      },
+      "name": "spacing-sm",
+      "attributes": {},
+      "path": [
+        "spacing",
+        "sm"
+      ]
+    },
+    "md": {
+      "key": "{spacing.md}",
+      "value": "16px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "16px",
+        "key": "{spacing.md}"
+      },
+      "name": "spacing-md",
+      "attributes": {},
+      "path": [
+        "spacing",
+        "md"
+      ]
+    },
+    "lg": {
+      "key": "{spacing.lg}",
+      "value": "24px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "24px",
+        "key": "{spacing.lg}"
+      },
+      "name": "spacing-lg",
+      "attributes": {},
+      "path": [
+        "spacing",
+        "lg"
+      ]
+    },
+    "xl": {
+      "key": "{spacing.xl}",
+      "value": "32px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "32px",
+        "key": "{spacing.xl}"
+      },
+      "name": "spacing-xl",
+      "attributes": {},
+      "path": [
+        "spacing",
+        "xl"
+      ]
+    },
+    "2xl": {
+      "key": "{spacing.2xl}",
+      "value": "48px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "48px",
+        "key": "{spacing.2xl}"
+      },
+      "name": "spacing-2xl",
+      "attributes": {},
+      "path": [
+        "spacing",
+        "2xl"
+      ]
+    },
+    "3xl": {
+      "key": "{spacing.3xl}",
+      "value": "64px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "64px",
+        "key": "{spacing.3xl}"
+      },
+      "name": "spacing-3xl",
+      "attributes": {},
+      "path": [
+        "spacing",
+        "3xl"
+      ]
+    },
+    "4xl": {
+      "key": "{spacing.4xl}",
+      "value": "96px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "96px",
+        "key": "{spacing.4xl}"
+      },
+      "name": "spacing-4xl",
+      "attributes": {},
+      "path": [
+        "spacing",
+        "4xl"
+      ]
+    }
+  },
+  "radius": {
+    "none": {
+      "key": "{radius.none}",
+      "value": "0px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0px",
+        "key": "{radius.none}"
+      },
+      "name": "radius-none",
+      "attributes": {},
+      "path": [
+        "radius",
+        "none"
+      ]
+    },
+    "sm": {
+      "key": "{radius.sm}",
+      "value": "4px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "4px",
+        "key": "{radius.sm}"
+      },
+      "name": "radius-sm",
+      "attributes": {},
+      "path": [
+        "radius",
+        "sm"
+      ]
+    },
+    "md": {
+      "key": "{radius.md}",
+      "value": "8px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "8px",
+        "key": "{radius.md}"
+      },
+      "name": "radius-md",
+      "attributes": {},
+      "path": [
+        "radius",
+        "md"
+      ]
+    },
+    "lg": {
+      "key": "{radius.lg}",
+      "value": "12px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "12px",
+        "key": "{radius.lg}"
+      },
+      "name": "radius-lg",
+      "attributes": {},
+      "path": [
+        "radius",
+        "lg"
+      ]
+    },
+    "xl": {
+      "key": "{radius.xl}",
+      "value": "16px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "16px",
+        "key": "{radius.xl}"
+      },
+      "name": "radius-xl",
+      "attributes": {},
+      "path": [
+        "radius",
+        "xl"
+      ]
+    },
+    "2xl": {
+      "key": "{radius.2xl}",
+      "value": "24px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "24px",
+        "key": "{radius.2xl}"
+      },
+      "name": "radius-2xl",
+      "attributes": {},
+      "path": [
+        "radius",
+        "2xl"
+      ]
+    },
+    "full": {
+      "key": "{radius.full}",
+      "value": "9999px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "9999px",
+        "key": "{radius.full}"
+      },
+      "name": "radius-full",
+      "attributes": {},
+      "path": [
+        "radius",
+        "full"
+      ]
+    }
+  },
+  "elevation": {
+    "0": {
+      "key": "{elevation.0}",
+      "value": "0px 0px 0px 0px rgba(0, 0, 0, 0)",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0px 0px 0px 0px rgba(0, 0, 0, 0)",
+        "key": "{elevation.0}"
+      },
+      "name": "elevation-0",
+      "attributes": {},
+      "path": [
+        "elevation",
+        "0"
+      ]
+    },
+    "1": {
+      "key": "{elevation.1}",
+      "value": "0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.06)",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.06)",
+        "key": "{elevation.1}"
+      },
+      "name": "elevation-1",
+      "attributes": {},
+      "path": [
+        "elevation",
+        "1"
+      ]
+    },
+    "2": {
+      "key": "{elevation.2}",
+      "value": "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        "key": "{elevation.2}"
+      },
+      "name": "elevation-2",
+      "attributes": {},
+      "path": [
+        "elevation",
+        "2"
+      ]
+    },
+    "3": {
+      "key": "{elevation.3}",
+      "value": "0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0px 10px 15px -3px rgba(0, 0, 0, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.05)",
+        "key": "{elevation.3}"
+      },
+      "name": "elevation-3",
+      "attributes": {},
+      "path": [
+        "elevation",
+        "3"
+      ]
+    },
+    "4": {
+      "key": "{elevation.4}",
+      "value": "0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0px 20px 25px -5px rgba(0, 0, 0, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        "key": "{elevation.4}"
+      },
+      "name": "elevation-4",
+      "attributes": {},
+      "path": [
+        "elevation",
+        "4"
+      ]
+    },
+    "5": {
+      "key": "{elevation.5}",
+      "value": "0px 25px 50px -12px rgba(0, 0, 0, 0.25)",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0px 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        "key": "{elevation.5}"
+      },
+      "name": "elevation-5",
+      "attributes": {},
+      "path": [
+        "elevation",
+        "5"
+      ]
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": {
+        "key": "{motion.duration.fast}",
+        "value": "150ms",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "150ms",
+          "key": "{motion.duration.fast}"
+        },
+        "name": "motion-duration-fast",
+        "attributes": {},
+        "path": [
+          "motion",
+          "duration",
+          "fast"
+        ]
+      },
+      "normal": {
+        "key": "{motion.duration.normal}",
+        "value": "250ms",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "250ms",
+          "key": "{motion.duration.normal}"
+        },
+        "name": "motion-duration-normal",
+        "attributes": {},
+        "path": [
+          "motion",
+          "duration",
+          "normal"
+        ]
+      },
+      "slow": {
+        "key": "{motion.duration.slow}",
+        "value": "350ms",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "350ms",
+          "key": "{motion.duration.slow}"
+        },
+        "name": "motion-duration-slow",
+        "attributes": {},
+        "path": [
+          "motion",
+          "duration",
+          "slow"
+        ]
+      },
+      "slower": {
+        "key": "{motion.duration.slower}",
+        "value": "500ms",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "500ms",
+          "key": "{motion.duration.slower}"
+        },
+        "name": "motion-duration-slower",
+        "attributes": {},
+        "path": [
+          "motion",
+          "duration",
+          "slower"
+        ]
+      }
+    },
+    "easing": {
+      "linear": {
+        "key": "{motion.easing.linear}",
+        "value": "linear",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "linear",
+          "key": "{motion.easing.linear}"
+        },
+        "name": "motion-easing-linear",
+        "attributes": {},
+        "path": [
+          "motion",
+          "easing",
+          "linear"
+        ]
+      },
+      "easeIn": {
+        "key": "{motion.easing.easeIn}",
+        "value": "cubic-bezier(0.4, 0, 1, 1)",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "cubic-bezier(0.4, 0, 1, 1)",
+          "key": "{motion.easing.easeIn}"
+        },
+        "name": "motion-easing-ease-in",
+        "attributes": {},
+        "path": [
+          "motion",
+          "easing",
+          "easeIn"
+        ]
+      },
+      "easeOut": {
+        "key": "{motion.easing.easeOut}",
+        "value": "cubic-bezier(0, 0, 0.2, 1)",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "cubic-bezier(0, 0, 0.2, 1)",
+          "key": "{motion.easing.easeOut}"
+        },
+        "name": "motion-easing-ease-out",
+        "attributes": {},
+        "path": [
+          "motion",
+          "easing",
+          "easeOut"
+        ]
+      },
+      "easeInOut": {
+        "key": "{motion.easing.easeInOut}",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "filePath": "tokens/design-tokens.json",
+        "isSource": true,
+        "original": {
+          "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+          "key": "{motion.easing.easeInOut}"
+        },
+        "name": "motion-easing-ease-in-out",
+        "attributes": {},
+        "path": [
+          "motion",
+          "easing",
+          "easeInOut"
+        ]
+      }
+    }
+  },
+  "opacity": {
+    "0": {
+      "key": "{opacity.0}",
+      "value": "0",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0",
+        "key": "{opacity.0}"
+      },
+      "name": "opacity-0",
+      "attributes": {},
+      "path": [
+        "opacity",
+        "0"
+      ]
+    },
+    "25": {
+      "key": "{opacity.25}",
+      "value": "0.25",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0.25",
+        "key": "{opacity.25}"
+      },
+      "name": "opacity-25",
+      "attributes": {},
+      "path": [
+        "opacity",
+        "25"
+      ]
+    },
+    "50": {
+      "key": "{opacity.50}",
+      "value": "0.5",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0.5",
+        "key": "{opacity.50}"
+      },
+      "name": "opacity-50",
+      "attributes": {},
+      "path": [
+        "opacity",
+        "50"
+      ]
+    },
+    "75": {
+      "key": "{opacity.75}",
+      "value": "0.75",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "0.75",
+        "key": "{opacity.75}"
+      },
+      "name": "opacity-75",
+      "attributes": {},
+      "path": [
+        "opacity",
+        "75"
+      ]
+    },
+    "100": {
+      "key": "{opacity.100}",
+      "value": "1",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "1",
+        "key": "{opacity.100}"
+      },
+      "name": "opacity-100",
+      "attributes": {},
+      "path": [
+        "opacity",
+        "100"
+      ]
+    }
+  },
+  "breakpoint": {
+    "xs": {
+      "key": "{breakpoint.xs}",
+      "value": "320px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "320px",
+        "key": "{breakpoint.xs}"
+      },
+      "name": "breakpoint-xs",
+      "attributes": {},
+      "path": [
+        "breakpoint",
+        "xs"
+      ]
+    },
+    "sm": {
+      "key": "{breakpoint.sm}",
+      "value": "640px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "640px",
+        "key": "{breakpoint.sm}"
+      },
+      "name": "breakpoint-sm",
+      "attributes": {},
+      "path": [
+        "breakpoint",
+        "sm"
+      ]
+    },
+    "md": {
+      "key": "{breakpoint.md}",
+      "value": "768px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "768px",
+        "key": "{breakpoint.md}"
+      },
+      "name": "breakpoint-md",
+      "attributes": {},
+      "path": [
+        "breakpoint",
+        "md"
+      ]
+    },
+    "lg": {
+      "key": "{breakpoint.lg}",
+      "value": "1024px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "1024px",
+        "key": "{breakpoint.lg}"
+      },
+      "name": "breakpoint-lg",
+      "attributes": {},
+      "path": [
+        "breakpoint",
+        "lg"
+      ]
+    },
+    "xl": {
+      "key": "{breakpoint.xl}",
+      "value": "1280px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "1280px",
+        "key": "{breakpoint.xl}"
+      },
+      "name": "breakpoint-xl",
+      "attributes": {},
+      "path": [
+        "breakpoint",
+        "xl"
+      ]
+    },
+    "2xl": {
+      "key": "{breakpoint.2xl}",
+      "value": "1536px",
+      "filePath": "tokens/design-tokens.json",
+      "isSource": true,
+      "original": {
+        "value": "1536px",
+        "key": "{breakpoint.2xl}"
+      },
+      "name": "breakpoint-2xl",
+      "attributes": {},
+      "path": [
+        "breakpoint",
+        "2xl"
+      ]
+    }
+  }
+}

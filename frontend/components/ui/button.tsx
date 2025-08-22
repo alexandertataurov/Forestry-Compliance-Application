@@ -5,30 +5,27 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "./utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-label font-label transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/20 focus-visible:ring-offset-2 aria-invalid:ring-brand-error/20 aria-invalid:border-brand-error min-touch-target",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+        primary: "bg-brand-primary text-brand-on-primary hover:bg-brand-primary/90 active:bg-brand-primary/95 shadow-1",
+        secondary: "bg-brand-secondary text-brand-on-secondary hover:bg-brand-secondary/90 active:bg-brand-secondary/95 shadow-1",
+        tertiary: "bg-brand-tertiary text-brand-on-tertiary hover:bg-brand-tertiary/90 active:bg-brand-tertiary/95 shadow-1",
+        destructive: "bg-brand-error text-brand-on-error hover:bg-brand-error/90 active:bg-brand-error/95 shadow-1",
+        outline: "border border-surface-border bg-surface-bg text-surface-on-surface hover:bg-surface-bg-variant hover:border-surface-border-variant",
+        ghost: "text-surface-on-surface hover:bg-surface-bg-variant hover:text-surface-on-variant",
+        link: "text-brand-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9 rounded-md",
+        sm: "h-8 px-sm py-xs gap-xs rounded-sm text-label-small",
+        default: "h-10 px-md py-sm gap-sm rounded-md text-label",
+        lg: "h-12 px-lg py-md gap-md rounded-lg text-body-small",
+        icon: "size-10 rounded-md",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "primary",
       size: "default",
     },
   },

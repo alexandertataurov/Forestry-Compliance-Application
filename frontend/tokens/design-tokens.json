@@ -25,12 +25,12 @@
       "900": { "value": "#1A202C" }
     },
     "surface": {
-      "bg": { "value": "{color.neutral.0.value}" },
-      "bgVariant": { "value": "{color.neutral.10.value}" },
+      "bg": { "value": "#FFFFFF" },
+      "bgVariant": { "value": "#F6F7F9" },
       "onSurface": { "value": "#111418" },
       "onVariant": { "value": "#2B303A" },
-      "border": { "value": "{color.neutral.100.value}" },
-      "borderVariant": { "value": "{color.neutral.200.value}" }
+      "border": { "value": "#DDE3EE" },
+      "borderVariant": { "value": "#C7D0E0" }
     },
     "state": {
       "success": { "value": "#17A34A" },
