@@ -1,0 +1,333 @@
+/* Motion System CSS */
+/* Generated from design tokens - DO NOT EDIT DIRECTLY */
+
+/* Base motion classes */
+.motion-safe {
+  /* Only apply motion when user hasn't requested reduced motion */
+}
+
+.motion-reduce {
+  /* Apply when user prefers reduced motion */
+}
+
+/* Transition utilities using design tokens */
+.transition-fast {
+  transition-duration: var(--motion-duration-fast);
+  transition-timing-function: var(--motion-easing-ease-out);
+}
+
+.transition-normal {
+  transition-duration: var(--motion-duration-normal);
+  transition-timing-function: var(--motion-easing-ease-out);
+}
+
+.transition-slow {
+  transition-duration: var(--motion-duration-slow);
+  transition-timing-function: var(--motion-easing-ease-out);
+}
+
+.transition-slower {
+  transition-duration: var(--motion-duration-slower);
+  transition-timing-function: var(--motion-easing-ease-out);
+}
+
+/* Easing utilities */
+.ease-linear {
+  transition-timing-function: var(--motion-easing-linear);
+}
+
+.ease-in {
+  transition-timing-function: var(--motion-easing-ease-in);
+}
+
+.ease-out {
+  transition-timing-function: var(--motion-easing-ease-out);
+}
+
+.ease-in-out {
+  transition-timing-function: var(--motion-easing-ease-in-out);
+}
+
+/* Common transition properties */
+.transition-all {
+  transition-property: all;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+}
+
+.transition-opacity {
+  transition-property: opacity;
+}
+
+.transition-transform {
+  transition-property: transform;
+}
+
+.transition-shadow {
+  transition-property: box-shadow;
+}
+
+/* Animation keyframes */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-bottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fade-in var(--motion-duration-normal) var(--motion-easing-ease-out);
+}
+
+.animate-fade-out {
+  animation: fade-out var(--motion-duration-normal) var(--motion-easing-ease-out);
+}
+
+.animate-slide-in-from-top {
+  animation: slide-in-from-top var(--motion-duration-normal) var(--motion-easing-ease-out);
+}
+
+.animate-slide-in-from-bottom {
+  animation: slide-in-from-bottom var(--motion-duration-normal) var(--motion-easing-ease-out);
+}
+
+.animate-slide-in-from-left {
+  animation: slide-in-from-left var(--motion-duration-normal) var(--motion-easing-ease-out);
+}
+
+.animate-slide-in-from-right {
+  animation: slide-in-from-right var(--motion-duration-normal) var(--motion-easing-ease-out);
+}
+
+.animate-scale-in {
+  animation: scale-in var(--motion-duration-normal) var(--motion-easing-ease-out);
+}
+
+.animate-scale-out {
+  animation: scale-out var(--motion-duration-normal) var(--motion-easing-ease-out);
+}
+
+.animate-bounce-in {
+  animation: bounce-in var(--motion-duration-slow) var(--motion-easing-ease-out);
+}
+
+/* Hover animations */
+.hover-lift {
+  transition: transform var(--motion-duration-fast) var(--motion-easing-ease-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.hover-scale {
+  transition: transform var(--motion-duration-fast) var(--motion-easing-ease-out);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow {
+  transition: box-shadow var(--motion-duration-fast) var(--motion-easing-ease-out);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--elevation-3);
+}
+
+/* Focus animations */
+.focus-ring {
+  transition: box-shadow var(--motion-duration-fast) var(--motion-easing-ease-out);
+}
+
+.focus-ring:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-brand-primary), 0 0 0 4px var(--color-brand-primary/20);
+}
+
+/* Loading animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .motion-reduce\:transition-none {
+    transition: none !important;
+  }
+  
+  .motion-reduce\:animate-none {
+    animation: none !important;
+  }
+  
+  .motion-reduce\:hover\:transform-none:hover {
+    transform: none !important;
+  }
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only.focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Touch target minimum size */
+.min-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .high-contrast-border {
+    border: 2px solid currentColor;
+  }
+  
+  .high-contrast-focus:focus {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+/* Dark mode motion adjustments */
+@media (prefers-color-scheme: dark) {
+  .dark-motion-slow {
+    transition-duration: var(--motion-duration-slow);
+  }
+}

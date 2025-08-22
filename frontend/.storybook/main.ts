@@ -1,29 +1,18 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-import type { StorybookConfig } from "@storybook/react-vite";
-const config: StorybookConfig = {
-  stories: ["../components/**/*.stories.@(js|jsx|ts|tsx)"],
-  addons: ["@storybook/addon-essentials", "@storybook/addon-a11y"],
-  framework: {
-    name: "@storybook/react-vite",
-    options: {},
-  },
-  docs: {
-    autodocs: "tag",
-  },
-};
-=======
-=======
->>>>>>> main
 import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
 import { resolve } from 'path';
 
 const config: StorybookConfig = {
-  stories: ['../stories/**/*.stories.@(ts|tsx)'],
+  stories: [
+    '../stories/**/*.stories.@(ts|tsx)',
+    '../components/**/*.stories.@(js|jsx|ts|tsx)'
+  ],
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
+    '@storybook/addon-a11y',
+    '@storybook/addon-designs',
+    '@storybook/addon-viewport',
   ],
   framework: {
     name: '@storybook/react-vite',
@@ -47,8 +36,4 @@ const config: StorybookConfig = {
   },
 };
 
-<<<<<<< HEAD
->>>>>>> 02123ba (Updates)
-=======
->>>>>>> main
 export default config;
