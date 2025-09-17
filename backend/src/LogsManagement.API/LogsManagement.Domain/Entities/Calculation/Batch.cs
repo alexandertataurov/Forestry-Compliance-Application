@@ -3,7 +3,7 @@ using LogsManagement.Domain.Enums;
 
 namespace LogsManagement.Domain.Entities.Calculation;
 
-public sealed class Batch : BaseEntity
+public sealed class Batch : TenantEntity
 {
     public Guid? CalculationId { get; set; }
 
@@ -11,17 +11,20 @@ public sealed class Batch : BaseEntity
 
     public required DateTime Date { get; set; }
 
-    public required decimal LogLengthMeters { get; set; }
+    public required Guid OperatorId { get; set; } 
 
-    public string? OperatorFullName { get; set; } // possible future use for user reference
+    /// <summary>
+    /// 
+    /// </summary>
+    public User.User? Operator { get; set; }
 
     #endregion
 
     #region Transport Info
 
-    public string? DriverFullName { get; set; } // possible future use for user reference
+    public string? DriverFullName { get; set; }
 
-    public TransportType TransportType { get; set; }
+    public required TransportType TransportType { get; set; }
 
     public required string TransportNumber { get; set; }
 
@@ -29,11 +32,9 @@ public sealed class Batch : BaseEntity
 
     #region Location Info
 
-    public string? Forestry { get; set; } // nullable to allow for batches without a specific forestry reference
+    public string? Forestry { get; set; } 
 
-    public string? Quarter { get; set; } // nullable to allow for batches without a specific quarter reference
-
-    //public Location? Location { get; set; } // nullable to allow for batches without a specific location
+    public string? Quarter { get; set; }
 
     #endregion
 

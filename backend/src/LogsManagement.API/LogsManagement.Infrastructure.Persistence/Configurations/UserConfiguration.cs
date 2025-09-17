@@ -5,50 +5,59 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LogsManagement.Infrastructure.Persistence.Configurations;
 
-public sealed class UserConfiguration : IEntityTypeConfiguration<User>
+public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("users");
+        // Ключи и индексы
+        builder.HasKey(u => u.Id);
 
         builder.ConfigureBaseEntity();
+        builder.ConfigureTenantEntity();
 
-        // Columns
-        builder.Property(u => u.Email)
-            .IsRequired()
-            .HasMaxLength(256);
-
-        builder.Property(u => u.FirstName)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(u => u.LastName)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(u => u.MiddleName)
-            .HasMaxLength(100);
-
-        builder.Property(u => u.PasswordHash)
-            .IsRequired()
-            .HasMaxLength(512);
-
-        builder.Property(u => u.RefreshToken)
-            .HasMaxLength(512);
-
-        builder.Property(u => u.IsActive)
-            .HasDefaultValue(true);
-
-        // Indexes
+        // Уникальные ограничения
         builder.HasIndex(u => u.Email)
             .IsUnique();
 
+        // Составной индекс для мультитенантности
+        builder.HasIndex(u => new { u.TenantId, u.Email })
+            .IsUnique();
+            
+        // Индекс для производительности
+        builder.HasIndex(u => u.TenantId);
+            
         builder.HasIndex(u => u.RoleId);
-
-        // Relations
+        
+        // Свойства
+        builder.Property(u => u.Email)
+            .HasMaxLength(256)
+            .IsRequired();
+            
+        builder.Property(u => u.FirstName)
+            .HasMaxLength(100)
+            .IsRequired();
+            
+        builder.Property(u => u.LastName)
+            .HasMaxLength(100)
+            .IsRequired();
+            
+        builder.Property(u => u.MiddleName)
+            .HasMaxLength(100);
+            
+        builder.Property(u => u.PasswordHash)
+            .HasMaxLength(256)
+            .IsRequired();
+            
+        builder.Property(u => u.RefreshToken)
+            .HasMaxLength(500);
+        
+        // Связи
         builder.HasOne(u => u.Role)
             .WithMany(r => r.Users)
             .HasForeignKey(u => u.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        // Игнорируем вычисляемое свойство
+        builder.Ignore(u => u.FullName);
     }
 }

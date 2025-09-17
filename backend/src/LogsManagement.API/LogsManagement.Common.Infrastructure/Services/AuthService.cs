@@ -199,7 +199,8 @@ public sealed class AuthService : IAuthService
             new(ClaimTypes.Email, user.Email),
             new(ClaimTypes.GivenName, user.FirstName),
             new(ClaimTypes.Surname, user.LastName),
-            new("IsActive", user.IsActive.ToString())
+            new("IsActive", user.IsActive.ToString()),
+            new("tenant_id", user.TenantId.ToString())
         };
 
         if (userRole != null)

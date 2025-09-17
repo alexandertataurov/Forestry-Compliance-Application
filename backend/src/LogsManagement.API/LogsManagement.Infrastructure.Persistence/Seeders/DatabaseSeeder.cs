@@ -1,8 +1,6 @@
-using LogsManagement.Common.Application.Services;
 using LogsManagement.Domain.Entities.User;
 using LogsManagement.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LogsManagement.Infrastructure.Persistence.Seeders;
 
@@ -20,8 +18,7 @@ public static class DatabaseSeeder
     {
         await SeedRolesAsync(context);
         await SeedRolePermissionsAsync(context);
-        await SeedDefaultAdminUserAsync(context, serviceProvider);
-        
+
         await context.SaveChangesAsync();
     }
 
@@ -195,52 +192,5 @@ public static class DatabaseSeeder
         }
 
         await context.SaveChangesAsync();
-    }
-
-    /// <summary>
-    /// Создает администратора по умолчанию
-    /// </summary>
-    private static async Task SeedDefaultAdminUserAsync(LogsManagementDbContext context, IServiceProvider serviceProvider)
-    {
-        const string adminEmail = "admin@logsmanagement.com";
-        const string defaultPassword = "Admin123!";
-
-        var existingAdmin = await context.Users
-            .FirstOrDefaultAsync(u => u.Email == adminEmail);
-
-        if (existingAdmin != null) return;
-
-        var adminRole = await context.Set<Role>()
-            .FirstOrDefaultAsync(r => r.Code == "administrator");
-
-        if (adminRole == null)
-        {
-            throw new InvalidOperationException("Роль администратора не найдена. Убедитесь, что роли созданы перед созданием пользователей.");
-        }
-
-        var passwordHasher = serviceProvider.GetRequiredService<IPasswordHasher>();
-        var hashedPassword = passwordHasher.HashPassword(defaultPassword);
-
-        var adminUser = new User
-        {
-            Id = Guid.Parse("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"),
-            Email = adminEmail,
-            FirstName = "Системный",
-            LastName = "Администратор",
-            PasswordHash = hashedPassword,
-            RoleId = adminRole.Id,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        context.Users.Add(adminUser);
-        await context.SaveChangesAsync();
-
-        // Логируем создание администратора (можно добавить логгер через DI)
-        Console.WriteLine($"✅ Создан администратор по умолчанию:");
-        Console.WriteLine($"   Email: {adminEmail}");
-        Console.WriteLine($"   Password: {defaultPassword}");
-        Console.WriteLine($"   ⚠️  Смените пароль после первого входа!");
     }
 }

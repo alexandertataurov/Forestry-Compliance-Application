@@ -11,7 +11,7 @@ namespace LogsManagement.API.Controllers;
 /// </summary>
 /// <param name="authService">Authentication service</param>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController(IAuthService authService) : ControllerBase
 {
     /// <summary>

@@ -2,7 +2,7 @@
 
 namespace LogsManagement.Domain.Entities.Directory
 {
-    public class Contractor : BaseEntity
+    public class Contractor : TenantEntity
     {
         // Основная информация
         public string Name { get; set; } = string.Empty;

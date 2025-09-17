@@ -2,7 +2,7 @@
 
 namespace LogsManagement.Domain.Entities.User;
 
-public class User : BaseEntity
+public class User : TenantEntity
 {
     // Основная информация
     public string Email { get; set; } = string.Empty;
@@ -24,13 +24,4 @@ public class User : BaseEntity
 
     // Вычисляемое свойство для получения полного имени
     public string FullName => $"{LastName} {FirstName} {MiddleName}".Trim();
-}
-
-public enum UserRole
-{
-    FieldWorker,    // Полевой работник
-    DataProcessor,  // Обработчик данных
-    DataVerifier,   // Проверяющий данных
-    Administrator,  // Администратор
-    Manager        // Менеджер
 }

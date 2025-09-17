@@ -2,7 +2,10 @@
 
 namespace LogsManagement.Common.Domain.Models;
 
-public class BaseEntity : IEntity
+/// <summary>
+/// Базовая сущность (без обязательной мультитенантности)
+/// </summary>
+public abstract class BaseEntity : IEntity
 {
     public Guid Id { get; set; }
 

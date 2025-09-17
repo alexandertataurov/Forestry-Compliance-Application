@@ -1,5 +1,4 @@
 using LogsManagement.Common.Domain.Models;
-using LogsManagement.Domain.Enums;
 
 namespace LogsManagement.Domain.Entities.User;
 
@@ -8,13 +7,18 @@ namespace LogsManagement.Domain.Entities.User;
 /// </summary>
 public class Role : BaseEntity
 {
-    public string Name { get; set; } = string.Empty;
-    public string Code { get; set; } = string.Empty; // Уникальный код роли
+    public required string Name { get; set; }
+    
+    public required string Code { get; set; } = string.Empty; // Уникальный код роли
+    
     public string? Description { get; set; }
-    public bool IsActive { get; set; } = true;
-    public bool IsSystemRole { get; set; } = false; // Системные роли нельзя удалять
+    
+    public required bool IsActive { get; set; }
+
+    public required bool IsSystemRole { get; set; } // Системные роли нельзя удалять
 
     // Связи
     public List<RolePermission> RolePermissions { get; set; } = [];
+
     public List<User> Users { get; set; } = [];
 }

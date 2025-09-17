@@ -23,5 +23,13 @@ namespace LogsManagement.Infrastructure.Persistence.Extensions
             builder.Property(e => e.UpdatedBy)
                 .IsRequired(false);
         }
+
+        public static void ConfigureTenantEntity<TEntity>(this EntityTypeBuilder<TEntity> builder)
+            where TEntity : TenantEntity
+        {
+            // Настройка свойств для сущностей, связанных с арендатором
+            builder.Property(e => e.TenantId)
+                .IsRequired();
+        }
     }
 }

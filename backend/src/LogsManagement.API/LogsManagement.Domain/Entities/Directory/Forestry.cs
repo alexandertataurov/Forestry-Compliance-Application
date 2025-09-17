@@ -2,7 +2,7 @@
 
 namespace LogsManagement.Domain.Entities.Directory;
 
-public sealed class Forestry : BaseEntity
+public sealed class Forestry : TenantEntity
 {
     // Основная информация
     public string Name { get; set; } = string.Empty;

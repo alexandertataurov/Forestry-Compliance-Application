@@ -1,38 +1,44 @@
 using LogsManagement.Domain.Entities.User;
-using LogsManagement.Infrastructure.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LogsManagement.Infrastructure.Persistence.Configurations;
 
-public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
+public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.ToTable("roles");
-
-        builder.ConfigureBaseEntity<Role>();
-
-        builder.Property(r => r.Name)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(r => r.Code)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(r => r.Description)
-            .HasMaxLength(512);
-
-        builder.Property(r => r.IsActive)
-            .HasDefaultValue(true);
-
-        builder.Property(r => r.IsSystemRole)
-            .HasDefaultValue(false);
-
+        // Ключи и индексы
+        builder.HasKey(r => r.Id);
+        
+        // Уникальные ограничения
         builder.HasIndex(r => r.Code)
             .IsUnique();
-
-        // Navigation collections configured by inverse relationships
+            
+        builder.HasIndex(r => r.Name)
+            .IsUnique();
+        
+        // Свойства
+        builder.Property(r => r.Name)
+            .HasMaxLength(100)
+            .IsRequired();
+            
+        builder.Property(r => r.Code)
+            .HasMaxLength(50)
+            .IsRequired();
+            
+        builder.Property(r => r.Description)
+            .HasMaxLength(500);
+        
+        // Связи
+        builder.HasMany(r => r.RolePermissions)
+            .WithOne(rp => rp.Role)
+            .HasForeignKey(rp => rp.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
+        builder.HasMany(r => r.Users)
+            .WithOne(u => u.Role)
+            .HasForeignKey(u => u.RoleId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

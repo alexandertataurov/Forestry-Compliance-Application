@@ -100,7 +100,7 @@ public sealed class JwtService : IJwtService
             IssuerSigningKey = symmetricSecurityKey,
             ClockSkew = TimeSpan.Zero,
             TryAllIssuerSigningKeys = true,
-            ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 }
+            ValidAlgorithms = [SecurityAlgorithms.HmacSha256]
         };
 
         try

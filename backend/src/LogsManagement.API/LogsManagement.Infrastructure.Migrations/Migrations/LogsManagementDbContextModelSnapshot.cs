@@ -47,36 +47,43 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasColumnName("date");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("description");
 
                     b.Property<string>("DriverFullName")
-                        .HasColumnType("text")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("driver_full_name");
 
                     b.Property<string>("Forestry")
-                        .HasColumnType("text")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("forestry");
 
-                    b.Property<decimal>("LogLengthMeters")
-                        .HasColumnType("numeric")
-                        .HasColumnName("log_length_meters");
-
-                    b.Property<string>("OperatorFullName")
-                        .HasColumnType("text")
-                        .HasColumnName("operator_full_name");
+                    b.Property<Guid>("OperatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("operator_id");
 
                     b.Property<string>("Quarter")
-                        .HasColumnType("text")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
                         .HasColumnName("quarter");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
 
                     b.Property<string>("TransportNumber")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
                         .HasColumnName("transport_number");
 
-                    b.Property<int>("TransportType")
-                        .HasColumnType("integer")
+                    b.Property<string>("TransportType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("transport_type");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -92,6 +99,15 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
 
                     b.HasIndex("CalculationId")
                         .HasDatabaseName("ix_batches_calculation_id");
+
+                    b.HasIndex("OperatorId")
+                        .HasDatabaseName("ix_batches_operator_id");
+
+                    b.HasIndex("TenantId", "CalculationId")
+                        .HasDatabaseName("ix_batches_tenant_id_calculation_id");
+
+                    b.HasIndex("TenantId", "Date")
+                        .HasDatabaseName("ix_batches_tenant_id_date");
 
                     b.ToTable("batches", "logs");
                 });
@@ -111,13 +127,19 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("created_by");
 
-                    b.Property<int>("Gost")
-                        .HasColumnType("integer")
-                        .HasColumnName("gost");
+                    b.Property<Guid>("GostStandardId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("gost_standard_id");
 
-                    b.Property<int>("LogType")
-                        .HasColumnType("integer")
+                    b.Property<string>("LogType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("log_type");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -130,7 +152,10 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                     b.HasKey("Id")
                         .HasName("pk_calculations");
 
-                    b.ToTable("Calculations", "logs");
+                    b.HasIndex("GostStandardId")
+                        .HasDatabaseName("ix_calculations_gost_standard_id");
+
+                    b.ToTable("calculations", "logs");
                 });
 
             modelBuilder.Entity("LogsManagement.Domain.Entities.Calculation.LogEntry", b =>
@@ -140,7 +165,7 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid?>("BatchId")
+                    b.Property<Guid>("BatchId")
                         .HasColumnType("uuid")
                         .HasColumnName("batch_id");
 
@@ -153,16 +178,22 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<decimal>("Diameter")
-                        .HasColumnType("numeric")
+                        .HasPrecision(9, 3)
+                        .HasColumnType("numeric(9,3)")
                         .HasColumnName("diameter");
 
                     b.Property<decimal>("Length")
-                        .HasColumnType("numeric")
+                        .HasPrecision(9, 3)
+                        .HasColumnType("numeric(9,3)")
                         .HasColumnName("length");
 
                     b.Property<int>("Quality")
                         .HasColumnType("integer")
                         .HasColumnName("quality");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -172,16 +203,24 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("updated_by");
 
+                    b.Property<decimal>("Volume")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("numeric(18,3)")
+                        .HasColumnName("volume");
+
                     b.HasKey("Id")
                         .HasName("pk_log_entries");
 
                     b.HasIndex("BatchId")
                         .HasDatabaseName("ix_log_entries_batch_id");
 
+                    b.HasIndex("TenantId", "BatchId")
+                        .HasDatabaseName("ix_log_entries_tenant_id_batch_id");
+
                     b.ToTable("log_entries", "logs");
                 });
 
-            modelBuilder.Entity("LogsManagement.Domain.Entities.User.Role", b =>
+            modelBuilder.Entity("LogsManagement.Domain.Entities.Gost.GostStandard", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,8 +229,8 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
                         .HasColumnName("code");
 
                     b.Property<DateTime?>("CreatedAt")
@@ -203,20 +242,203 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("description");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_system");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_gost_standards");
+
+                    b.HasIndex("IsActive", "IsSystem")
+                        .HasDatabaseName("ix_gost_standards_is_active_is_system");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_gost_standards_tenant_id_code");
+
+                    b.ToTable("gost_standards", "logs");
+                });
+
+            modelBuilder.Entity("LogsManagement.Domain.Entities.Gost.GostVolume", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<decimal>("Diameter")
+                        .HasColumnType("decimal(9,3)")
+                        .HasColumnName("diameter");
+
+                    b.Property<Guid>("GostStandardId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("gost_standard_id");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<decimal>("Length")
+                        .HasColumnType("decimal(9,3)")
+                        .HasColumnName("length");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<decimal>("Volume")
+                        .HasColumnType("decimal(18,6)")
+                        .HasColumnName("volume");
+
+                    b.HasKey("Id")
+                        .HasName("pk_gost_volumes");
+
+                    b.HasIndex("GostStandardId", "Length", "Diameter")
+                        .IsUnique()
+                        .HasDatabaseName("ix_gost_volumes_gost_standard_id_length_diameter");
+
+                    b.ToTable("gost_volumes", "logs");
+                });
+
+            modelBuilder.Entity("LogsManagement.Domain.Entities.Tenant.Tenant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("contact_email");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("contact_phone");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("Inn")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
+                        .HasColumnName("inn");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_tenants");
+
+                    b.HasIndex("Inn")
+                        .IsUnique()
+                        .HasDatabaseName("ix_tenants_inn");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_tenants_name");
+
+                    b.ToTable("tenants", "logs");
+                });
+
+            modelBuilder.Entity("LogsManagement.Domain.Entities.User.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
                         .HasColumnName("is_active");
 
                     b.Property<bool>("IsSystemRole")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false)
                         .HasColumnName("is_system_role");
 
                     b.Property<string>("Name")
@@ -239,6 +461,10 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                     b.HasIndex("Code")
                         .IsUnique()
                         .HasDatabaseName("ix_roles_code");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_roles_name");
 
                     b.ToTable("roles", "logs");
                 });
@@ -283,10 +509,7 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_role_permissions_role_id_permission");
 
-                    b.ToTable("role_permissions", "logs", t =>
-                        {
-                            t.HasCheckConstraint("ck_role_permissions_permission_valid", "permission in ('ViewUsers', 'CreateUsers', 'EditUsers', 'DeleteUsers', 'ViewCalculations', 'CreateCalculations', 'EditCalculations', 'DeleteCalculations', 'ApproveCalculations', 'ViewBatches', 'CreateBatches', 'EditBatches', 'DeleteBatches', 'ViewLogs', 'CreateLogs', 'EditLogs', 'DeleteLogs', 'SystemAdmin', 'ViewAudit', 'ManageSettings')");
-                        });
+                    b.ToTable("role_permissions", "logs");
                 });
 
             modelBuilder.Entity("LogsManagement.Domain.Entities.User.User", b =>
@@ -317,9 +540,7 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasColumnName("first_name");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
                         .HasColumnName("is_active");
 
                     b.Property<DateTime?>("LastLoginAt")
@@ -339,13 +560,13 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("RefreshToken")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("refresh_token");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
@@ -355,6 +576,10 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid")
                         .HasColumnName("role_id");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -374,6 +599,13 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                     b.HasIndex("RoleId")
                         .HasDatabaseName("ix_users_role_id");
 
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_users_tenant_id");
+
+                    b.HasIndex("TenantId", "Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_tenant_id_email");
+
                     b.ToTable("users", "logs");
                 });
 
@@ -384,14 +616,51 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasForeignKey("CalculationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_batches_calculations_calculation_id");
+
+                    b.HasOne("LogsManagement.Domain.Entities.User.User", "Operator")
+                        .WithMany()
+                        .HasForeignKey("OperatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_batches_users_operator_id");
+
+                    b.Navigation("Operator");
+                });
+
+            modelBuilder.Entity("LogsManagement.Domain.Entities.Calculation.Calculation", b =>
+                {
+                    b.HasOne("LogsManagement.Domain.Entities.Gost.GostStandard", "GostStandard")
+                        .WithMany()
+                        .HasForeignKey("GostStandardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_calculations_gost_standards_gost_standard_id");
+
+                    b.Navigation("GostStandard");
                 });
 
             modelBuilder.Entity("LogsManagement.Domain.Entities.Calculation.LogEntry", b =>
                 {
-                    b.HasOne("LogsManagement.Domain.Entities.Calculation.Batch", null)
+                    b.HasOne("LogsManagement.Domain.Entities.Calculation.Batch", "Batch")
                         .WithMany("LogEntries")
                         .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_log_entries_batches_batch_id");
+
+                    b.Navigation("Batch");
+                });
+
+            modelBuilder.Entity("LogsManagement.Domain.Entities.Gost.GostVolume", b =>
+                {
+                    b.HasOne("LogsManagement.Domain.Entities.Gost.GostStandard", "GostStandard")
+                        .WithMany("Rows")
+                        .HasForeignKey("GostStandardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_gost_volumes_gost_standards_gost_standard_id");
+
+                    b.Navigation("GostStandard");
                 });
 
             modelBuilder.Entity("LogsManagement.Domain.Entities.User.RolePermission", b =>
@@ -413,7 +682,14 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_users_role_role_id");
+                        .HasConstraintName("fk_users_roles_role_id");
+
+                    b.HasOne("LogsManagement.Domain.Entities.Tenant.Tenant", null)
+                        .WithMany("Users")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_users_tenants_tenant_id");
 
                     b.Navigation("Role");
                 });
@@ -426,6 +702,16 @@ namespace LogsManagement.Infrastructure.Migrations.Migrations
             modelBuilder.Entity("LogsManagement.Domain.Entities.Calculation.Calculation", b =>
                 {
                     b.Navigation("Batches");
+                });
+
+            modelBuilder.Entity("LogsManagement.Domain.Entities.Gost.GostStandard", b =>
+                {
+                    b.Navigation("Rows");
+                });
+
+            modelBuilder.Entity("LogsManagement.Domain.Entities.Tenant.Tenant", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("LogsManagement.Domain.Entities.User.Role", b =>

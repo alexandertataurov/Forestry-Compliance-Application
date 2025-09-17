@@ -3,14 +3,18 @@ using LogsManagement.Domain.Enums;
 
 namespace LogsManagement.Domain.Entities.Calculation;
 
-public class LogEntry : BaseEntity
+public class LogEntry : TenantEntity
 {
-    public Guid? BatchId { get; set; }
+    public required Guid BatchId { get; set; }
 
-    // Основные измерения
-    public decimal Diameter { get; set; }
-    public decimal Length { get; set; }
+    public Batch? Batch { get; set; }
+
+    public required decimal Diameter { get; set; }
+    
+    public required decimal Length { get; set; }
+
+    public required decimal Volume { get; set; }
 
     // Качество и классификация
-    public QualityGrade Quality { get; set; }
+    public required QualityGrade Quality { get; set; }
 }

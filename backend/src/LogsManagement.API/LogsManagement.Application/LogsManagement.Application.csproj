@@ -12,4 +12,8 @@
     <None Remove="Repositories\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LogsManagement.Common.Application\LogsManagement.Common.Application.csproj" />
+  </ItemGroup>
+
 </Project>

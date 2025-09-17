@@ -10,22 +10,13 @@ public sealed class RolePermissionConfiguration : IEntityTypeConfiguration<RoleP
 {
     public void Configure(EntityTypeBuilder<RolePermission> builder)
     {
-        builder.ToTable("role_permissions", t =>
-        {
-            // Optional: DB-level guard to prevent invalid values
-            var allowed = string.Join(", ", Enum.GetNames<Permission>().Select(n => $"'{n}'"));
-            t.HasCheckConstraint("ck_role_permissions_permission_valid", $"permission in ({allowed})");
-        });
-
         builder.ConfigureBaseEntity();
 
-        // Store enum as string (readable, migration-friendly)
         builder.Property(rp => rp.Permission)
             .HasConversion<string>()
             .HasMaxLength(100)
             .IsRequired();
 
-        // Unique per role
         builder.HasIndex(rp => new { rp.RoleId, rp.Permission })
             .IsUnique();
 
