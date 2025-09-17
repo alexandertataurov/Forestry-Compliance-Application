@@ -1,0 +1,67 @@
+## Build results
+bin/
+obj/
+out/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## VS Code
+.vscode/
+
+## Visual Studio
+.vs/
+*.dbmdl
+*.pdb
+*.cache
+*.log
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## Publish results
+publish/
+*.Publish.xml
+
+## Docker
+**/logs/
+**/docker-compose.*
+docker-compose.*
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Others
+*.swp
+*.bak
+*.tmp
+*.tmp.*
+*.DS_Store
+Thumbs.db
+
+## Rider
+.idea/
+*.sln.iml
+
+## Test results
+TestResults/
+*.coverage
+*.coveragexml
+
+## Local secrets
+secrets.json
+
+## Aspire (.NET 8)
+**/AppHost/bin/
+**/AppHost/obj/
+**/ServiceDefaults/bin/
+**/ServiceDefaults/obj/

@@ -1,0 +1,60 @@
+# version: '3.8'
+
+# services:
+#   logs-api:
+#     image: ghcr.io/YOUR_GITHUB_USERNAME/YOUR_REPO:latest
+#     container_name: logsmanagement-api
+#     environment:
+#       - ASPNETCORE_ENVIRONMENT=Production
+#       - ASPNETCORE_URLS=http://+:8080
+#       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+#       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+#       - OTEL_SERVICE_NAME=logs-api
+#       - OTEL_RESOURCE_ATTRIBUTES=service.instance.id=instance-1,application=logs-management
+#     ports:
+#       - "127.0.0.1:8080:8080"   # важно: проксировать только внутри, наружу даёт nginx
+#     depends_on:
+#       logs-postgres:
+#         condition: service_healthy
+#     networks:
+#       - logs-network
+#     healthcheck:
+#       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null 2>&1 || exit 1"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 3
+#     restart: always
+
+#   logs-postgres:
+#     image: postgres:16-alpine
+#     container_name: logsmanagement-postgres
+#     restart: unless-stopped
+#     environment:
+#       POSTGRES_DB: logs_management
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: postgres
+#       PGDATA: /var/lib/postgresql/data/pgdata
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     networks:
+#       - logs-network
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U postgres -d logs_management"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+
+# networks:
+#   logs-network:
+#     driver: bridge
+
+# volumes:
+#   postgres_data:
+#     driver: local
+
+
+
+
+
